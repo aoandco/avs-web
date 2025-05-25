@@ -32,11 +32,11 @@ export default function Sidebar() {
                 <FaUserFriends className='text-2xl' />
                 <p className='text-base font-semibold'>Tasks</p>
             </div>
-            <div className='rounded-md bg-[#f5f5f5] hover:bg-[#9dc782] p-2 text-[#8a8a8a] hover:text-white flex flex-row gap-2 items-center transition-all duration-300 ease-linear'>
+            <div onClick={()=>handleRouter('/admin/clients')} className='rounded-md bg-[#f5f5f5] hover:bg-[#9dc782] p-2 text-[#8a8a8a] hover:text-white flex flex-row gap-2 items-center transition-all duration-300 ease-linear'>
                 <FaUserFriends className='text-2xl' />
                 <p className='text-base font-semibold'>Client</p>
             </div>
-            <div className='rounded-md bg-[#f5f5f5] hover:bg-[#9dc782] p-2 text-[#8a8a8a] hover:text-white flex flex-row gap-2 items-center transition-all duration-300 ease-linear'>
+            <div onClick={()=>handleRouter('/admin/projects')} className='rounded-md bg-[#f5f5f5] hover:bg-[#9dc782] p-2 text-[#8a8a8a] hover:text-white flex flex-row gap-2 items-center transition-all duration-300 ease-linear'>
                 <RiFileList2Fill className='text-2xl' />
                 <p className='text-base font-semibold'>Projects</p>
             </div>
@@ -54,7 +54,7 @@ export default function Sidebar() {
             </div>
             <div className='rounded-md bg-[#f5f5f5] hover:bg-[#9dc782] p-2 text-[#8a8a8a] hover:text-white flex flex-row gap-2 items-center transition-all duration-300 ease-linear'>
                 <IoMdSettings className='text-2xl' />
-                <p className='text-base font-semibold'>Analytics</p>
+                <p className='text-base font-semibold'>Settings</p>
             </div>
         </div>
     </div>

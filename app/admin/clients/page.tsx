@@ -3,26 +3,28 @@ import React, { useState } from 'react'
 import Header from '../_components/Header'
 import Sidebar from '../_components/Sidebar'
 import { IoSearch } from "react-icons/io5";
-import fileIcon from "../_assests/file-icon.png"
-import Image, { StaticImageData } from 'next/image';
+import Image from 'next/image';
 import emptyIcon from "../_assests/emptyIcon.svg"
 
 
- function Page() {
+export default function Page() {
     const [isEmpty,] = useState(false)
-
-    const FileComp = ({icon , file, bgColor}:{icon: StaticImageData, file: string, bgColor: string}) =>{
-        return (
-            <div className='rounded-md flex flex-row gap-6 px-2 py-2 items-center bg-white'>
-                <div className={`flex justify-center items-center ${bgColor} h-[36px] w-[36px] rounded-md`}>
-                    <Image className="scale-80" src={icon} alt="" />
-                </div>
-                <p className='text-base font-semibold'>{file}</p>
+  
+  const ClientComp = ({name}:{name: string}) => {
+    return (
+        <div className='rounded-md bg-white h-auto'>
+            <div className='flex flex-row items-stretch h-[36px] border-b-[1.5px]  border-b-[#ececec]'>
+                <div className='flex-1'></div>
+                <p className='flex items-center pl-2 border-l-[1.5px]  border-l-[#ececec] flex-[3] font-semibold text-base'>{name}</p>
             </div>
-        )
-    }
-
-  return (
+            <div className='pl-2 md:pl-4 lg:pl-6 pb-4 mt-2 md:mt-3 lg:mt-4'>
+                <p className='text-[#8a8a8a] text-base mb-2 mb:mb-3 lg:mb-4'>Open projects</p>
+                <p className='text-[#8a8a8a] text-base'>Open tasks</p>
+            </div>
+        </div>
+    )
+  }
+    return (
     <main className='bg-[#f6f6f7] h-auto flex flex-col'>
         <Header />
         <section className='flex-1 w-[95%] mx-auto max-w-screen-xl flex flex-row gap-6 mb-4'>
@@ -48,47 +50,31 @@ import emptyIcon from "../_assests/emptyIcon.svg"
                 </div>
                 {
                     !isEmpty
-                    ? 
+                    ?
                     <div className='p-3 md:p-5 lg:p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6'>
-                        <FileComp 
-                            icon={fileIcon}
-                            file={"Bigbee Company"}
-                            bgColor={"bg-[#562cf1]"}
+                        <ClientComp 
+                            name={"Bigbee Company"}
                         />
-                        <FileComp 
-                            icon={fileIcon}
-                            file={"Bigbee Company"}
-                            bgColor={"bg-[#562cf1]"}
+                        <ClientComp 
+                            name={"TA Insurance"}
                         />
-                        <FileComp 
-                            icon={fileIcon}
-                            file={"Bigbee Company"}
-                            bgColor={"bg-[#562cf1]"}
+                        <ClientComp 
+                            name={"Bigbee Company"}
                         />
-                        <FileComp 
-                            icon={fileIcon}
-                            file={"Bigbee Company"}
-                            bgColor={"bg-[#562cf1]"}
+                        <ClientComp 
+                            name={"TA Insurance"}
                         />
-                        <FileComp 
-                            icon={fileIcon}
-                            file={"Bigbee Company"}
-                            bgColor={"bg-[#562cf1]"}
+                        <ClientComp 
+                            name={"Bigbee Company"}
                         />
-                        <FileComp 
-                            icon={fileIcon}
-                            file={"Bigbee Company"}
-                            bgColor={"bg-[#562cf1]"}
+                        <ClientComp 
+                            name={"TA Insurance"}
                         />
-                        <FileComp 
-                            icon={fileIcon}
-                            file={"Bigbee Company"}
-                            bgColor={"bg-[#562cf1]"}
+                        <ClientComp 
+                            name={"Bigbee Company"}
                         />
-                        <FileComp 
-                            icon={fileIcon}
-                            file={"Bigbee Company"}
-                            bgColor={"bg-[#562cf1]"}
+                        <ClientComp 
+                            name={"TA Insurance"}
                         />
                     </div>
                     : 
@@ -101,9 +87,7 @@ import emptyIcon from "../_assests/emptyIcon.svg"
                     </div>
                 }
             </div>
-        </section>  
+        </section>
     </main>
   )
 }
-
-export default Page
