@@ -20,7 +20,7 @@ export default function Page() {
     const [isEmpty,] = useState(false)
     const Complain = ({title,desc,date,time,status,id,color}:  ComplainType) => {
         return (
-            <div className='mb2 md:mb-4 lg:mb-6 px-4 md:px-6 py-4 md:py-6 rounded-xl bg-white'>
+            <div className='mb-3 md:mb-4 lg:mb-6 px-4 md:px-6 py-4 md:py-6 rounded-xl bg-white'>
                 <div className='flex flex-row justify-between items-center mb-2 md:mb-3 lg:mb-4'>
                     <p className='text-base font-semibold'>{title}</p>
                     <p className={`px-4 py-2 rounded-full text-white ${color} hover:opacity-80`}>{status}</p>
@@ -39,9 +39,9 @@ export default function Page() {
         )
     } 
   return (
-    <main className='mx-auto w-full max-w-screen-2xl bg-[#f6f6f7] h-auto flex flex-row'>
+    <main className='mx-auto w-full max-w-screen-2xl h-auto flex flex-row'>
         <Sidebar />
-        <div className='flex-1 px-4 md:px-6 lg:px-8 pt-6'>
+        <div className='bg-[#f6f6f7] flex-1 px-4 md:px-6 lg:px-8 pt-6'>
             <Header />
             <div>
                 <div className='mb-4 md:mb-6 lg:mb-8 relative h-auto'>
@@ -52,13 +52,13 @@ export default function Page() {
                         className='w-full pl-16 py-3 pr-2 bg-white rounded-2xl outline-none'
                     />
                 </div>
-                <div className='mb-4 md:mb-6 lg:mb-8 flex flex-row gap-4 lg:gap-10 items-center px-4 lg:px-6 py-3 bg-white rounded-xl'>
-                    <p className='text-base font-semibold'>Filter by:</p>
+                <div className='mb-4 md:mb-6 lg:mb-8 flex flex-col sm:flex-row gap-4 lg:gap-10 items-center px-4 lg:px-6 py-3 bg-white rounded-xl'>
+                    <p className='self-start md:self-center text-base font-semibold'>Filter by:</p>
                     <ul className='flex flex-row gap-4 md:gap-6 lg:gap-10 items-center list-none'>
-                        <li className='text-base px-4 md:px-6 lg:px-8 py-2 rounded-xl bg-[#e3e2e2] text-[#0f170a] hover:bg-[#485d3a] hover:text-white'>All</li>
-                        <li className='text-base px-4 md:px-6 lg:px-8 py-2 rounded-xl bg-[#e3e2e2] text-[#0f170a] hover:bg-[#485d3a] hover:text-white'>Opened</li>
-                        <li className='text-base px-4 md:px-6 lg:px-8 py-2 rounded-xl bg-[#e3e2e2] text-[#0f170a] hover:bg-[#485d3a] hover:text-white'>In review</li>
-                        <li className='text-base px-4 md:px-6 lg:px-8 py-2 rounded-xl bg-[#e3e2e2] text-[#0f170a] hover:bg-[#485d3a] hover:text-white'>Resolved</li>
+                        <li className='cursor-pointer text-base px-4 md:px-6 lg:px-8 py-2 rounded-xl bg-[#e3e2e2] text-[#0f170a] hover:bg-[#485d3a] hover:text-white'>All</li>
+                        <li className='cursor-pointer text-base px-4 md:px-6 lg:px-8 py-2 rounded-xl bg-[#e3e2e2] text-[#0f170a] hover:bg-[#485d3a] hover:text-white'>Opened</li>
+                        <li className='cursor-pointer text-base whitespace-nowrap px-4 md:px-6 lg:px-8 py-2 rounded-xl bg-[#e3e2e2] text-[#0f170a] hover:bg-[#485d3a] hover:text-white'>In review</li>
+                        <li className='cursor-pointer text-base px-4 md:px-6 lg:px-8 py-2 rounded-xl bg-[#e3e2e2] text-[#0f170a] hover:bg-[#485d3a] hover:text-white'>Resolved</li>
                     </ul>
                 </div>
                 <div className='py-3 px-4 rounded-xl bg-white'>

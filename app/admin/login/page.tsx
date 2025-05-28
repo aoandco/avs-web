@@ -36,7 +36,10 @@ function Page() {
                     <div className='flex justify-center items-center'>
                         <button
                             onClick={(e: MouseEvent<HTMLButtonElement>)=>{e.preventDefault();handleRouter("/admin/dashboard")}} 
-                            className='cursor-pointer h-[40px] w-[175px] rounded-md bg-[#485d3a] hover:bg-white text-white hover:text-[#485d3a] hover:border-2 hover:border-[#485d3a] transition-all duration-500 ease-linear'>Sign In</button>
+                            className='cursor-pointer py-3 px-14 rounded-md bg-[#485d3a] text-white hover:opacity-85 active:opacity-85 transition-all duration-500 ease-linear'
+                        >
+                            Sign In
+                        </button>
                     </div>
                 </form>
             </div>

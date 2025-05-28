@@ -27,8 +27,8 @@ const Page = () => {
                     Log in to manage requests, assign agents, and ensure every address gets the bayog touch of trust
                 </p>
                 <div className='flex flex-row gap-6'>
-                    <button onClick={()=>handleRouter("/admin/signup")} className='cursor-pointer w-[175px] h-[45px] rounded-lg text-white bg-[#485d3a] hover:bg-white hover:text-[#485d3a] hover:border-2 hover:border-[#485d3a] transition-all duration-500 ease-linear'>Sign Up as Admin</button>
-                    <button onClick={()=>handleRouter("/admin/login")} className='cursor-pointer w-[175px] h-[45px] rounded-lg text-[#485d3a] bg-white border-2 border-[#485d3a] hover:border-0 hover:bg-[#485d3a] hover:text-white transition-all duration-500 ease-linear'>Login as Admin</button>
+                    <button onClick={()=>handleRouter("/admin/signup")} className='cursor-pointer px-5 py-4 rounded-lg text-white bg-[#485d3a] hover:opacity-85 active:opacity-85 transition-all duration-300 ease-linear'>Sign Up as Admin</button>
+                    <button onClick={()=>handleRouter("/admin/login")} className='cursor-pointer px-5 py-4 rounded-lg text-[#485d3a] bg-white border-2 border-[#485d3a] hover:bg-[#eaeaea] active:btg-[#eaeaea] transition-all duration-300 ease-linear'>Login as Admin</button>
                 </div>
             </div>
             <div className='relative admin-hero flex-1 shrink-0'>

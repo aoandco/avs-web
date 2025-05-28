@@ -10,24 +10,25 @@ import emptyIcon from "../_assests/emptyIcon.svg"
 export default function Page() {
     const [isEmpty,] = React.useState(false)
   return (
-    <main className='bg-[#f6f6f7] h-auto flex flex-col'>
+    <main className='w-[95%] mx-auto max-w-screen-xl h-auto flex flex-col'>
         <Header />
-        <section className='flex-1 w-[95%] mx-auto max-w-screen-xl flex flex-row gap-6 mb-4'>
+        <section className='flex-1  flex flex-col lg:flex-row gap-6 mb-4'>
             <Sidebar />  
             <div className='flex-1 rounded-lg border-[1.5px] border-[#b3b3b3] flex flex-col'>
                 <div className='flex flex-row gap-4 px-3 md:px-5 lg:px-6 border-b-[1.5px] border-b-[#b3b3b3]'>
                     <p className='py-3 md:py-5 lg:py-6 text-sm md:text-base leading-none text-[#8a8a8a] hover:text-[#9dc782] hover:border-b hover:border-b-[#9dc782] cursor-pointer'>Companies</p>
                     <p className='py-3 md:py-5 lg:py-6 text-sm md:text-base leading-none text-[#8a8a8a] hover:text-[#9dc782] hover:border-b hover:border-b-[#9dc782] cursor-pointer'>Agents</p>
                 </div>
-                <div className='p-3 md:p-5 lg:px-6 lg:py-3 flex justify-between items-center border-b-[1.5px] border-b-[#b3b3b3]'>
+                <div className='p-3 md:p-5 lg:px-6 lg:py-3 flex flex-col md:flex-row justify-between gap-3 md:gap-0 items-center border-b-[1.5px] border-b-[#b3b3b3]'>
                     <div className='flex flex-row gap-4 items-center'>
-                        <p className='text-black font-semibold text-base'>Agent Directory</p>
-                        <div className='relative h-auto'>
+                        <p className='hidden sm:block text-black font-semibold text-base'>Agent Directory</p>
+                        <p className='block sm:hidden text-black font-semibold text-sm'>Agent</p>
+                        <div className='relative h-auto flex-1 md:w-[250px]'>
                             <IoSearch className='absolute text-[#8a8a8a] top-[50%] -translate-y-[50%] left-2' />
                             <input 
                                 type="text" 
-                                className='w-[250px] border-0 border-white rounded-xl border-[1.5px] bg-white text-[#8a8a8a] py-2 pl-8 pr-2'
-                                placeholder='search companies'    
+                                className='w-full border-0 border-white rounded-xl border-[1.5px] bg-white text-[#8a8a8a] py-2 pl-8 pr-2'
+                                placeholder='search agents'    
                             />
                         </div>
                     </div>
@@ -36,8 +37,8 @@ export default function Page() {
                 {
                     !isEmpty
                     ?
-                    <>
-                       <table className='table-fixed w-full'>
+                    <div className='overflow-x-auto w-full'>
+                       <table className='table-fixed w-full min-w-[720px]'>
                             <thead>
                                 <tr className='text-[#626262] border-b-[1.5px] border-b-[#b3b3b3]'>
                                     <th className='w-[1/4] text-left py-4 lg:py-6 px-4 flex flex-row gap-4 items-center'>
@@ -124,7 +125,7 @@ export default function Page() {
                                 </tr>
                             </tbody>                        
                         </table> 
-                    </>
+                    </div>
                     : 
                     <div className='flex-1 flex justify-center items-center'>
                         <div>

@@ -11,7 +11,6 @@ const myContext = createContext<MyContextType | undefined>(undefined)
 
 export const MyContextProvider = ({children}:{children: ReactNode})=>{
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-    
     const toggleSidebar = () => {
         if(window.innerWidth >= 1024) return;
         setIsSidebarOpen(!isSidebarOpen);
@@ -27,7 +26,7 @@ export const MyContextProvider = ({children}:{children: ReactNode})=>{
 export const useMyContext = () => {
     const context = useContext(myContext)
     if (!context) {
-        throw new Error("useMyCOntext must be used within a MyContextProvider");
+        throw new Error("useMyContext must be used within a MyContextProvider");
     }
     return context;
 }

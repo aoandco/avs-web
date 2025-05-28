@@ -1,10 +1,13 @@
 "use client"
-import React from 'react'
+import React, { MouseEvent } from 'react'
 import AuthComp from '../components/AuthComp'
 import Link from 'next/link'
 import { PiEyeLight, PiEyeSlashLight } from 'react-icons/pi'
+import { useRouter } from 'next/navigation'
+
 
 export default function page() {
+    const router = useRouter();
   return (
     <div className='h-screen flex flex-row'>
         <AuthComp />
@@ -35,7 +38,9 @@ export default function page() {
                         </div>
                     </div>
                     <div className='flex justify-center items-center'>
-                        <button className='h-[40px] w-[175px] rounded-md bg-[#485d3a] hover:bg-white text-white hover:text-[#485d3a] hover:border-2 hover:border-[#485d3a] transition-all duration-500 ease-linear'>Sign In</button>
+                        <button
+                            onClick={(e : MouseEvent<HTMLButtonElement>) => {e.preventDefault();router.push("/dashboard")}} 
+                            className='cursor-pointer py-3 px-14 rounded-md bg-[#485d3a] hover:opacity-80 text-white transition-all duration-500 ease-linear'>Sign In</button>
                     </div>
                 </form>
             </div>

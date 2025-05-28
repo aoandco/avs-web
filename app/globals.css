@@ -5,6 +5,7 @@
 body {
   font-family: 'Inter', sans-serif;
   line-height: 1;
+  /* width: 100vw */
 }
 .admin-hero{
   aspect-ratio: 3/3;

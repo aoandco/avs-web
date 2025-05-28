@@ -110,9 +110,9 @@ export default function page() {
     }
 
   return (
-    <main className='mx-auto w-full max-w-screen-2xl bg-[#f6f6f7] h-auto flex flex-row'>
+    <main className='mx-auto w-full max-w-screen-2xl h-auto flex flex-row'>
         <Sidebar />
-        <div className='flex-1 px-4 md:px-6 lg:px-8 pt-6'>
+        <div className='bg-[#f6f6f7] flex-1 px-4 md:px-6 lg:px-8 pt-6'>
             <Header />
             <div>
                 <div className='mb-4 md:mb-6 lg:mb-8 relative h-auto'>
@@ -124,17 +124,17 @@ export default function page() {
                     />
                 </div>
             </div>
-            <div className='mb-4 md:mb-6 lg:mb-8 flex flex-row gap-4 lg:gap-10 items-center px-4 lg:px-6 py-3 bg-white rounded-xl'>
-                <select className='text-base font-semibold'>
+            <div className='mb-4 md:mb-6 lg:mb-8 flex flex-col sm:flex-row gap-4 md:gap-8 lg:gap-10 items-center px-4 lg:px-6 py-3 bg-white rounded-xl'>
+                <select className='border-2 border-[#485d3a] rounded-xl p-2 self-start md:self-center text-base font-semibold'>
                     <option value="daily">Daily</option>
                     <option value="monthly">Monthly</option>
                     <option value="yearly">Yearly</option>
                 </select>
                 <ul className='flex flex-row gap-4 md:gap-6 lg:gap-10 items-center list-none'>
-                    <li className='text-base px-4 md:px-6 lg:px-8 py-2 rounded-xl bg-[#e3e2e2] text-[#0f170a] hover:bg-[#485d3a] hover:text-white'>Report</li>
-                    <li className='text-base px-4 md:px-6 lg:px-8 py-2 rounded-xl bg-[#e3e2e2] text-[#0f170a] hover:bg-[#485d3a] hover:text-white'>Pending</li>
-                    <li className='text-base px-4 md:px-6 lg:px-8 py-2 rounded-xl bg-[#e3e2e2] text-[#0f170a] hover:bg-[#485d3a] hover:text-white'>Verified</li>
-                    <li className='text-base px-4 md:px-6 lg:px-8 py-2 rounded-xl bg-[#e3e2e2] text-[#0f170a] hover:bg-[#485d3a] hover:text-white'>Complains</li>
+                    <li className='cursor-pointer text-base px-4 md:px-6 lg:px-8 py-2 rounded-xl bg-[#e3e2e2] text-[#0f170a] hover:bg-[#485d3a] hover:text-white'>Report</li>
+                    <li className='cursor-pointer text-base px-4 md:px-6 lg:px-8 py-2 rounded-xl bg-[#e3e2e2] text-[#0f170a] hover:bg-[#485d3a] hover:text-white'>Pending</li>
+                    <li className='cursor-pointer text-base px-4 md:px-6 lg:px-8 py-2 rounded-xl bg-[#e3e2e2] text-[#0f170a] hover:bg-[#485d3a] hover:text-white'>Verified</li>
+                    <li className='cursor-pointer text-base px-4 md:px-6 lg:px-8 py-2 rounded-xl bg-[#e3e2e2] text-[#0f170a] hover:bg-[#485d3a] hover:text-white'>Complains</li>
                 </ul>
             </div>
             <p className='mb-2 md:m-3 lg:mb-4 font-semibold text-base lg:text-xl'>Report Analysis</p>
@@ -156,11 +156,11 @@ export default function page() {
                         <option value="yearly">Yearly</option>
                     </select> 
                 </div>    
-                <div className='flex flex-row gap-4 md:gap-6 gap-8'>
-                <div className="py-3 md:py-4 lg:py-5 flex-1">
+                <div className='flex flex-col sm:flex-row gap-4 md:gap-6 gap-8'>
+                <div className="py-3 md:py-4 lg:py-5 flex-1 min-h-[250px] sm:min-h-[350px] lg:min-h-[450px]">
                     <Line data={data} options={options} />
                 </div>
-                <div className="self-end py-4 px-6 lg:px-8 border border-[#8a8a8a] rounded-md min-w-[225px]">
+                <div className="self-start sm:self-end py-4 px-6 lg:px-8 border border-[#8a8a8a] rounded-md min-w-[225px]">
                     <div className='flex flex-col gap-4 pb-3 border-b border-[#8a8a8a] mb-3'>
                         <div className='flex flex-row justify-between items-center'>
                             <span className='h-[20px] w-[20px] rounded-full bg-[#1877f2]'></span>
@@ -205,11 +205,11 @@ export default function page() {
                         <option value="yearly">Yearly</option>
                     </select> 
                 </div>
-                <div className='py-4 md:py-5 lg:py-7 flex flex-row gap-4 md:gap-6 gap-8'>
+                <div className='py-4 md:py-5 lg:py-7 flex flex-col sm:flex-row gap-4 md:gap-6 gap-8'>
                     <div className="flex-1">
                         <Bar data={data2} options={options2} />
                     </div>
-                    <div className="self-end py-4 px-6 lg:px-8 border border-[#8a8a8a] rounded-md min-w-[225px]">
+                    <div className="self-start sm:self-end py-4 px-6 lg:px-8 border border-[#8a8a8a] rounded-md min-w-[225px]">
                         <div className='flex flex-col gap-4 pb-3 border-b border-[#8a8a8a] mb-3'>
                             <div className='flex flex-row justify-between items-center'>
                                 <span className='h-[20px] w-[20px] rounded-full bg-[#ff0000]'></span>

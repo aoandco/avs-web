@@ -30,6 +30,8 @@ ChartJS.register(
     Title
 )
 
+// min-h-[250px] sm:min-h-[350px] lg:min-h-[450px]
+
 export default function page() {
     const [isEmpty,] = React.useState(false)
 
@@ -63,7 +65,7 @@ export default function page() {
         responsive: true,
         plugins: {
             legend: {
-                display: true,
+                display:false,
                 position: "top"
             },
             title: {
@@ -84,16 +86,16 @@ export default function page() {
 
     const Card = ({number,desc,color}:{number: number, desc: string,color:string})=>{
         return (
-            <div className={`rounded-xl flex-1 flex flex-col justify-center items-center border-[1.5px] border-[#485d3a] ${color}`}>
-                <p className='text-2xl font-semibold'>{number}</p>
-                <p className='text-base font-semibold'>{desc}</p>
+            <div className={`min-h-[100px] sm:min-h-[125px] rounded-xl flex-1 flex flex-col justify-center items-center border-[1.5px] border-[#485d3a] ${color}`}>
+                <p className='text-xl sm:text-2xl font-semibold'>{number}</p>
+                <p className='text-sm sm:text-base font-semibold'>{desc}</p>
             </div>
         )
     }
   return (
-    <main className='bg-[#f6f6f7] h-auto flex flex-row'> 
+    <main className='mx-auto w-full max-w-screen-2xl h-auto flex flex-row'> 
         <Sidebar />
-        <div className='flex-1 px-4 md:px-6 lg:px-8 pt-6'>
+        <div className='bg-[#f6f6f7] flex-1 px-4 md:px-6 lg:px-8 pt-6'>
             <Header />  
             <div>
                 <div className='mb-4 md:mb-6 lg:mb-8 relative h-auto'>
@@ -104,17 +106,17 @@ export default function page() {
                         className='w-full pl-16 py-3 pr-2 bg-white rounded-2xl outline-none'
                     />
                 </div>
-                <div className='flex flex-row justify-between gap-5 md:gap-6 lg:gap-8'>
-                    <div className='flex flex-col gap-4 w-[200px] md:w-[250px] lg:w-[300px]'>
-                        <div className='bg-[#485d3a] rounded-lg py-4 md:py-5 lg:py-7 flex flex-row gap-3 justify-center items-center text-white'>
-                            <MdUpload className='text-3xl'/>
+                <div className='flex flex-col sm:flex-row justify-between gap-5 md:gap-6 lg:gap-8'>
+                    <div className='flex flex-col gap-4 w-full sm:w-[200px] md:w-[250px] lg:w-[300px]'>
+                        <div className='bg-[#485d3a] rounded-lg py-3 lg:py-5 flex flex-row gap-3 justify-center items-center text-white hover:opacity-80 active:opacity-80 transition-all duration-300 ease-linear cursor-pointer'>
+                            <MdUpload className='text-2xl sm:text-3xl'/>
                             <div>
-                                <p className='text-base font-semibold'>Upload Addresses</p>
+                                <p className='text-sm sm:text-base font-semibold'>Upload Addresses</p>
                                 <p className='text-sm font-normal' >Excel file</p>
                             </div>
                         </div>
-                        <div className='bg-white rounded-lg py-4 md:py-5 lg:py-7 flex flex-row gap-3 justify-center items-center border-[1.5px] border-[#485d3a] text-[#485d3a]'>
-                            <p className='text-base font-semibold'>Upload History</p>
+                        <div className='cursor-pointer bg-white rounded-lg py-3 lg:py-5  flex flex-row gap-3 justify-center items-center border-[1.5px] border-[#485d3a] text-[#485d3a]'>
+                            <p className='text-sm sm:text-base font-semibold'>Upload History</p>
                         </div>
                     </div>
                     <div className='flex-1 flex flow-row gap-3 md:gap-4 lg:gap-6'>
@@ -139,60 +141,84 @@ export default function page() {
                     !isEmpty
                     ?
                     <>
-                    <div className='h-[200px] md:min-h-[300px] lg:min-h-[350px] bg-white rounded-lg pb-6 mb-4 md:mb-6 lg:mb-8'>
+                    <div className='min-h-[200px] md:min-h-[300px] lg:min-h-[350px] bg-white rounded-lg pb-6 mb-4 md:mb-6 lg:mb-8'>
                         <div className="border-b-2 border-b-[#131313] py-4 px-6 flex flex-row justify-between items-center">
                             <div className='flex flex-row gap-2 items-center'>
-                                <Image src={recentIcon} alt='recent icon' />
-                                <p>Recent Uploads</p>
+                                <Image className='w-[24px] sm:w-[28px] h-[24px] sm:h-[28px]' src={recentIcon} alt='recent icon' />
+                                <p >Recent Uploads</p>
                             </div>
                             <p>View all</p>
                         </div>
                         <table className='w-full'>
                             <thead>
                                 <tr className='border-b border-b-[#c4c4c4]'>
-                                    <th className='text-start py-2 md:py-4 px-4 md:px-6 text-[#626262]'>No</th>
-                                    <th className='py-2 md:py-4 px-4 md:px-6 text-[#626262] text-center'>File Name</th>
-                                    <th className='py-2 md:py-4 px-4 md:px-6 text-[#626262] text-center'>Date & Time</th>
-                                    <th className='text-start py-2 md:py-4 px-4 md:px-6 text-[#626262]'>Status</th>
+                                    <th className='text-sm sm:text-base text-start py-2 md:py-4 px-4 md:px-6 text-[#626262]'>No</th>
+                                    <th className='text-sm sm:text-base py-2 md:py-4 px-4 md:px-6 text-[#626262] text-center'>File Name</th>
+                                    <th className='text-sm sm:text-base py-2 md:py-4 px-4 md:px-6 text-[#626262] text-center'>Date & Time</th>
+                                    <th className='text-sm sm:text-base text-start py-2 md:py-4 px-4 md:px-6 text-[#626262]'>Status</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr className='border-b border-b-[#c4c4c4]'>
-                                    <td className='py-2 md:py-4 px-4 md:px-6'>01</td>
-                                    <td className='text-center py-2 md:py-4 px-4 md:px-6'>ABC ltd Address verificatins.xlsx</td>
-                                    <td className='text-center py-2 md:py-4 px-4 md:px-6 text-sm text-[#c4c4c4]'>11st April 2025 | 12:02pm</td>
-                                    <td className='py-2 md:py-4 px-4 md:px-6 text-[#178a51]'>Verified</td>
+                                    <td className='text-sm sm:text-base py-2 md:py-4 px-4 md:px-6'>01</td>
+                                    <td className='text-sm sm:text-base text-center py-2 md:py-4 px-4 md:px-6'>ABC ltd Address verificatins.xlsx</td>
+                                    <td className='text-sm sm:text-base text-center py-2 md:py-4 px-4 md:px-6 text-sm text-[#c4c4c4]'>11st April 2025 | 12:02pm</td>
+                                    <td className='text-sm sm:text-base py-2 md:py-4 px-4 md:px-6 text-[#178a51]'>Verified</td>
                                 </tr>
                                 <tr className='border-b border-b-[#c4c4c4]'>
-                                    <td className='py-2 md:py-4 px-4 md:px-6'>02</td>
-                                    <td className='text-center py-2 md:py-4 px-4 md:px-6'>ABC ltd Address verificatins.xlsx</td>
-                                    <td className='text-center py-2 md:py-4 px-4 md:px-6 text-sm text-[#c4c4c4]'>11st April 2025 | 12:02pm</td>
-                                    <td className='py-2 md:py-4 px-4 md:px-6 text-[#178a51]'>Verified</td>
+                                    <td className='text-sm sm:text-base py-2 md:py-4 px-4 md:px-6'>02</td>
+                                    <td className='text-sm sm:text-base text-center py-2 md:py-4 px-4 md:px-6'>ABC ltd Address verificatins.xlsx</td>
+                                    <td className='text-sm sm:text-base text-center py-2 md:py-4 px-4 md:px-6 text-sm text-[#c4c4c4]'>11st April 2025 | 12:02pm</td>
+                                    <td className='text-sm sm:text-base py-2 md:py-4 px-4 md:px-6 text-[#178a51]'>Verified</td>
                                 </tr>
                                 <tr className='border-b border-b-[#c4c4c4]'>
-                                    <td className='py-2 md:py-4 px-4 md:px-6'>03</td>
-                                    <td className='text-center py-2 md:py-4 px-4 md:px-6'>ABC ltd Address verificatins.xlsx</td>
-                                    <td className='text-center py-2 md:py-4 px-4 md:px-6 text-sm text-[#c4c4c4]'>11st April 2025 | 12:02pm</td>
-                                    <td className='py-2 md:py-4 px-4 md:px-6 text-[#ff0000]'>In Progress</td>
+                                    <td className='text-sm sm:text-base py-2 md:py-4 px-4 md:px-6'>03</td>
+                                    <td className='text-sm sm:text-base text-center py-2 md:py-4 px-4 md:px-6'>ABC ltd Address verificatins.xlsx</td>
+                                    <td className='text-sm sm:text-base text-center py-2 md:py-4 px-4 md:px-6 text-sm text-[#c4c4c4]'>11st April 2025 | 12:02pm</td>
+                                    <td className='text-sm sm:text-base py-2 md:py-4 px-4 md:px-6 text-[#ff0000]'>In Progress</td>
                                 </tr>
                                 <tr className='border-b border-b-[#c4c4c4]'>
-                                    <td className='py-2 md:py-4 px-4 md:px-6'>04</td>
-                                    <td className='text-center py-2 md:py-4 px-4 md:px-6'>ABC ltd Address verificatins.xlsx</td>
-                                    <td className='text-center py-2 md:py-4 px-4 md:px-6 text-sm text-[#c4c4c4]'>11st April 2025 | 12:02pm</td>
-                                    <td className='py-2 md:py-4 px-4 md:px-6 text-[#ff0000]'>In Progress</td>
+                                    <td className='text-sm sm:text-base py-2 md:py-4 px-4 md:px-6'>04</td>
+                                    <td className='text-sm sm:text-base text-center py-2 md:py-4 px-4 md:px-6'>ABC ltd Address verificatins.xlsx</td>
+                                    <td className='text-sm sm:text-base text-center py-2 md:py-4 px-4 md:px-6 text-sm text-[#c4c4c4]'>11st April 2025 | 12:02pm</td>
+                                    <td className='text-sm sm:text-base py-2 md:py-4 px-4 md:px-6 text-[#ff0000]'>In Progress</td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
-                    <div className='mb-3 md:mb-4 lg:mb-5 rounded-lg bg-white py-2 md:py-4 px-4 md:px-6 lg:px-8'>
-                        <p className='text-xl font-semibold mb-2'>Upload History</p>
+                    <div className='mb-3 md:mb-4 lg:mb-5 rounded-lg bg-white py-4 px-4 md:px-6 lg:px-8'>
+                        <p className='text-base sm:text-xl font-semibold mb-2'>Upload History</p>
                         <select className='rounded-lg border-[1.5px] border-black py-2 px-4'>
                             <option value="daily">Daily</option>
                             <option value="monthly">Monthly</option>
                             <option value="yearly">Yearly</option>
                         </select>
-                        <div className="py-3 md:py-4 lg:py-5 w-full h-[300px] md:min-h-[350px] lg:min-h-[450px]">
-                            <Line data={data} options={options} />
+                        <div className='flex flex-col sm:flex-row gap-3 lg:gap-4 md:gap-6 gap-8'>
+                            <div className="py-3 md:py-4 lg:py-5 w-full">
+                                <Line data={data} options={options} />
+                            </div>
+                            <div className="self-start sm:self-end py-4 px-6 lg:px-8 border border-[#8a8a8a] rounded-md min-w-[225px]">
+                                <div className='flex flex-col gap-4 pb-3 border-b border-[#8a8a8a] mb-3'>
+                                    <div className='flex flex-row justify-between items-center'>
+                                        <span className='h-[20px] w-[20px] rounded-full bg-[#1877f2]'></span>
+                                        <p className='text-base text-[#1877f2]'>Total Request</p>
+                                    </div>
+                                    <div className='flex flex-row justify-between items-center'>
+                                        <span className='h-[20px] w-[20px] rounded-full bg-[#ff0000]'></span>
+                                        <p className='text-[#ff0000]'>Total Pending</p>
+                                    </div>
+                                    <div className='flex flex-row justify-between items-center'>
+                                        <span className='h-[20px] w-[20px] rounded-full bg-[#178a51]'></span>
+                                        <p className='text-[#178a51]'>Total Verified</p>
+                                    </div>    
+                                </div>
+                                <div className='flex flex-col gap-3'>
+                                    <p className='text-xl font-semibold'>Current Statistics</p>
+                                    <p className='text-base'>Total Request: 4590</p>
+                                    <p className='text-base'>Total Verified: 3925</p>
+                                    <p className='text-base'>Total pending: 1720</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     </>
