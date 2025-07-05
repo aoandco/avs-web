@@ -1,5 +1,5 @@
 "use client"
-import React, { MouseEvent } from 'react'
+import React from 'react'
 import AuthComp from '../components/AuthComp'
 import Link from 'next/link'
 import { PiEyeLight, PiEyeSlashLight } from 'react-icons/pi'

@@ -18,7 +18,7 @@ interface signupObj{
 
 const endpoint = 'https://bayog-production.up.railway.app/v1/auth/signup/client/web'
 
-export default function page() {
+export default function Page() {
     const {register, handleSubmit, formState: {errors}, watch} = useForm<signupObj>();
     const [showPassword, setShowPassword] = React.useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = React.useState(false);

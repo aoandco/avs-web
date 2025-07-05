@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import axios from 'axios';
 
 
-export default function page() {
+export default function Page() {
     const searchParams = useSearchParams();
     const token = searchParams.get('token');
     const router = useRouter();
