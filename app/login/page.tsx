@@ -4,43 +4,108 @@ import AuthComp from '../components/AuthComp'
 import Link from 'next/link'
 import { PiEyeLight, PiEyeSlashLight } from 'react-icons/pi'
 import { useRouter } from 'next/navigation'
+import { useForm, SubmitHandler } from 'react-hook-form'
+import axios from 'axios'
+import { toast, Toaster } from 'react-hot-toast'
 
+interface lofinFormInput {
+    email: string;
+    password: string;
+}
+
+const endpoint = 'https://bayog-production.up.railway.app/v1/auth/login/client'
 
 export default function Page() {
+    const { register, handleSubmit, formState: { errors } } = useForm<lofinFormInput>();
+    const [showPassword, setShowPassword] = React.useState(false);
+    const [isLoading, setIsLoading] = React.useState(false);
     const router = useRouter();
+
+    const onSubmit: SubmitHandler<lofinFormInput> = (data) => {
+        setIsLoading(true);
+        axios.post(endpoint,{
+            ...data
+        })
+        .then((response)=>{
+            console.log(response.data)
+            sessionStorage.setItem("token", response.data.token);
+            sessionStorage.setItem("user", JSON.stringify(response.data.data));
+            router.push("/dashboard");
+        })
+        .catch((error)=>{
+            toast.error(error.response ? error.response.data.message : "An error occurred during login");
+        })
+        .finally(() => {
+            setIsLoading(false);
+        });
+    }
+
   return (
     <div className='h-screen flex flex-row'>
+        <Toaster />
         <AuthComp />
         <div className='relative leading-none flex-1 lg:flex-[2] xl:flex-[3] pb-6 lg:pb-10 px-4 md:px-6 lg:px-10 xl:px-14 pt-6'>
             <p className='text-end text-base font-semibold pb-3'>Don&apos;t have an account? <Link href="/signup" className='text-[#213bff]'>Sign Up</Link></p> 
             <hr className='border-t-2'></hr>
             <div className='px-4 md:px-6 lg:px-10 xl:px-14 absolute top-[50%] left-[50%] -translate-x-[50%] -translate-y-[50%] w-full'>
                 <h2 className='leading-none text-2xl font-semibold mb-4'>Welcome Back</h2>
-                <form>
-                    <label className=' mb-2 block text-sm font-semibold' htmlFor="">Email address</label>
-                    <input className="mb-3 px-2 py-2 md:py-3 block rounded-md border border-black w-full" type="text" name="" id="" />
+                <form onSubmit={handleSubmit(onSubmit)}>
+                    <label className=' mb-2 block text-sm font-semibold' htmlFor="email">Email address</label>
+                    <input 
+                        {...register("email", { 
+                            required: "Email is required", 
+                            pattern: {
+                                value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                                message: "Invalid email address"
+                            }
+                        })}
+                        className={`mb-3 px-2 py-2 md:py-3 block rounded-md border ${errors.email ?"border-red-500": "border-black" } w-full`}
+                        type="text" 
+                        name="email" 
+                        id="email" 
+                    />
+                    {errors.email?.message == "Invalid email address" && (
+                        <p className='text-red-500 text-sm mb-3'>{errors.email.message}</p>
+                    )}
                     <div className='flex flex-row gap-8 mb-8'>
                         <div className='flex-1'>
-                            <label className='mb-2 block text-sm font-semibold' htmlFor="">Password</label>
+                            <label className='mb-2 block text-sm font-semibold' htmlFor="password">Password</label>
                             <div className="relative mb-3 w-full">
-                                <input className="mb-3 px-2 py-2 md:py-3 block rounded-md border border-black h-full w-full" type="text" name="" id="" />
-                                <PiEyeSlashLight className='absolute absolute top-[50%] right-2 -translate-y-[50%]' />
-                                <PiEyeLight className='hidden absolute top-[50%] right-2 -translate-y-[50%]' />
+                                <input
+                                    {...register("password", { 
+                                        required: "Password is required", 
+                                    })}
+                                    id="password" 
+                                    className={`mb-3 px-2 py-2 md:py-3 block rounded-md border ${errors.password ?"border-red-500": "border-black" } w-full`}
+                                    type={ showPassword ? "text" : "password"} 
+                                    name="password" 
+                                />
+                                <PiEyeSlashLight
+                                    onClick={() => setShowPassword(!showPassword)} 
+                                    className={`${!showPassword ? "cursor-pointer absolute top-[50%] right-2 -translate-y-[50%]" : "hidden"}`} 
+                                />
+                                <PiEyeLight
+                                    onClick={() => setShowPassword(!showPassword)} 
+                                    className={`${!showPassword ? "hidden" : "cursor-pointer absolute top-[50%] right-2 -translate-y-[50%]"}`}  
+                                />
                             </div>                         
                         </div>
-                        <div className='flex-1'>
+                        {/* <div className='flex-1'>
                             <label className='mb-2 block text-sm font-semibold' htmlFor="">Confirm Password</label>
                             <div className="relative mb-3 w-full">
                                 <input  className="mb-3 px-2 py-2 md:py-3 block rounded-md border border-black h-full w-full" type="text" name="" id="" />
                                 <PiEyeSlashLight className='absolute absolute top-[50%] right-2 -translate-y-[50%]' />
                                 <PiEyeLight className='hidden absolute absolute top-[50%] right-2 -translate-y-[50%]' />
                             </div> 
-                        </div>
+                        </div> */}
                     </div>
                     <div className='flex justify-center items-center'>
                         <button
-                            onClick={(e : MouseEvent<HTMLButtonElement>) => {e.preventDefault();router.push("/dashboard")}} 
-                            className='cursor-pointer py-3 px-14 rounded-md bg-[#485d3a] hover:opacity-80 text-white transition-all duration-500 ease-linear'>Sign In</button>
+                            className='cursor-pointer py-3 px-14 rounded-md bg-[#485d3a] hover:opacity-80 text-white transition-all duration-500 ease-linear'
+                        >   {
+                            isLoading ? "Loading..." : "Sign In"
+                        }
+                        </button>
                     </div>
                 </form>
             </div>

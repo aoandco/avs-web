@@ -5,7 +5,7 @@ import Link from 'next/link'
 
 export default function AuthComp() {
   return (
-    <div className='hidden md:block relative leading-none flex-1 bg-[#f5f9f2] text-[#0f170a] p-6 md:p-8 lg:p-10 pt-6'>
+    <div className=' hidden md:block relative leading-none flex-1 bg-[#f5f9f2] text-[#0f170a] p-6 md:p-8 lg:p-10 pt-6'>
       <Link href="/">
       <Image 
         src={logo} 
