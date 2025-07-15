@@ -1,5 +1,6 @@
 "use client"
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
+import axios from 'axios'
 
 
 interface cardType{
@@ -12,7 +13,19 @@ interface cardType{
 }
 
  function Page() {
+    const token = sessionStorage.getItem("token")
     const [isEmpty,] = useState(false)
+    const [dashboardStats, setDashboardStats] = useState({
+        totalToday: 0,
+        totalWeek: 0,
+        completed: 0,
+        failed: 0,
+        inProgress: 0,
+        verifiedAgents: 0,
+        notVerifiedAgents: 0,
+        agentComplaints: 0,
+        clientComplaints: 0
+    })
 
     const Card = ({type,paraText1,paraText2,children, bgColor}:cardType) => {
         return (
@@ -34,6 +47,41 @@ interface cardType{
         )
     }
 
+    const getDashboardStats = async () => {
+        axios.get('https://bayog-production.up.railway.app/v1/admin/dashboard-stats',{
+            headers: {
+                Authorization : `Bearer ${token}`
+            }
+        })
+        .then((response) => {
+    
+            setDashboardStats({
+                ...dashboardStats,
+                ...response.data.data
+            })
+        })
+        .catch((error)=>{
+            console.error("Error fetching dashboard stats:", error.response ? error.response.data.message : "An error occurred");
+            setDashboardStats({
+                totalToday: 0,
+                totalWeek: 0,
+                completed: 0,
+                failed: 0,
+                inProgress: 0,
+                verifiedAgents: 0,
+                notVerifiedAgents: 0,
+                agentComplaints: 0,
+                clientComplaints: 0
+            })
+        })
+    }
+
+    useEffect(()=>{
+        if(token){
+            getDashboardStats()
+        }
+    },[token])
+
     return (
             
         <div className='flex-1 rounded-lg border-[1.5px] border-[#b3b3b3] flex flex-col'>
@@ -41,42 +89,40 @@ interface cardType{
                         <p className='text-base md:text-xl font-semibold leading-none'>Dashboard</p>
                     </div>
                     <div className='flex-1'>
-                        {
-                            !isEmpty
-                            ? (
                                 <div className='p-3 md:p-5 lg:p-6'>
                                 <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mb-4 md:mb-6 lg:mb-10'>
+                                    
                                     <Card 
                                         type="first"
                                         paraText1="Total task today"
-                                        paraText2="150"
-                                        bgColor="bg-[#174795]"
+                                        paraText2={dashboardStats.totalToday.toString()}
+                                        bgColor={ dashboardStats.totalToday == 0 ? "bg-[#8a8a8a]" : "bg-[#174795]"}
                                     />
                                     <Card 
                                         type="first"
                                         paraText1="Total task this week"
-                                        paraText2="1000"
-                                        bgColor="bg-[#174795]"
+                                        paraText2={dashboardStats.totalWeek.toString()}
+                                        bgColor={dashboardStats.totalWeek === 0 ? "bg-[#8a8a8a]" : "bg-[#174795]"}
                                     />
                                     <Card 
                                         type="first"
                                         paraText1="Completed verifications"
-                                        paraText2="94"
-                                        bgColor="bg-[#178a51]"
+                                        paraText2={dashboardStats.completed.toString()}
+                                        bgColor={ dashboardStats.completed == 0 ? "bg-[#8a8a8a]" : "bg-[#178a51]"}
                                     />
                                     <Card
                                         type="second"
                                         paraText1='Failed/Incomplete Verifications'
-                                        bgColor="bg-[#ff0000]"
+                                        bgColor={ dashboardStats.inProgress == 0 || dashboardStats.failed == 0 ? "bg-[#8a8a8a]" : "bg-[#ff0000]"}
                                     >
                                         <div className='flex flex-col gap-2 text-white'>
                                             <p className='flex justify-between'>
                                                 <span className='text-base md:text-xl'>Incomplete</span>
-                                                <span className='text-base md:text-xl'>5</span>
+                                                <span className='text-base md:text-xl'>{dashboardStats.inProgress.toString()}</span>
                                             </p>
                                             <p className='flex justify-between'>
                                                 <span className='text-base md:text-xl'>Failed</span>
-                                                <span className='text-base md:text-xl'>9</span>
+                                                <span className='text-base md:text-xl'>{dashboardStats.failed.toString()}</span>
                                             </p>
                                         </div>
                                     </Card>
@@ -87,41 +133,52 @@ interface cardType{
                                     >
                                         <div className='flex flex-col gap-2 text-white'>
                                             <p className='flex justify-between'>
-                                                <span className='text-base md:text-xl'>Incomplete</span>
-                                                <span className='text-base md:text-xl'>5</span>
+                                                <span className='text-base md:text-xl'>Verified</span>
+                                                <span className='text-base md:text-xl'>{dashboardStats.verifiedAgents.toString()}</span>
                                             </p>
                                             <p className='flex justify-between'>
-                                                <span className='text-base md:text-xl'>Failed</span>
-                                                <span className='text-base md:text-xl'>9</span>
+                                                <span className='text-base md:text-xl'>Not Verified</span>
+                                                <span className='text-base md:text-xl'>{dashboardStats.notVerifiedAgents.toString()}</span>
                                             </p>
                                         </div>
                                     </Card>
                                     <Card
                                         type="second"
                                         paraText1='Complaints and issues'
-                                        bgColor="bg-[#ff0000]"
+                                        bgColor={ dashboardStats.agentComplaints == 0 || dashboardStats.clientComplaints == 0 ? "bg-[#8a8a8a]" :"bg-[#ff0000]"}
                                     >
                                         <div className='flex flex-col gap-2 text-white'>
                                             <p className='flex justify-between'>
                                                 <span className='text-base md:text-xl'>Agents</span>
-                                                <span className='text-base md:text-xl'>5</span>
+                                                <span className='text-base md:text-xl'>{dashboardStats.agentComplaints.toString()}</span>
                                             </p>
                                             <p className='flex justify-between'>
                                                 <span className='text-base md:text-xl'>Clients</span>
-                                                <span className='text-base md:text-xl'>5</span>
+                                                <span className='text-base md:text-xl'>{dashboardStats.clientComplaints.toString()}</span>
                                             </p>
                                         </div>
                                     </Card>
                                 </div>
-                                <div className='overflow-x-auto min-h-[200px] md:min-h-[300px] lg:min-h-[350px] bg-white rounded-lg pb-6'>
+                                <div className='overflow-x-auto min-h-[200px] md:min-h-[300px] lg:min-h-[350px] bg-white rounded-lg pb-6 flex flex-col'>
                                     <div className="border-b-2 border-b-[#131313] py-4 px-6 flex flex-row justify-between items-center">
                                         <div className='flex flex-row gap-2 items-center'>
-                                            <img src="/recent-icon.png" alt='recent icon' />
+                                            <img src="/recent-icon.svg" alt='recent icon' />
                                             <p>Recent Uploads</p>
                                         </div>
                                         <p>View all</p>
                                     </div>
-                                    <table className='w-full min-w-[375px]'>
+                                    {
+                                        isEmpty
+                                        ? <div className='flex-1 flex justify-center items-center'>
+                                        <div className='w-[90%] max-w-[300px] flex flex-col gap-2 items-center'>
+                                            <img src='/upload-icon.svg' alt='upload icon' />
+                                            <p className='text-base md:text-xl font-semibold'>No Uploads yet</p>
+                                            <p className='text-center text-sm md:text-base'>Expect to see your recent uploads appear here soon</p>
+                                            <button className='cursor-pointer hover:opacity-80 active:opacity rounded-lg text-base text-white md:text-xl py-2 px-6 md:px-8 bg-[#484545]'>Upload</button>
+                                        </div>
+                                    </div>
+                                        :
+                                        <table className='w-full min-w-[375px]'>
                                         <thead>
                                             <tr className='border-b border-b-[#c4c4c4]'>
                                                 <th className='text-sm sm:text-base text-start py-2 md:py-4 px-4 md:px-6 text-[#626262]'>No</th>
@@ -157,99 +214,10 @@ interface cardType{
                                             </tr>
                                         </tbody>
                                     </table>
+                                    }
                                 </div>
                                 </div>
                             )
-                            
-                            : 
-                            <div className='p-3 md:p-5 lg:p-6'>
-                                <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mb-4 md:mb-6 lg:mb-10'>
-                                    <Card 
-                                        type="first"
-                                        paraText1="Total task today"
-                                        paraText2="0"
-                                        bgColor="bg-[#8a8a8a]"
-                                    />
-                                    <Card 
-                                        type="first"
-                                        paraText1="Total task this week"
-                                        paraText2="0"
-                                        bgColor="bg-[#8a8a8a]"
-                                    />
-                                    <Card 
-                                        type="first"
-                                        paraText1="Completed verifications"
-                                        paraText2="0"
-                                        bgColor="bg-[#8a8a8a]"
-                                    />
-                                    <Card
-                                        type="second"
-                                        paraText1='Failed/Incomplete Verifications'
-                                        bgColor="bg-[#8a8a8a]"
-                                    >
-                                        <div className='flex flex-col gap-2 text-white'>
-                                            <p className='flex justify-between'>
-                                                <span className='text-base md:text-xl'>Incomplete</span>
-                                                <span className='text-base md:text-xl'>0</span>
-                                            </p>
-                                            <p className='flex justify-between'>
-                                                <span className='text-base md:text-xl'>Failed</span>
-                                                <span className='text-base md:text-xl'>0</span>
-                                            </p>
-                                        </div>
-                                    </Card>
-                                    <Card
-                                        type="second"
-                                        paraText1='Agents and Teams'
-                                        bgColor="bg-[#8a8a8a]"
-                                    >
-                                        <div className='flex flex-col gap-2 text-white'>
-                                            <p className='flex justify-between'>
-                                                <span className='text-base md:text-xl'>Incomplete</span>
-                                                <span className='text-base md:text-xl'>0</span>
-                                            </p>
-                                            <p className='flex justify-between'>
-                                                <span className='text-base md:text-xl'>Failed</span>
-                                                <span className='text-base md:text-xl'>0</span>
-                                            </p>
-                                        </div>
-                                    </Card>
-                                    <Card
-                                        type="second"
-                                        paraText1='Complaints and issues'
-                                        bgColor="bg-[#8a8a8a]"
-                                    >
-                                        <div className='flex flex-col gap-2 text-white'>
-                                            <p className='flex justify-between'>
-                                                <span className='text-base md:text-xl'>Agents</span>
-                                                <span className='text-base md:text-xl'>0</span>
-                                            </p>
-                                            <p className='flex justify-between'>
-                                                <span className='text-base md:text-xl'>Clients</span>
-                                                <span className='text-base md:text-xl'>0</span>
-                                            </p>
-                                        </div>
-                                    </Card>
-                                </div>
-                                <div className='flex flex-col h-[200px] md:min-h-[300px] lg:min-h-[350px] bg-white rounded-lg pb-6'>
-                                    <div className="border-b-2 border-b-[#131313] py-4 px-6 flex flex-row justify-between items-center">
-                                        <div className='flex flex-row gap-2 items-center'>
-                                            <img src="/recent-icon.png" alt='recent icon' />
-                                            <p>Recent Uploads</p>
-                                        </div>
-                                        <p>View all</p>
-                                    </div>
-                                    <div className='flex-1 flex justify-center items-center'>
-                                        <div className='w-[90%] max-w-[300px] flex flex-col gap-2 items-center'>
-                                            <img src='/upload-icon' alt='upload icon' />
-                                            <p className='text-base md:text-xl font-semibold'>No Uploads yet</p>
-                                            <p className='text-center text-sm md:text-base'>Expect to see your recent uploads appear here soon</p>
-                                            <button className='cursor-pointer hover:opacity-80 active:opacity rounded-lg text-base text-white md:text-xl py-2 px-6 md:px-8 bg-[#484545]'>Upload</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        }
                     </div>
         </div>
             

@@ -1,8 +1,11 @@
 "use client"
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { IoSearch } from "react-icons/io5";
 import emptyIcon from "../../admin/_assests/emptyIcon.svg"
 import Image from 'next/image';
+import axios from 'axios'
+import {useForm, SubmitHandler} from 'react-hook-form';
+import { toast, Toaster } from 'react-hot-toast';
 
 interface ComplainType {
     title: string;
@@ -14,8 +17,49 @@ interface ComplainType {
     color: string
 } 
 
+interface ComplainFormInput {
+    title: string;
+    desc: string;
+}
+
 export default function Page() {
+    const {register, handleSubmit, formState: {errors}, setValue} = useForm<ComplainFormInput>({
+        defaultValues: {
+            title: '',
+            desc: ''
+        }
+    });
+    const endpoint = "https://bayog-production.up.railway.app/v1/client/submit-complaint"
+    const baseUrl = "https://bayog-production.up.railway.app/v1/client/complaints"
+    const token = sessionStorage.getItem('token');
     const [isEmpty,] = useState(false)
+    const [isLoading, setIsLoading] = useState(false);
+    
+    const onSubmit: SubmitHandler<ComplainFormInput> = (data) => {
+        setIsLoading(true);
+        axios.post(endpoint, {
+            subject: data.title,
+            message: data.desc
+        },
+        {
+            headers: {
+                Authorization: `Bearer ${sessionStorage.getItem('token')}`
+            }
+        })
+        .then((response) => {
+            toast.success(response.data.message);
+            setValue("title", "");
+            setValue("desc", "");
+        })
+        .catch((error) => {
+            toast.error(error.response ? error.response.data.message : "An error occurred while submiting....");
+        })
+        .finally(()=>{
+            setIsLoading(false);
+        })
+    }
+
+
     const Complain = ({title,desc,date,time,status,id,color}:  ComplainType) => {
         return (
             <div className='mb-3 md:mb-4 lg:mb-6 px-4 md:px-6 py-4 md:py-6 rounded-xl bg-white'>
@@ -36,8 +80,31 @@ export default function Page() {
 
         )
     } 
+
+    const getNotifications = async () => {
+        try{
+            const response = await axios.get(baseUrl, {
+                headers: {  
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            if(response.status === 200) {
+                console.log(response.data);
+            }
+        }catch(error){
+            console.error("Error fetching notifications:", error);
+        }
+
+    }
+
+    useEffect(()=>{
+        getNotifications();
+    },[])
+
   return (
         <div>
+            <Toaster />
                 <div className='mb-4 md:mb-6 lg:mb-8 relative h-auto'>
                     <IoSearch className='text-xl text-[#8a8a8a] absolute top-[50%] -translate-y-[50%] left-8' />
                     <input 
@@ -55,15 +122,25 @@ export default function Page() {
                         <li className='cursor-pointer text-base px-4 md:px-6 lg:px-8 py-2 rounded-xl bg-[#e3e2e2] text-[#0f170a] hover:bg-[#485d3a] hover:text-white'>Resolved</li>
                     </ul>
                 </div>
+                <form onSubmit={handleSubmit(onSubmit)}>
                 <div className='py-3 px-4 rounded-xl bg-white'>
-                    <p className='text-[#8a8a8a] text-xl font-semibold mb-3'>Title Of Complaint</p>
-                    <textarea className='w-full h-[150px] resize-y text-[#8a8a8a]' name="" id="" placeholder='write your complains'>
-
-                    </textarea>
+                    <input
+                        {...register("title", { required: "Title is required" })}
+                        placeholder='Title of complain' 
+                        className={`${errors.title ? "border-red-500" : 'focus:border-b-[#485d3a] focus:border-b-2'} text-[#8a8a8a] text-xl text-black w-full block font-semibold mb-3 p-2 focus:outline-none`}
+                    />
+                    <textarea
+                        {...register("desc", { required: "Description is required" })} 
+                        className={`${errors.desc ? "border-2 border-red-500 rounded-lg" : "focus:border-2 focus:border-[#485d3a] rounded-lg" } p-2 w-full h-[150px] resize-y text-[#8a8a8a] focus:outline-none text-black`} 
+                        name="desc" 
+                        id="desc" 
+                        placeholder='write your complains'
+                    ></textarea>
                 </div>
-                <button className='my-3 md:my-5 lg:my-7 mx-auto text-sm px-16 py-2 rounded-xl block text-white bg-[#485d3a] cursor-pointer hover:opacity-80'>
-                    Submit
+                <button type='submit' className='my-3 md:my-5 lg:my-7 mx-auto text-sm px-16 py-2 rounded-xl block text-white bg-[#485d3a] cursor-pointer hover:opacity-80'>
+                    {isLoading ? "Submitting..." : "Submit"}
                 </button>
+                </form>
                 <p className='mb-2 md:mb-4 lg:mb-6 text-base font-semibold'>All Complains List</p>
                 <div className='bg-[#e3e2e2] rounded-xl px-6 md:px-8 lg:px-10 py-4 md:py-6 lg:py-8 mb-4 md:mb-mb-6 lg:mb-8'>
                     {

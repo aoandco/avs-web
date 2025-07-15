@@ -90,14 +90,6 @@ export default function Page() {
                                 />
                             </div>                         
                         </div>
-                        {/* <div className='flex-1'>
-                            <label className='mb-2 block text-sm font-semibold' htmlFor="">Confirm Password</label>
-                            <div className="relative mb-3 w-full">
-                                <input  className="mb-3 px-2 py-2 md:py-3 block rounded-md border border-black h-full w-full" type="text" name="" id="" />
-                                <PiEyeSlashLight className='absolute absolute top-[50%] right-2 -translate-y-[50%]' />
-                                <PiEyeLight className='hidden absolute absolute top-[50%] right-2 -translate-y-[50%]' />
-                            </div> 
-                        </div> */}
                     </div>
                     <div className='flex justify-center items-center'>
                         <button

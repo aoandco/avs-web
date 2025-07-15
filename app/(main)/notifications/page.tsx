@@ -1,9 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { IoSearch, IoChatbubbles } from 'react-icons/io5'
 import emptyIcon from "../../admin/_assests/emptyIcon.svg"
 import Image from 'next/image'
-
+import axios from 'axios'  
 
 interface CardType {
     num: string;
@@ -20,7 +21,14 @@ interface NotificationsType {
 }
 
 export default function Page() {
+    const baseurl= 'https://bayog-production.up.railway.app/v1/client/notifications'
     const [isEmpty,] = useState(false)
+    const [,setNotifications] = useState<any[]>([])
+    const [metric,setMetric] = useState({
+        message: 0,
+        report: 0,
+        "complaint resolution": 0
+    })
     const Card = ({num,type,color,borderColor}:CardType)=>{
         return (
             <div className={`flex-1 border-2 ${borderColor} rounded-2xl bg-white min-h-[150px] sm:min-h-[200px] flex flex-col justify-center items-center gap-2`}>
@@ -52,6 +60,35 @@ export default function Page() {
         )
     }
 
+    const  getNotifications = async () => {
+        try {
+            const response = await axios.get(baseurl, {
+                headers: {
+                    Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+                    'Content-Type': 'application/json'
+                }
+            })
+            if(response.status === 200) {
+                console.log(response.data);
+                setNotifications([...response.data.data])
+                setMetric({
+                    ...response.data.counts
+                })
+            }
+        }catch(error){
+            setNotifications([])
+            setMetric({
+                message: 0,
+                report: 0,
+                "complaint resolution": 0
+            })
+            console.log(error)
+        }
+    }
+
+    useEffect(()=>{
+        getNotifications()
+    },[])
 
   return (
         <>
@@ -75,51 +112,25 @@ export default function Page() {
                 </ul>
             </div>
             <div className='mb-4 md:mb-6 lg:mb-8 flex flex-col md:flex-row gap-6 md:gap-8 lg:gap-10'>
-                {
-                    !isEmpty
-                ?
-                <> 
+                 
                 <Card 
-                    num={"50"}
-                    type={"New Messages"}
-                    color={"text-[#001eff]"}
-                    borderColor={"border-[#001eff]"}
+                    num={metric.message.toString()}
+                    type={metric.message == 0 ? "No Messages" : "New Messages"}
+                    color={metric.message == 0 ? "text-[#626262]" : "text-[#001eff]"}
+                    borderColor={metric.message == 0 ? "border-[#626262]" : "border-[#001eff]"}
                 />
                 <Card 
-                    num={"30"}
-                    type={"New Reports"}
-                    color={"text-[#178a51]"}
-                    borderColor={'border-[#178a51]'}
+                    num={metric.report.toString()}
+                    type={metric.report == 0 ? "No Reports": "New Reports"}
+                    color={metric.report == 0 ? "text-[#626262" : "text-[#178a51]"}
+                    borderColor={metric.report == 0 ? 'border-[#626262]' : 'border-[#178a51]'}
                 />
                 <Card 
-                    num={"3"}
+                    num={metric["complaint resolution"].toString()}
                     type={"Complaints Resolution"}
-                    color={"text-[#ff0000]"}
-                    borderColor={'border-[#ff0000]'}
-                />
-                </> 
-                :
-                <>
-                  <Card 
-                    num={"0"}
-                    type={"No Messages"}
-                    color={"text-[#626262"}
-                    borderColor={"border-[#626262]"}
-                    />
-                    <Card 
-                        num={"0"}
-                        type={"No Reports"}
-                        color={"text-[#626262"}
-                        borderColor={"border-[#626262]"}
-                    />
-                    <Card 
-                        num={"0"}
-                        type={"COmplaints Resolution"}
-                        color={"text-[#626262"}
-                        borderColor={"border-[#626262]"}
-                    />
-                </>
-            }
+                    color={metric['complaint resolution'] == 0 ? "text-[#626262]" :"text-[#ff0000]"}
+                    borderColor={metric['complaint resolution'] == 0 ? 'border-[#626262]' :'border-[#ff0000]'}
+                /> 
             </div>
             <p className='mb-2 md:mb-4 lg:mb-6 text-base font-semibold'>All Complains List</p>
             {
