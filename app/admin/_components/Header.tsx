@@ -6,9 +6,18 @@ import { MdLogout } from "react-icons/md";
 import Image from 'next/image';
 import { FaBars } from "react-icons/fa";
 import { useMyContext } from '@/app/context/MyContext';
+import { useRouter } from 'next/navigation';
 
 export default function Header() {
+    const router = useRouter();
     const { toggleSidebar } = useMyContext()
+
+    const handleLogout = () => {
+        sessionStorage.removeItem('token');
+        sessionStorage.removeItem('user');
+        router.push('/login');
+    }
+
   return (
     <header className='flex justify-between items-center py-2'>
         <Image
@@ -27,7 +36,7 @@ export default function Header() {
                     <span className='absolute text-xs text-white top-0 right-0 bg-[#e71f1f] h-[12px] w-[12px] rounded-full flex justify-center items-center'>2</span>
                 </div>
             </div>
-            <div className='rounded-lg p-2 border-2 border-[#9fe273] flex flex-row gap-3 items-center'>
+            <div onClick={handleLogout} className='cursor-pointer rounded-lg p-2 border-2 border-[#9fe273] flex flex-row gap-3 items-center hover:border-red-500 hover:bg-red-500 hover:text-white'>
                 <MdLogout className='text-2xl' />
                 <span className='text-base'>Log Out</span>
             </div>

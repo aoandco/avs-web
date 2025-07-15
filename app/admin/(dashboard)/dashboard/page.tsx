@@ -13,19 +13,20 @@ interface cardType{
 }
 
  function Page() {
-    const token = sessionStorage.getItem("token")
+    const [token, setToken] = useState<string>("")
     const [isEmpty,] = useState(false)
     const [dashboardStats, setDashboardStats] = useState({
-        totalToday: 0,
-        totalWeek: 0,
-        completed: 0,
-        failed: 0,
-        inProgress: 0,
+        todaysTasks: 0,
+        currentWeekTasks: 0,
+        completedTasks: 0,
+        failedTasks: 0,
+        inProgressTasks: 0,
         verifiedAgents: 0,
         notVerifiedAgents: 0,
         agentComplaints: 0,
         clientComplaints: 0
     })
+
 
     const Card = ({type,paraText1,paraText2,children, bgColor}:cardType) => {
         return (
@@ -63,11 +64,11 @@ interface cardType{
         .catch((error)=>{
             console.error("Error fetching dashboard stats:", error.response ? error.response.data.message : "An error occurred");
             setDashboardStats({
-                totalToday: 0,
-                totalWeek: 0,
-                completed: 0,
-                failed: 0,
-                inProgress: 0,
+                todaysTasks: 0,
+                currentWeekTasks: 0,
+                completedTasks: 0,
+                failedTasks: 0,
+                inProgressTasks: 0,
                 verifiedAgents: 0,
                 notVerifiedAgents: 0,
                 agentComplaints: 0,
@@ -82,6 +83,11 @@ interface cardType{
         }
     },[token])
 
+     useEffect(() => {
+        const storedToken = sessionStorage.getItem("token") || ""
+        setToken(storedToken)
+    }, [])
+
     return (
             
         <div className='flex-1 rounded-lg border-[1.5px] border-[#b3b3b3] flex flex-col'>
@@ -95,41 +101,41 @@ interface cardType{
                                     <Card 
                                         type="first"
                                         paraText1="Total task today"
-                                        paraText2={dashboardStats.totalToday.toString()}
-                                        bgColor={ dashboardStats.totalToday == 0 ? "bg-[#8a8a8a]" : "bg-[#174795]"}
+                                        paraText2={dashboardStats.todaysTasks.toString()}
+                                        bgColor={ dashboardStats.todaysTasks == 0 ? "bg-[#8a8a8a]" : "bg-[#174795]"}
                                     />
                                     <Card 
                                         type="first"
                                         paraText1="Total task this week"
-                                        paraText2={dashboardStats.totalWeek.toString()}
-                                        bgColor={dashboardStats.totalWeek === 0 ? "bg-[#8a8a8a]" : "bg-[#174795]"}
+                                        paraText2={dashboardStats.currentWeekTasks.toString()}
+                                        bgColor={dashboardStats.currentWeekTasks === 0 ? "bg-[#8a8a8a]" : "bg-[#174795]"}
                                     />
                                     <Card 
                                         type="first"
                                         paraText1="Completed verifications"
-                                        paraText2={dashboardStats.completed.toString()}
-                                        bgColor={ dashboardStats.completed == 0 ? "bg-[#8a8a8a]" : "bg-[#178a51]"}
+                                        paraText2={dashboardStats.completedTasks.toString()}
+                                        bgColor={ dashboardStats.completedTasks == 0 ? "bg-[#8a8a8a]" : "bg-[#178a51]"}
                                     />
                                     <Card
                                         type="second"
                                         paraText1='Failed/Incomplete Verifications'
-                                        bgColor={ dashboardStats.inProgress == 0 || dashboardStats.failed == 0 ? "bg-[#8a8a8a]" : "bg-[#ff0000]"}
+                                        bgColor={ dashboardStats.inProgressTasks == 0 && dashboardStats.failedTasks == 0 ? "bg-[#8a8a8a]" : "bg-[#ff0000]"}
                                     >
                                         <div className='flex flex-col gap-2 text-white'>
                                             <p className='flex justify-between'>
                                                 <span className='text-base md:text-xl'>Incomplete</span>
-                                                <span className='text-base md:text-xl'>{dashboardStats.inProgress.toString()}</span>
+                                                <span className='text-base md:text-xl'>{dashboardStats.inProgressTasks.toString()}</span>
                                             </p>
                                             <p className='flex justify-between'>
                                                 <span className='text-base md:text-xl'>Failed</span>
-                                                <span className='text-base md:text-xl'>{dashboardStats.failed.toString()}</span>
+                                                <span className='text-base md:text-xl'>{dashboardStats.failedTasks.toString()}</span>
                                             </p>
                                         </div>
                                     </Card>
                                     <Card
                                         type="second"
                                         paraText1='Agents and Teams'
-                                        bgColor="bg-[#8a8a8a]"
+                                        bgColor={"bg-[#8a8a8a]"}
                                     >
                                         <div className='flex flex-col gap-2 text-white'>
                                             <p className='flex justify-between'>
@@ -145,7 +151,7 @@ interface cardType{
                                     <Card
                                         type="second"
                                         paraText1='Complaints and issues'
-                                        bgColor={ dashboardStats.agentComplaints == 0 || dashboardStats.clientComplaints == 0 ? "bg-[#8a8a8a]" :"bg-[#ff0000]"}
+                                        bgColor={ dashboardStats.agentComplaints == 0 && dashboardStats.clientComplaints == 0 ? "bg-[#8a8a8a]" :"bg-[#ff0000]"}
                                     >
                                         <div className='flex flex-col gap-2 text-white'>
                                             <p className='flex justify-between'>
