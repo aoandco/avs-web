@@ -90,7 +90,7 @@ interface cardType{
 
     return (
             
-        <div className='flex-1 rounded-lg border-[1.5px] border-[#b3b3b3] flex flex-col'>
+        <div className='h-full overflow-auto flex-1 rounded-lg border-[1.5px] border-[#b3b3b3] flex flex-col'>
                     <div className='p-3 md:p-5 lg:p-6 border-b-[1.5px] border-b-[#b3b3b3]'>
                         <p className='text-base md:text-xl font-semibold leading-none'>Dashboard</p>
                     </div>

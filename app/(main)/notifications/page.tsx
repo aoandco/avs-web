@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 import React, { useEffect, useState } from 'react'
 import { IoSearch, IoChatbubbles } from 'react-icons/io5'
@@ -20,15 +19,28 @@ interface NotificationsType {
     time: string
 }
 
+interface NotificationObjType{
+    _id: string;
+    recipientRole: string;
+    recipientId: string;
+    type: string;
+    title: string;
+    body: string;
+    isRead: boolean;
+    createdAt: string;
+}
+
+
+
 export default function Page() {
     const baseurl= 'https://bayog-production.up.railway.app/v1/client/notifications'
-    const [isEmpty,] = useState(false)
-    const [,setNotifications] = useState<any[]>([])
+    const [notifications,setNotifications] = useState<NotificationObjType[]>([])
     const [metric,setMetric] = useState({
         message: 0,
         report: 0,
         "complaint resolution": 0
     })
+    const [loading, setLoading] = useState(true)
     const Card = ({num,type,color,borderColor}:CardType)=>{
         return (
             <div className={`flex-1 border-2 ${borderColor} rounded-2xl bg-white min-h-[150px] sm:min-h-[200px] flex flex-col justify-center items-center gap-2`}>
@@ -69,7 +81,6 @@ export default function Page() {
                 }
             })
             if(response.status === 200) {
-                console.log(response.data);
                 setNotifications([...response.data.data])
                 setMetric({
                     ...response.data.counts
@@ -83,6 +94,8 @@ export default function Page() {
                 "complaint resolution": 0
             })
             console.log(error)
+        }finally{
+            setLoading(false)
         }
     }
 
@@ -132,29 +145,27 @@ export default function Page() {
                     borderColor={metric['complaint resolution'] == 0 ? 'border-[#626262]' :'border-[#ff0000]'}
                 /> 
             </div>
-            <p className='mb-2 md:mb-4 lg:mb-6 text-base font-semibold'>All Complains List</p>
+            <p className='mb-2 md:mb-4 lg:mb-6 text-base font-semibold'>All Notifications List</p>
             {
-                !isEmpty
+                loading
+                ? 
+                <div className='bg-[#e3e2e2] flex-1 flex justify-center items-center min-h-[200px] md:min-h-[300px] lg:min-h-[400px]'>
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#485d3a]"></div>
+                </div>  
+                : notifications.length > 0
                 ?
-            <div className='bg-[#e3e2e2] rounded-xl px-6 md:px-8 lg:px-10 py-4 md:py-6 lg:py-8 mb-4 md:mb-mb-6 lg:mb-8 min-h-[200px] md:min-h-[300px] lg:min-h-[400px]'>
-                <Notifications
-                    title={"Title of Notification"}
-                    message={"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."}
-                    date={"12/12/2023"}
-                    time={"12:00 PM"}
-                />
-                <Notifications
-                    title={"Title of Notification"}
-                    message={"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."}
-                    date={"12/12/2023"}
-                    time={"12:00 PM"}
-                />
-                <Notifications
-                    title={"Title of Notification"}
-                    message={"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."}
-                    date={"12/12/2023"}
-                    time={"12:00 PM"}
-                />
+            <div className='bg-[#e3e2e2] rounded-xl px-6 md:px-8 lg:px-10 py-4 md:py-6 lg:py-8 mb-4 md:mb-mb-6 lg:mb-8 h-[400px] overflow-y-auto'>
+                {
+                    notifications.map((notification: NotificationObjType) => (
+                        <Notifications
+                            key={notification._id}
+                            title={notification.title}
+                            message={notification.body}
+                            date={new Date(notification.createdAt).toLocaleDateString()}
+                            time={new Date(notification.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        />
+                    ))
+                }
                 <button className='mx-auto block text-sm py-3 px-16 md:px-20 lg:px-24 rounded-full text-white bg-[#178a51] cursor-pointer hover:opacity-80'>
                     Load More notifications
                 </button>

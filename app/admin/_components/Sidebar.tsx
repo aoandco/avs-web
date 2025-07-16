@@ -6,17 +6,19 @@ import { FaUserFriends } from "react-icons/fa";
 import { IoAnalyticsSharp} from "react-icons/io5";
 import { IoMdSettings } from "react-icons/io";
 import Image from 'next/image'
-import { useRouter } from 'next/navigation';
 import { IoMdClose } from "react-icons/io"
 import { useMyContext } from '@/app/context/MyContext';
 import logo from "@/app/assests/logo.png"
 import { MdLogout } from "react-icons/md";
+import { usePathname } from 'next/navigation';
+import Link from 'next/link';
 
 export default function Sidebar() {
+    const pathname = usePathname();
     const {isSidebarOpen,setIsSidebarOpen ,toggleSidebar} = useMyContext()
-    const router = useRouter()
-    const handleRouter = (link: string) =>{
-        router.push(link)
+
+    const isActive = (path: string) => {
+        return pathname === path ? 'bg-[#9dc782] text-white' : 'bg-[#f5f5f5] text-[#8a8a8a]';
     }
 
     useEffect(()=>{
@@ -52,22 +54,26 @@ export default function Sidebar() {
             <p className='text-base text-black'>ceo@bayog.com</p>
         </div>
         <div className='cursor-pointer flex flex-col gap-2 items-stretch mt-4'>
-            <div onClick={()=>handleRouter('/admin/dashboard')} className='rounded-md bg-[#f5f5f5] hover:bg-[#9dc782] p-2 text-[#8a8a8a] hover:text-white flex flex-row gap-2 items-center transition-all duration-300 ease-linear'>
+            <Link href='/admin/dashboard' 
+                className={`rounded-md hover:bg-[#9dc782] p-2 hover:text-white flex flex-row gap-2 items-center transition-all duration-300 ease-linear ${isActive('/admin/dashboard')}`}>
                 <RiDashboardHorizontalFill className='text-2xl' />
                 <p className='text-base font-semibold'>Dashboard</p>
-            </div>
-            <div onClick={()=>handleRouter('/admin/tasks')} className='rounded-md bg-[#f5f5f5] hover:bg-[#9dc782] p-2 text-[#8a8a8a] hover:text-white flex flex-row gap-2 items-center transition-all duration-300 ease-linear'>
+            </Link>
+            <Link  href={'/admin/tasks'} 
+                className={`rounded-md hover:bg-[#9dc782] p-2 hover:text-white flex flex-row gap-2 items-center transition-all duration-300 ease-linear ${isActive('/admin/tasks')}`}>
                 <FaUserFriends className='text-2xl' />
                 <p className='text-base font-semibold'>Tasks</p>
-            </div>
-            <div onClick={()=>handleRouter('/admin/clients')} className='rounded-md bg-[#f5f5f5] hover:bg-[#9dc782] p-2 text-[#8a8a8a] hover:text-white flex flex-row gap-2 items-center transition-all duration-300 ease-linear'>
+            </Link>
+            <Link href={'/admin/clients'} 
+                className={`rounded-md hover:bg-[#9dc782] p-2 hover:text-white flex flex-row gap-2 items-center transition-all duration-300 ease-linear ${isActive('/admin/clients')}`}>
                 <FaUserFriends className='text-2xl' />
                 <p className='text-base font-semibold'>Client</p>
-            </div>
-            <div onClick={()=>handleRouter('/admin/projects')} className='rounded-md bg-[#f5f5f5] hover:bg-[#9dc782] p-2 text-[#8a8a8a] hover:text-white flex flex-row gap-2 items-center transition-all duration-300 ease-linear'>
+            </Link>
+            <Link href={'/admin/agents'} 
+                className={`rounded-md hover:bg-[#9dc782] p-2 hover:text-white flex flex-row gap-2 items-center transition-all duration-300 ease-linear ${isActive('/admin/agents')}`}>
                 <RiFileList2Fill className='text-2xl' />
-                <p className='text-base font-semibold'>Projects</p>
-            </div>
+                <p className='text-base font-semibold'>Agents</p>
+            </Link>
             <div className='rounded-md bg-[#f5f5f5] hover:bg-[#9dc782] p-2 text-[#8a8a8a] hover:text-white flex flex-row gap-2 items-center transition-all duration-300 ease-linear'>
                 <FaUserFriends className='text-2xl' />
                 <p className='text-base font-semibold'>Teams</p>

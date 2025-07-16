@@ -14,8 +14,16 @@ interface ComplainType {
     time: string;
     status: string;
     id: string;
-    color: string
 } 
+
+interface ComplainObjType {
+    _id: string;
+    complaintID : string;
+    subject: string;
+    message: string;
+    status: string;
+    createdAt: string;
+}
 
 interface ComplainFormInput {
     title: string;
@@ -32,9 +40,22 @@ export default function Page() {
     const endpoint = "https://bayog-production.up.railway.app/v1/client/submit-complaint"
     const baseUrl = "https://bayog-production.up.railway.app/v1/client/complaints"
     const token = sessionStorage.getItem('token');
-    const [isEmpty,] = useState(false)
     const [isLoading, setIsLoading] = useState(false);
-    
+    const [complains, setComplains] = useState<ComplainObjType[]>([]);
+    const [isLoadingComplains, setIsLoadingComplains] = useState(true);
+
+    const getStatusColor = (status: string) => {
+        switch(status) {
+            case 'opened':
+                return 'bg-[#c837ab]';
+            case 'in-review':
+                return 'bg-[#1877f2]';
+            case 'resolved':
+                return 'bg-[#178a51]';
+            default:
+                return 'bg-[#8a8a8a]';
+        }
+    }
     const onSubmit: SubmitHandler<ComplainFormInput> = (data) => {
         setIsLoading(true);
         axios.post(endpoint, {
@@ -60,12 +81,12 @@ export default function Page() {
     }
 
 
-    const Complain = ({title,desc,date,time,status,id,color}:  ComplainType) => {
+    const Complain = ({title,desc,date,time,status,id}:  ComplainType) => {
         return (
             <div className='mb-3 md:mb-4 lg:mb-6 px-4 md:px-6 py-4 md:py-6 rounded-xl bg-white'>
                 <div className='flex flex-row justify-between items-center mb-2 md:mb-3 lg:mb-4'>
                     <p className='text-base font-semibold'>{title}</p>
-                    <p className={`px-4 py-2 rounded-full text-white ${color} hover:opacity-80`}>{status}</p>
+                    <p className={`px-4 py-2 rounded-full text-white ${getStatusColor(status)} hover:opacity-80`}>{status}</p>
                 </div>
                 <p className='text-[#626262] mb-2 md:mb-3 lg:mb-4'>{desc}</p>
                 <div className='flex flex-row items-center justify-between'>
@@ -81,25 +102,35 @@ export default function Page() {
         )
     } 
 
-    const getNotifications = async () => {
+    const getComplains = async (filter: string) => {
         try{
-            const response = await axios.get(baseUrl, {
+            const response = await axios.get(`${filter== "all" ?baseUrl :`${baseUrl}?status=${filter}`}`, {
                 headers: {  
                     Authorization: `Bearer ${token}`,
                     'Content-Type': 'application/json'
                 }
             });
             if(response.status === 200) {
-                console.log(response.data);
+                setComplains(response.data.data);
             }
         }catch(error){
             console.error("Error fetching notifications:", error);
+            setComplains([]);
+        }
+        finally{
+            setIsLoadingComplains(false);
         }
 
     }
 
+    const handleFilter = (filter: string) => {
+        setIsLoadingComplains(true);
+        getComplains(filter);
+    }
+
+
     useEffect(()=>{
-        getNotifications();
+        getComplains("all");
     },[])
 
   return (
@@ -116,10 +147,22 @@ export default function Page() {
                 <div className='mb-4 md:mb-6 lg:mb-8 flex flex-col sm:flex-row gap-4 lg:gap-10 items-center px-4 lg:px-6 py-3 bg-white rounded-xl'>
                     <p className='self-start md:self-center text-base font-semibold'>Filter by:</p>
                     <ul className='flex flex-row gap-4 md:gap-6 lg:gap-10 items-center list-none'>
-                        <li className='cursor-pointer text-base px-4 md:px-6 lg:px-8 py-2 rounded-xl bg-[#e3e2e2] text-[#0f170a] hover:bg-[#485d3a] hover:text-white'>All</li>
-                        <li className='cursor-pointer text-base px-4 md:px-6 lg:px-8 py-2 rounded-xl bg-[#e3e2e2] text-[#0f170a] hover:bg-[#485d3a] hover:text-white'>Opened</li>
-                        <li className='cursor-pointer text-base whitespace-nowrap px-4 md:px-6 lg:px-8 py-2 rounded-xl bg-[#e3e2e2] text-[#0f170a] hover:bg-[#485d3a] hover:text-white'>In review</li>
-                        <li className='cursor-pointer text-base px-4 md:px-6 lg:px-8 py-2 rounded-xl bg-[#e3e2e2] text-[#0f170a] hover:bg-[#485d3a] hover:text-white'>Resolved</li>
+                        <li 
+                            onClick={() => handleFilter('all')}
+                            className='cursor-pointer text-base px-4 md:px-6 lg:px-8 py-2 rounded-xl bg-[#e3e2e2] text-[#0f170a] hover:bg-[#485d3a] hover:text-white'
+                        >All
+                        </li>
+                        <li 
+                            onClick={() => handleFilter('opened')}
+                            className='cursor-pointer text-base px-4 md:px-6 lg:px-8 py-2 rounded-xl bg-[#e3e2e2] text-[#0f170a] hover:bg-[#485d3a] hover:text-white'>
+                            Opened
+                        </li>
+                        <li 
+                            onClick={() => handleFilter('in-review')}
+                            className='cursor-pointer text-base whitespace-nowrap px-4 md:px-6 lg:px-8 py-2 rounded-xl bg-[#e3e2e2] text-[#0f170a] hover:bg-[#485d3a] hover:text-white'>In review</li>
+                        <li 
+                            onClick={() => handleFilter('resolved')}
+                            className='cursor-pointer text-base px-4 md:px-6 lg:px-8 py-2 rounded-xl bg-[#e3e2e2] text-[#0f170a] hover:bg-[#485d3a] hover:text-white'>Resolved</li>
                     </ul>
                 </div>
                 <form onSubmit={handleSubmit(onSubmit)}>
@@ -142,57 +185,41 @@ export default function Page() {
                 </button>
                 </form>
                 <p className='mb-2 md:mb-4 lg:mb-6 text-base font-semibold'>All Complains List</p>
-                <div className='bg-[#e3e2e2] rounded-xl px-6 md:px-8 lg:px-10 py-4 md:py-6 lg:py-8 mb-4 md:mb-mb-6 lg:mb-8'>
+                <div className='h-[450px] overflow-auto bg-[#e3e2e2] rounded-xl px-6 md:px-8 lg:px-10 py-4 md:py-6 lg:py-8 mb-4 md:mb-mb-6 lg:mb-8'>
                     {
-                    !isEmpty 
+                    isLoadingComplains
+                    ? 
+                    <div className='flex-1 flex justify-center items-center h-full'>
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#485d3a]"></div>
+                    </div>  
+                    : complains.length > 0
                     ?
                     <>
-                    <Complain 
-                        title='Title of complain'
-                        desc='Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatibus.'
-                        date='12/12/2023'
-                        time='12:00 PM'
-                        status='Open'
-                        id='1234567890'
-                        color='bg-[#c837ab]'
-                    />
-                    <Complain 
-                        title='Title of complain'
-                        desc='Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatibus.'
-                        date='12/12/2023'
-                        time='12:00 PM'
-                        status='In review'
-                        id='1234567890'
-                        color='bg-[#1877f2]'
-                    />
-                    <Complain 
-                        title='Title of complain'
-                        desc='Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatibus.'
-                        date='12/12/2023'
-                        time='12:00 PM'
-                        status='Resolved'
-                        id='1234567890'
-                        color="bg-[#178a51]"
-                    />
-                    <Complain 
-                        title='Title of complain'
-                        desc='Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatibus.'
-                        date='12/12/2023'
-                        time='12:00 PM'
-                        status='Open'
-                        id='1234567890'
-                        color="bg-[#c837ab]"
-                    />
+                    {
+                    complains.map((complain,index)=>{
+                        return (
+                            <Complain 
+                                key={index}
+                                title={complain.subject}
+                                desc={complain.message}
+                                date={new Date(complain.createdAt).toLocaleDateString()}
+                                time={new Date(complain.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                status={complain.status}
+                                id={complain.complaintID}
+                            />
+                        )
+                    })
+                }
                     <button className='mx-auto block text-sm py-3 px-16 md:px-20 lg:px-24 rounded-full text-white bg-[#178a51] cursor-pointer hover:opacity-80'>
                         Load More complains
                     </button>
                     </>
                     : 
-                     <div className='flex-1 flex justify-center items-center min-h-[200px] md:min-h-[300px] lg:min-h-[400px]'>
+                     <div className='flex-1 flex justify-center items-center h-full'>
                         <div>
-                            <Image src={emptyIcon} alt="no clients icon" className='w-[150px] block mb-2 mx-auto' />
-                            <p className='text-xl font-semibold mb-2 text-center'>No clients</p>
-                            <p className='text-[#8a8a8a] text-base text-center'>Expect to see your clients here</p>
+                            <Image src={emptyIcon} alt="no  complains icon" className='w-[150px] block mb-2 mx-auto' />
+                            <p className='text-xl font-semibold mb-2 text-center'>No complains</p>
+                            <p className='text-[#8a8a8a] text-base text-center'>Expect to see your complains here</p>
                         </div>
                     </div>
                     }
