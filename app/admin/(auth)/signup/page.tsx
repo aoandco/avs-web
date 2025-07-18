@@ -44,12 +44,11 @@ export default function Page() {
             email: data.email,
             securityQuestion: data.securityQuestion,
             phoneNumber: data.phoneNumber,
-            password: data.password,
-            confirmPassword: data.confirmPassword
+            password: data.password
         })
-            .then((res) => {
-                toast.success("Admin account created successfully");
-                console.log(res.data);
+            .then((response) => {
+                toast.success(response.data.message)
+
             })
             .catch((error) => {
                 toast.error(error.response ? error.response.data.message : "An error occurred during signup");
@@ -76,6 +75,8 @@ export default function Page() {
                         id="fullName" 
                     />
                     <label
+                        htmlFor="email" className='mb-2 block text-sm font-semibold'>Email address</label>
+                   <input 
                         {...register("email", 
                             { required: true,
                             pattern: {
@@ -83,8 +84,6 @@ export default function Page() {
                                 message: "Invalid email address"
                             }
                             })} 
-                        htmlFor="email" className='mb-2 block text-sm font-semibold'>Email address</label>
-                   <input 
                         className={`mb-3 px-2 py-2 md:py-3 block rounded-md border ${errors.email ?"border-red-500": "border-black" } w-full`}
                         type="text" 
                         name="email" 
@@ -131,8 +130,8 @@ export default function Page() {
                                         }
                                     })} 
                                     className={`mb-3 px-2 py-2 md:py-3 block rounded-md border ${errors.password ?"border-red-500": "border-black" } h-full w-full`} 
-                                    type="text" 
-                                    name={showPassword ? "text" : "password"} 
+                                    name="password" 
+                                    type={showPassword ? "text" : "password"} 
                                     id="password" 
                                 />
                                 <PiEyeSlashLight 
@@ -156,8 +155,8 @@ export default function Page() {
                                         required: "Confirm password is required",
                                         validate: value => value === password || "Passwords do not match"
                                     })}
-                                    className={`mb-3 px-2 py-2 md:py-3 block rounded-md border ${errors.password ?"border-red-500": "border-black" } w-full`}
-                                    type={showPassword ? "text" : "password"} 
+                                    className={`mb-3 px-2 py-2 md:py-3 block rounded-md border ${errors.confirmPassword ?"border-red-500": "border-black" } w-full`}
+                                    type={showConfirmPassword ? "text" : "password"} 
                                     name="confirmPassword" 
                                     id="confirmPassword" 
                                 />
@@ -191,7 +190,7 @@ export default function Page() {
                         <p className="text-red-500 text-sm">{errors.termsAccepted.message}</p>
                     )}
                     <div className='flex justify-center items-center'>
-                        <button className='h-[40px] w-[215px] rounded-md bg-[#485d3a] hover:bg-white text-white hover:text-[#485d3a] hover:border-2 hover:border-[#485d3a] transition-all duration-500 ease-linear'>
+                        <button className='cursor-pointer h-[40px] w-[215px] rounded-md bg-[#485d3a] text-white hover:opacity-80 transition-all duration-500 ease-linear'>
                             {
                                 isLoading ? "Loading..." : "Get Started"
                             }
