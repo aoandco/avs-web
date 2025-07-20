@@ -103,14 +103,19 @@ export default function ComplaintsModal() {
                 </div>
                 <button 
                     type="submit"
-                    className='w-full bg-[#9dc782] text-white py-2 rounded-md hover:bg-[#8cbf7a] transition-colors'
+                    disabled={loading}
+                    className={`w-full py-2 rounded-md transition-all duration-200 font-medium ${
+                        loading 
+                            ? 'bg-gray-300 text-gray-500 cursor-not-allowed' 
+                            : 'bg-[#9dc782] text-white hover:bg-[#8cbf7a] hover:shadow-md active:scale-95'
+                    }`}
                 >
                     {loading ? "Sending..." : "Send Notification"}
                 </button>
                 <button 
                     type="button"
                     onClick={handleClose}
-                    className='w-full bg-gray-300 text-black py-2 rounded-md hover:bg-gray-400 transition-colors'
+                    className='w-full bg-gray-300 text-black py-2 rounded-md font-medium hover:bg-gray-400 hover:shadow-sm active:scale-95 transition-all duration-200'
                 >
                     Cancel
                 </button>

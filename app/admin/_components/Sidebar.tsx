@@ -41,7 +41,7 @@ export default function Sidebar() {
     }, [])
 
   return (
-    <div className={`${isSidebarOpen ? 'block' : 'hidden'} absolute z-10 top-0 left-0 md:shadow-xl lg:shadow-none md:shadow-md lg:shadow-none lg:relative w-[225px] xl:w-[250px] rounded-tr-xl rounded-br-xl lg:rounded-none border lg:border-[1.5px] border-l-0 border-[#b3b3b3] pt-4 md:pt-10 pb-6 pl-6 pr-4 bg-[#abe08a] lg:bg-white`}>
+    <div className={`${isSidebarOpen ? 'block' : 'hidden'} absolute z-10 top-0 left-0 md:shadow-xl lg:shadow-none md:shadow-md lg:shadow-none lg:relative w-[225px] rounded-tr-xl rounded-br-xl lg:rounded-none border lg:border-[1.5px] border-l-0 border-[#b3b3b3] pt-4 md:pt-10 pb-6 pl-6 pr-4 bg-[#abe08a] lg:bg-white`}>
         <IoMdClose
             onClick={toggleSidebar}
             className='cursor-pointer absolute text-2xl block top-4 right-4 lg:hidden' 

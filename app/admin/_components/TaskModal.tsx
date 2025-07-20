@@ -2,7 +2,7 @@
 "use client"
 import { useMyContext } from '@/app/context/MyContext';
 import axios from 'axios';
-import React, { FormEvent, useEffect, useState } from 'react'
+import React, {FormEvent, useEffect, useState } from 'react'
 import toast, { Toaster } from 'react-hot-toast';
 
 interface AgentObj {
@@ -18,7 +18,7 @@ interface AgentObj {
 
 export default function TaskModal() {
     const token = sessionStorage.getItem("token");
-    const { setIsTaskModalOpen, taskId,setTaskId } = useMyContext();
+    const { setIsTaskModalOpen, taskId,setTaskId, activityId } = useMyContext();
     const [agents, setAgents] = useState<AgentObj[]>([]);
     const [agentId, setAgentId] = useState<string>("");
     const [loading,setLoading] = useState(false)
@@ -87,7 +87,7 @@ export default function TaskModal() {
         <form onSubmit={assignTaskAgent} className='space-y-6'>
             <div className='pl-0 sm:pl-4 md:pl-6 flex flex-row items-center font-semibold text-base pb-2 border-b border-b-black'>
                 <p className='flex-1'>Task ID</p>
-                <p className='flex-[1.5] text-center'>ID {taskId}</p>
+                <p className='flex-[1.5] text-center'>{activityId}</p>
             </div>
             <div className='pl-0 sm:pl-4 md:pl-6 flex flex-col sm:flex-row sm:items-center'>
                 <label className='flex-1 font-semibold text-base'>Select Agent</label>
@@ -109,10 +109,15 @@ export default function TaskModal() {
             <div className='flex flex-row justify-end gap-4 sm:gap-6'>
                 <button
                     onClick={handleClose}
-                    className='py-3 font-medium w-[150px] sm:w-[200px] border border-black rounded-md bg-transparent'>Cancel</button>
+                    className='cursor-pointer py-3 font-medium w-[150px] sm:w-[200px] border border-black rounded-md bg-transparent hover:bg-gray-100 hover:border-gray-700 transition-all duration-200'>Cancel</button>
                 <button 
                     type='submit'
-                    className='bg-[#b1d29b] font-medium w-[150px] sm:w-[200px] py-3 rounded-md'>
+                    disabled={loading}
+                    className={`cursor-pointer font-medium w-[150px] sm:w-[200px] py-3 rounded-md transition-all duration-200 ${
+                        loading 
+                            ? 'bg-gray-300 cursor-not-allowed' 
+                            : 'bg-[#b1d29b] hover:bg-[#a0c78a] hover:shadow-md active:scale-95'
+                    }`}>
                     {
                         loading ? "assigning..." : "Assign to Agent"
                     }

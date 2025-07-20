@@ -1,8 +1,8 @@
 "use client"
 import React, { useEffect, useState } from 'react'
 import { IoSearch } from "react-icons/io5";
-import fileIcon from "../../_assests/file-icon.png"
-import Image, { StaticImageData } from 'next/image';
+import { MdDelete } from "react-icons/md";
+import Image from 'next/image';
 import emptyIcon from "../../_assests/emptyIcon.svg"
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
@@ -30,6 +30,7 @@ interface taskObj{
 
  function Page() {
     const router = useRouter()
+    const {setIsTaskModalOpen, setTaskId, setActivityId} = useMyContext();
     const endpoint = "https://bayog-production.up.railway.app/v1/admin/tasks"
     const [token, setToken] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -59,6 +60,32 @@ interface taskObj{
         setIsLoading(true);
         getTasks(filter);
     }
+
+    const getStatusColor = (status: string) => {
+        switch (status.toLowerCase()) {
+            case 'completed':
+                return 'bg-green-100 text-green-800';
+            case 'assigned':
+                return 'bg-blue-100 text-blue-800';
+            case 'in-progress':
+                return 'bg-yellow-100 text-yellow-800';
+            case 'pending':
+                return 'bg-yellow-100 text-yellow-800';
+            case 'in-progress':
+                return 'bg-orange-100 text-orange-800';
+            default:
+                return 'bg-gray-100 text-gray-800';
+        }
+    }
+
+    const formatDate = (dateString: string) => {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric'
+        });
+    }
     useEffect(() => {
         const storedToken = sessionStorage.getItem("token");
         if (storedToken) {
@@ -76,21 +103,7 @@ interface taskObj{
         }
     }, [token]);
 
-    const FileComp = ({id, icon , file, bgColor}:{id: string, icon: StaticImageData, file: string, bgColor: string}) =>{
-         const {setIsTaskModalOpen, setTaskId} = useMyContext();
-        return (
-            <div 
-                onClick={() => { setIsTaskModalOpen(true); setTaskId(id)}}
-                className='cursor-pointer h-full overflow-auto rounded-md flex flex-row gap-6 px-2 py-2 items-center bg-white'>
-                <div className={`flex justify-center items-center ${bgColor} h-[36px] w-[36px] rounded-md`}>
-                    <Image className="scale-80" src={icon} alt="" />
-                </div>
-                <p className='text-base font-semibold'>{file}</p>
-            </div>
-        )
-    }
-
-  return (
+    return (
             <div className='h-full overflow-auto flex-1 rounded-lg border-[1.5px] border-[#b3b3b3] flex flex-col'>
                 {/* <div className='flex flex-row gap-4 px-3 md:px-5 lg:px-6 border-b-[1.5px] border-b-[#b3b3b3]'>
                     <p className='py-3 md:py-5 lg:py-6 text-sm md:text-base leading-none text-[#8a8a8a] hover:text-[#9dc782] hover:border-b hover:border-b-[#9dc782] cursor-pointer'>Companies</p>
@@ -115,26 +128,31 @@ interface taskObj{
                 </div>
                 <div className='flex flex-col sm:flex-row gap-4 lg:gap-10 items-center px-4 lg:px-6 py-3 bg-white rounded-xl'>
                     <p className='self-start md:self-center text-base font-semibold'>Filter by:</p>
-                    <ul className='flex flex-row gap-4 md:gap-6 lg:gap-10 items-center list-none'>
+                    <ul className='flex flex-row gap-4 md:gap-6 items-center list-none'>
                         <li 
                             onClick={() => handleFilter('all')}
-                            className={`cursor-pointer text-base px-4 md:px-6 lg:px-8 py-2 rounded-xl hover:bg-[#485d3a] hover:text-white ${statusFilter === 'all' ? 'bg-[#485d3a] text-white' : 'bg-[#e3e2e2] text-[#0f170a]'}`}
+                            className={`cursor-pointer text-base px-4 md:px-6 py-2 rounded-xl hover:bg-[#485d3a] hover:text-white ${statusFilter === 'all' ? 'bg-[#485d3a] text-white' : 'bg-[#e3e2e2] text-[#0f170a]'}`}
                         >All
                         </li>
                         <li 
                             onClick={() => handleFilter('assigned')}
-                            className={`cursor-pointer text-base px-4 md:px-6 lg:px-8 py-2 rounded-xl hover:bg-[#485d3a] hover:text-white ${statusFilter === 'assigned' ? 'bg-[#485d3a] text-white' : 'bg-[#e3e2e2] text-[#0f170a]'}`}
+                            className={`cursor-pointer text-base px-4 md:px-6 py-2 rounded-xl hover:bg-[#485d3a] hover:text-white ${statusFilter === 'assigned' ? 'bg-[#485d3a] text-white' : 'bg-[#e3e2e2] text-[#0f170a]'}`}
                         >Assigned
                         </li>
                         <li 
-                            onClick={() => handleFilter('notassigned')}
-                            className={`cursor-pointer text-base whitespace-nowrap px-4 md:px-6 lg:px-8 py-2 rounded-xl hover:bg-[#485d3a] hover:text-white ${statusFilter === 'notassigned' ? 'bg-[#485d3a] text-white' : 'bg-[#e3e2e2] text-[#0f170a]'}`}
-                        >Not Assigned
+                            onClick={() => handleFilter('pending')}
+                            className={`cursor-pointer text-base whitespace-nowrap px-4 md:px-6 py-2 rounded-xl hover:bg-[#485d3a] hover:text-white ${statusFilter === 'pending' ? 'bg-[#485d3a] text-white' : 'bg-[#e3e2e2] text-[#0f170a]'}`}
+                        >Pending
+                        </li>
+                        <li 
+                            onClick={() => handleFilter('in-progress')}
+                            className={`cursor-pointer text-base whitespace-nowrap px-4 md:px-6 py-2 rounded-xl hover:bg-[#485d3a] hover:text-white ${statusFilter === 'in-progress' ? 'bg-[#485d3a] text-white' : 'bg-[#e3e2e2] text-[#0f170a]'}`}
+                        >In Progress
                         </li>
                         <li 
                             onClick={() => handleFilter('completed')}
-                            className={`cursor-pointer text-base px-4 md:px-6 lg:px-8 py-2 rounded-xl hover:bg-[#485d3a] hover:text-white ${statusFilter === 'completed' ? 'bg-[#485d3a] text-white' : 'bg-[#e3e2e2] text-[#0f170a]'}`}
-                        >completed
+                            className={`cursor-pointer text-base px-4 md:px-6  py-2 rounded-xl hover:bg-[#485d3a] hover:text-white ${statusFilter === 'completed' ? 'bg-[#485d3a] text-white' : 'bg-[#e3e2e2] text-[#0f170a]'}`}
+                        >Completed
                         </li>
                     </ul>
                 </div>
@@ -145,23 +163,99 @@ interface taskObj{
                     </div>   
                     : tasks.length > 0
                     ?
-                    <div className='p-3 md:p-5 lg:p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6'>
-                        {
-                            tasks.map((task: taskObj) => (
-                                <FileComp 
-                                    key={task._id}
-                                    id={task._id}
-                                    icon={fileIcon}
-                                    file={task.clientId.companyName}
-                                    bgColor={"bg-[#562cf1]"}
-                                />
-                            ))
-                        }
+                    <div className='p-3 md:p-5 lg:p-6 bg-white rounded-xl overflow-hidden shadow-sm border border-gray-200'>
+                        <div className='overflow-x-auto'>
+                            <table className='w-full'>
+                                <thead className='bg-gray-50 border-b border-gray-200'>
+                                    <tr>
+                                        <th className='px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
+                                            Activity ID
+                                        </th>
+                                        <th className='px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
+                                            Company Name
+                                        </th>
+                                        <th className='px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
+                                            Verification Address
+                                        </th>
+                                        <th className='px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
+                                            Customer Name
+                                        </th>
+                                        <th className='px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
+                                            Status
+                                        </th>
+                                        <th className='px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
+                                            Date Created
+                                        </th>
+                                        <th className='px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
+                                            Actions
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody className='bg-white divide-y divide-gray-200'>
+                                    {tasks.map((task: taskObj, index) => (
+                                        <tr 
+                                            key={task._id} 
+                                            className={`hover:bg-gray-50 transition-colors duration-200 ${
+                                                index % 2 === 0 ? 'bg-white' : 'bg-gray-50/30'
+                                            }`}
+                                        >
+                                            <td className='px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900'>
+                                                #{task.activityId}
+                                            </td>
+                                            <td className='px-6 py-4 whitespace-nowrap text-sm text-gray-600'>
+                                                {task.clientId?.companyName || 'N/A'}
+                                            </td>
+                                            <td className='px-6 py-4 text-sm text-gray-900 max-w-xs'>
+                                                <div className='truncate' title={task.verificationAddress}>
+                                                    {task.verificationAddress.length > 40 
+                                                        ? `${task.verificationAddress.substring(0, 40)}...` 
+                                                        : task.verificationAddress
+                                                    }
+                                                </div>
+                                            </td>
+                                            <td className='px-6 py-4 whitespace-nowrap text-sm text-gray-600'>
+                                                {task.customerName || 'N/A'}
+                                            </td>
+                                            <td className='px-6 py-4 whitespace-nowrap'>
+                                                <span className={`inline-flex px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(task.status)}`}>
+                                                    {task.status.charAt(0).toUpperCase() + task.status.slice(1).replace(/([A-Z])/g, ' $1').trim()}
+                                                </span>
+                                            </td>
+                                            <td className='px-6 py-4 whitespace-nowrap text-sm text-gray-500'>
+                                                {formatDate(task.createdAt)}
+                                            </td>
+                                            <td className='px-6 py-4 whitespace-nowrap text-sm font-medium'>
+                                                <div className='flex space-x-2 items-center'>
+                                                    {task.status === 'pending' && (
+                                                        <button 
+                                                            onClick={() => { 
+                                                                setIsTaskModalOpen(true); 
+                                                                setTaskId(task._id);
+                                                                setActivityId(task.activityId);
+                                                            }}
+                                                            className='text-green-600 hover:text-green-900 transition-colors duration-200 px-3 py-1 rounded-md hover:bg-green-50 border border-green-200 hover:border-green-300'
+                                                        >
+                                                            Assign
+                                                        </button>
+                                                    )}
+                                                    <button 
+                                                        className='text-red-600 hover:text-red-900 transition-colors duration-200 p-2 rounded-md hover:bg-red-50 border border-red-200 hover:border-red-300'
+                                                       title="Delete task"
+                                                    >
+                                                        <MdDelete className='w-4 h-4' />
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                     :
                     <div className='flex-1 flex justify-center items-center'>
                         <div>
-                            <Image src={emptyIcon} alt="no clients icon" className='w-[150px] block mb-2 mx-auto' />
+                            <Image src={emptyIcon} alt="no tasks icon" className='w-[150px] block mb-2 mx-auto' />
                             <p className='text-xl font-semibold mb-2 text-center'>No tasks</p>
                             <p className='text-[#8a8a8a] text-base text-center'>Expect to see your tasks here</p>
                         </div>

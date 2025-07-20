@@ -65,7 +65,7 @@ interface DashboardStatsType {
 
     const Card = ({type,paraText1,paraText2,children, bgColor}:cardType) => {
         return (
-            <div className={`${bgColor} ${type === 'first' ? "px-6 py-8" : "px-8 py-6" }  rounded-lg text-white`}>
+            <div className={`${bgColor} ${type === 'first' ? "px-4 py-6" : "px-6 py-4" }  rounded-lg text-white`}>
                 {
                     type == "first"
                     ? 
@@ -210,7 +210,7 @@ interface DashboardStatsType {
                                             <Image src="/recent-icon.svg" alt='recent icon' width={16} height={16} />
                                             <p>Recent Uploads</p>
                                         </div>
-                                        <Link href="/admin/tasks" className='text-base md:text-xl'>View all</Link>
+                                        <Link href="/admin/tasks" className='text-base md:text-xl hover:text-[#485d3a] active:text-[#485d3a]'>View all</Link>
                                     </div>
                                     {
                                         isLoading 
@@ -243,7 +243,7 @@ interface DashboardStatsType {
                                                     <tr key={file._id} className='border-b border-b-[#c4c4c4]'>
                                                         <td className='text-sm sm:text-base py-2 md:py-4 px-4 md:px-6'>{index + 1}</td>
                                                         <td className='text-sm sm:text-base text-center py-2 md:py-4 px-4 md:px-6'>
-                                                            <Link href={file.taskUrl} rel="noopener noreferrer">{file.taskUrl.split('/').pop()}</Link>
+                                                            <span>{file.taskUrl.split('/').pop()}</span>
                                                         </td>
                                                         <td className='text-sm sm:text-base text-center py-2 md:py-4 px-4 md:px-6 text-sm text-[#c4c4c4]'>{new Date(file.uploadedAt).toLocaleString()}</td>
                                                         <td className={`text-sm sm:text-base py-2 md:py-4 px-4 md:px-6 ${getStatusColor(file.status)}`}>{file.status.charAt(0).toUpperCase() + file.status.slice(1)}</td>

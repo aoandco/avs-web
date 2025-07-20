@@ -17,6 +17,8 @@ interface MyContextType {
     setComplaintId: (value: string | null) => void;
     recipientRole: string | null;
     setRecipientRole: (value: string | null) => void;
+    activityId: string | null;
+    setActivityId: (value: string | null) => void;
 
 }
 
@@ -30,6 +32,7 @@ export const MyContextProvider = ({children}:{children: ReactNode})=>{
     const [recipientId, setRecipientId] = useState<string | null>(null);
     const [complaintId, setComplaintId] = useState<string | null>(null);
     const [recipientRole, setRecipientRole] = useState<string | null>(null);
+    const [activityId, setActivityId] = useState<string | null>(null);
     const toggleSidebar = () => {
         if(window.innerWidth >= 1024) return;
         setIsSidebarOpen(!isSidebarOpen);
@@ -50,7 +53,9 @@ export const MyContextProvider = ({children}:{children: ReactNode})=>{
             complaintId,
             setComplaintId,
             recipientRole,
-            setRecipientRole
+            setRecipientRole,
+            activityId,
+            setActivityId
         }}>
             {children}
         </myContext.Provider>
