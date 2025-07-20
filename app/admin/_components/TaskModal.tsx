@@ -4,6 +4,7 @@ import { useMyContext } from '@/app/context/MyContext';
 import axios from 'axios';
 import React, {FormEvent, useEffect, useState } from 'react'
 import toast, { Toaster } from 'react-hot-toast';
+import { MdClose } from 'react-icons/md';
 
 interface AgentObj {
     id: string;
@@ -85,7 +86,8 @@ export default function TaskModal() {
       <div 
         onClick={handleClose}
        className='absolute top-0 left-0 w-full h-full bg-black opacity-70'></div>
-      <div className='relative z-20 bg-white rounded-lg pt-4 px-4 pb-8 max-w-xl w-full '>
+      <div className='relative z-20 bg-white rounded-lg pt-4 px-4 pb-8 max-w-xl w-full'>
+        <MdClose onClick={handleClose} className='absolute top-4 right-4 cursor-pointer' />
         <h2 className='text-xl font-semibold mb-8 text-center'>Assign Agent To Task</h2>
         <form onSubmit={assignTaskAgent} className='space-y-6'>
             <div className='pl-0 sm:pl-4 md:pl-6 flex flex-row items-center font-semibold text-base pb-2 border-b border-b-black'>

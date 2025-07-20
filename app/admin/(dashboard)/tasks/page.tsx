@@ -8,12 +8,37 @@ import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import { useMyContext } from '@/app/context/MyContext';
 
+interface feedbackObj{
+        addressExistence: string, 
+        addressResidential: string,
+        areaProfile : string,
+        buildingColor: string,
+        buildingType: string,
+        comments : string,
+        customerKnown: string,
+        customerRelationshipWithAddress: string,
+        customerResident: string,
+        easeOfLocation: string,
+        geoMapping: {
+            lat: number,
+            lng: number
+        },
+        geotaggedImages: string[],
+        landMark: string,
+        metWith: string,
+        nameOfPersonMet: string,
+        personMetOthers: string,
+        receivedDate: string,
+        recordedAudio: string,
+        recordedVideo: string,
+        relatioshipWithCustomer: string,
+        reportUrl: string,
+        visitFeedback: string
+}
 
 
 interface taskObj{
-    feedback: {
-        geotaggedImages: string[];
-    };
+    feedback: feedbackObj;
     _id: string;
     clientId: {
         _id: string;
@@ -30,7 +55,7 @@ interface taskObj{
 
  function Page() {
     const router = useRouter()
-    const {setIsTaskModalOpen, setTaskId, setActivityId, setIsDeleteTaskModalOpen, isTaskAssigned, setIsTaskAssigned, isTaskDeleted,setIsTaskDeleted} = useMyContext();
+    const {setIsTaskModalOpen, setTaskId, setActivityId, setIsDeleteTaskModalOpen, isTaskAssigned, setIsTaskAssigned, isTaskDeleted,setIsTaskDeleted, setIsViewReportModalOpen, setReportData} = useMyContext();
     const endpoint = "https://bayog-production.up.railway.app/v1/admin/tasks"
     const [token, setToken] = useState<string | null>(null);
     const [isTaskLoading, setIsTaskLoading] = useState(true);
@@ -87,6 +112,15 @@ interface taskObj{
             day: 'numeric'
         });
     }
+
+    const handleViewReport = (task: taskObj) => {
+        if (task.feedback) {
+            console.log(task.feedback)
+            setReportData(task.feedback);
+            setIsViewReportModalOpen(true);
+        }
+    }
+
     useEffect(() => {
         const storedToken = sessionStorage.getItem("token");
         if (storedToken) {
@@ -108,6 +142,7 @@ interface taskObj{
     }, [token, isTaskAssigned, isTaskDeleted]);
 
     return (
+        <>
             <div className='h-full overflow-auto flex-1 rounded-lg border-[1.5px] border-[#b3b3b3] flex flex-col'>
                 {/* <div className='flex flex-row gap-4 px-3 md:px-5 lg:px-6 border-b-[1.5px] border-b-[#b3b3b3]'>
                     <p className='py-3 md:py-5 lg:py-6 text-sm md:text-base leading-none text-[#8a8a8a] hover:text-[#9dc782] hover:border-b hover:border-b-[#9dc782] cursor-pointer'>Companies</p>
@@ -133,37 +168,37 @@ interface taskObj{
                     </div>
                     {/* <button className='bg-[#9dc782] text-white text-base rounded-lg py-2 px-4'>Add New Tasks</button> */}
                 </div>
-                <div className='overflow-x-auto mb-4 flex flex-row gap-4 lg:gap-10 items-center px-4 lg:px-6 py-3 bg-white rounded-xl'>
+                <div className='overflow-x-auto flex flex-row gap-4 lg:gap-10 items-center px-4 lg:px-6 py-3 bg-white rounded-xl'>
                     <p className='self-start md:self-center text-base font-semibold'>Filter by:</p>
-                    <ul className='flex flex-row gap-4 md:gap-6 items-center list-none'>
+                    <ul className='flex flex-row gap-4 items-center list-none'>
                         <li 
                             onClick={() => handleFilter('all')}
-                            className={`cursor-pointer text-base px-4 md:px-6 py-2 rounded-xl hover:bg-[#485d3a] hover:text-white ${statusFilter === 'all' ? 'bg-[#485d3a] text-white' : 'bg-[#e3e2e2] text-[#0f170a]'}`}
+                            className={`cursor-pointer text-base px-4 py-2 rounded-xl hover:bg-[#485d3a] hover:text-white ${statusFilter === 'all' ? 'bg-[#485d3a] text-white' : 'bg-[#e3e2e2] text-[#0f170a]'}`}
                         >All
                         </li>
                         <li 
                             onClick={() => handleFilter('assigned')}
-                            className={`cursor-pointer text-base px-4 md:px-6 py-2 rounded-xl hover:bg-[#485d3a] hover:text-white ${statusFilter === 'assigned' ? 'bg-[#485d3a] text-white' : 'bg-[#e3e2e2] text-[#0f170a]'}`}
+                            className={`cursor-pointer text-base px-4 py-2 rounded-xl hover:bg-[#485d3a] hover:text-white ${statusFilter === 'assigned' ? 'bg-[#485d3a] text-white' : 'bg-[#e3e2e2] text-[#0f170a]'}`}
                         >Assigned
                         </li>
                         <li 
                             onClick={() => handleFilter('pending')}
-                            className={`cursor-pointer text-base whitespace-nowrap px-4 md:px-6 py-2 rounded-xl hover:bg-[#485d3a] hover:text-white ${statusFilter === 'pending' ? 'bg-[#485d3a] text-white' : 'bg-[#e3e2e2] text-[#0f170a]'}`}
+                            className={`cursor-pointer text-base whitespace-nowrap px-4 py-2 rounded-xl hover:bg-[#485d3a] hover:text-white ${statusFilter === 'pending' ? 'bg-[#485d3a] text-white' : 'bg-[#e3e2e2] text-[#0f170a]'}`}
                         >Pending
                         </li>
                         <li 
                             onClick={() => handleFilter('in-progress')}
-                            className={`cursor-pointer text-base whitespace-nowrap px-4 md:px-6 py-2 rounded-xl hover:bg-[#485d3a] hover:text-white ${statusFilter === 'in-progress' ? 'bg-[#485d3a] text-white' : 'bg-[#e3e2e2] text-[#0f170a]'}`}
+                            className={`cursor-pointer text-base whitespace-nowrap px-4 py-2 rounded-xl hover:bg-[#485d3a] hover:text-white ${statusFilter === 'in-progress' ? 'bg-[#485d3a] text-white' : 'bg-[#e3e2e2] text-[#0f170a]'}`}
                         >In Progress
                         </li>
                         <li 
                             onClick={() => handleFilter('completed')}
-                            className={`cursor-pointer text-base px-4 md:px-6  py-2 rounded-xl hover:bg-[#485d3a] hover:text-white ${statusFilter === 'completed' ? 'bg-[#485d3a] text-white' : 'bg-[#e3e2e2] text-[#0f170a]'}`}
+                            className={`cursor-pointer text-base px-4 py-2 rounded-xl hover:bg-[#485d3a] hover:text-white ${statusFilter === 'completed' ? 'bg-[#485d3a] text-white' : 'bg-[#e3e2e2] text-[#0f170a]'}`}
                         >Completed
                         </li>
                         <li
                             onClick={() => handleFilter('over-due')}
-                            className={`cursor-pointer text-base px-4 md:px-6  py-2 rounded-xl hover:bg-[#485d3a] hover:text-white ${statusFilter === 'over-due' ? 'bg-[#485d3a] text-white' : 'bg-[#e3e2e2] text-[#0f170a]'}`}
+                            className={`cursor-pointer text-base px-4 py-2 rounded-xl hover:bg-[#485d3a] hover:text-white ${statusFilter === 'over-due' ? 'bg-[#485d3a] text-white' : 'bg-[#e3e2e2] text-[#0f170a]'}`}
                             >
                             Overdue
                         </li>
@@ -188,7 +223,7 @@ interface taskObj{
                                             Company Name
                                         </th>
                                         <th className='px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
-                                            Verification Address
+                                            Verification Address2
                                         </th>
                                         <th className='px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
                                             Customer Name
@@ -239,6 +274,15 @@ interface taskObj{
                                             </td>
                                             <td className='px-6 py-4 whitespace-nowrap text-sm font-medium'>
                                                 <div className='flex space-x-2 items-center'>
+                                                    {
+                                                        task.status == 'completed' &&
+                                                        <button 
+                                                            onClick={() => handleViewReport(task)}
+                                                            className='cursor-pointer text-blue-600 hover:text-blue-900 transition-colors duration-200 px-3 py-1 rounded-md hover:bg-blue-50 border border-blue-200 hover:border-blue-300'
+                                                        >
+                                                            View Report
+                                                        </button>
+                                                    }
                                                     {task.status === 'pending' && (
                                                         <button 
                                                             onClick={() => { 
@@ -279,7 +323,7 @@ interface taskObj{
                     </div>
                 }
             </div>
-    
+        </>
   )
 }
 

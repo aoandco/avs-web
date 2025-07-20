@@ -7,9 +7,10 @@ import { useMyContext } from '@/app/context/MyContext';
 import TaskModal from '../_components/TaskModal';
 import ComplaintsModal from '../_components/ComplaintsModal';
 import DeleteTaskModal from '../_components/DeleteTaskModal';
+import ViewReportModal from '../_components/ViewReportModal';
 
 export default function Layout({children}: {children: React.ReactNode}) {
-  const {isTaskModalOpen, isComplaintsModalOpen, isDeleteTaskModalOpen} = useMyContext();
+  const {isTaskModalOpen, isComplaintsModalOpen, isDeleteTaskModalOpen, isViewReportModalOpen} = useMyContext();
   const [token, setToken] = React.useState<string | null>(null);
   const [isLoading, setIsLoading] = React.useState(true);
   const router = useRouter();
@@ -56,6 +57,11 @@ export default function Layout({children}: {children: React.ReactNode}) {
           isDeleteTaskModalOpen
           &&
           <DeleteTaskModal />
+        }
+        {
+           isViewReportModalOpen &&
+          <ViewReportModal
+          />
         }
     </main>
   )

@@ -1,6 +1,34 @@
 "use client";
 import { createContext, ReactNode, useContext, useState } from "react";
 
+interface GeoMappingData {
+    addressExistence: string;
+    addressResidential: string;
+    areaProfile: string;
+    buildingColor: string;
+    buildingType: string;
+    comments: string;
+    customerKnown: string;
+    customerRelationshipWithAddress: string;
+    customerResident: string;
+    easeOfLocation: string;
+    geoMapping: {
+        lat: number;
+        lng: number;
+    };
+    geotaggedImages: string[];
+    landMark: string;
+    metWith: string;
+    nameOfPersonMet: string;
+    personMetOthers: string;
+    receivedDate: string;
+    recordedAudio: string;
+    recordedVideo: string;
+    relatioshipWithCustomer: string;
+    reportUrl: string;
+    visitFeedback: string;
+}
+
 interface MyContextType {
     isSidebarOpen: boolean;
     setIsSidebarOpen: (value: boolean) => void;
@@ -22,10 +50,15 @@ interface MyContextType {
     isDeleteTaskModalOpen: boolean;
     setIsDeleteTaskModalOpen: (value: boolean) => void;
     isTaskAssigned : boolean;
-    setIsTaskAssigned: (value: boolean) => void
-    isTaskDeleted : boolean, 
-    setIsTaskDeleted: (value: boolean) => void
-
+    setIsTaskAssigned: (value: boolean) => void;
+    isTaskDeleted : boolean;
+    setIsTaskDeleted: (value: boolean) => void;
+    compId: string | null;
+    setCompId: (value: string | null) => void;
+    isViewReportModalOpen: boolean;
+    setIsViewReportModalOpen: (value: boolean) => void;
+    reportData: GeoMappingData | null;
+    setReportData: (value: GeoMappingData | null) => void;
 }
 
 const myContext = createContext<MyContextType | undefined>(undefined)
@@ -41,8 +74,11 @@ export const MyContextProvider = ({children}:{children: ReactNode})=>{
     const [activityId, setActivityId] = useState<string | null>(null);
     const [isDeleteTaskModalOpen, setIsDeleteTaskModalOpen] = useState(false);
     const [isTaskAssigned, setIsTaskAssigned] = useState(false);
-    const [isTaskDeleted, setIsTaskDeleted] = useState(false)
-    
+    const [isTaskDeleted, setIsTaskDeleted] = useState(false);
+    const [compId, setCompId] = useState<string | null>(null);
+    const [isViewReportModalOpen, setIsViewReportModalOpen] = useState(false);
+    const [reportData, setReportData] = useState<GeoMappingData | null>(null);
+
     const toggleSidebar = () => {
         if(window.innerWidth >= 1024) return;
         setIsSidebarOpen(!isSidebarOpen);
@@ -71,7 +107,13 @@ export const MyContextProvider = ({children}:{children: ReactNode})=>{
             isTaskAssigned, 
             setIsTaskAssigned,
             isTaskDeleted, 
-            setIsTaskDeleted
+            setIsTaskDeleted,
+            compId,
+            setCompId,
+            isViewReportModalOpen,
+            setIsViewReportModalOpen,
+            reportData,
+            setReportData
         }}>
             {children}
         </myContext.Provider>

@@ -21,7 +21,7 @@ interface ComplainObj {
 
 
 export default function Page() {
-    const { setIsComplaintsModalOpen, setRecipientId, setComplaintId, setRecipientRole } = useMyContext();
+    const { setIsComplaintsModalOpen, setRecipientId, setComplaintId, setRecipientRole,setCompId } = useMyContext();
     const router = useRouter();
     const [token, setToken] = useState<string | null>(null);
     const [isLoadingComplains, setIsLoadingComplains] = useState(true);
@@ -185,6 +185,7 @@ export default function Page() {
                                                     setIsComplaintsModalOpen(true);
                                                     setRecipientId(complaint.userId._id);
                                                     setComplaintId(complaint._id);
+                                                    setCompId(complaint.complaintID);
                                                     setRecipientRole(complaint.role);
                                                 }}
                                                 className='cursor-pointer text-blue-600 hover:text-blue-900'>
