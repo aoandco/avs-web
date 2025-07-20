@@ -438,7 +438,7 @@ export default function Page() {
                     />
                     </div>
                 </div>
-                <div className='flex flex-col h-[350px] bg-white rounded-lg pb-6 my-4 md:my-6 lg:my-8'>
+                <div className='flex flex-col h-auto md:h-[350px] bg-white rounded-lg pb-6 my-4 md:my-6 lg:my-8'>
                     <div className="border-b-2 border-b-[#131313] py-4 px-6 flex flex-row justify-between items-center">
                         <div className='flex flex-row gap-2 items-center'>
                             <Image className='w-[24px] sm:w-[28px] h-[24px] sm:h-[28px]' src={recentIcon} alt='recent icon' />

@@ -125,7 +125,7 @@ export default function Page() {
                     </div> 
                 ) : complaints.length > 0 ? (
                     // Complaints table
-                    <div className='overflow-auto h-[350px]'>
+                    <div className='overflow-auto h-auto md:h-[350px]'>
                         <table className='w-full'>
                             <thead className='bg-gray-50 border-b border-gray-200'>
                                 <tr>
