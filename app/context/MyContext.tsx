@@ -35,8 +35,8 @@ interface MyContextType {
     toggleSidebar: () => void;
     isTaskModalOpen: boolean;
     setIsTaskModalOpen: (value: boolean) => void;
-    taskId: string | null;
-    setTaskId: (value: string | null) => void;
+    taskIds: string[];
+    setTaskIds: (value: string[]) => void;
     isComplaintsModalOpen: boolean;
     setIsComplaintsModalOpen: (value: boolean) => void;    
     recipientId: string | null;
@@ -59,6 +59,10 @@ interface MyContextType {
     setIsViewReportModalOpen: (value: boolean) => void;
     reportData: GeoMappingData | null;
     setReportData: (value: GeoMappingData | null) => void;
+    isRejectTaskModalOpen: boolean;
+    setIsRejectTaskModalOpen: (value: boolean) => void;
+    isNotSent: boolean, 
+    setIsNotSent: (value: boolean) => void
 }
 
 const myContext = createContext<MyContextType | undefined>(undefined)
@@ -66,7 +70,7 @@ const myContext = createContext<MyContextType | undefined>(undefined)
 export const MyContextProvider = ({children}:{children: ReactNode})=>{
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
-    const [taskId, setTaskId] = useState<string | null>(null);
+    const [taskIds, setTaskIds] = useState<string[]>([]);
     const [isComplaintsModalOpen, setIsComplaintsModalOpen] = useState(false);
     const [recipientId, setRecipientId] = useState<string | null>(null);
     const [complaintId, setComplaintId] = useState<string | null>(null);
@@ -78,7 +82,8 @@ export const MyContextProvider = ({children}:{children: ReactNode})=>{
     const [compId, setCompId] = useState<string | null>(null);
     const [isViewReportModalOpen, setIsViewReportModalOpen] = useState(false);
     const [reportData, setReportData] = useState<GeoMappingData | null>(null);
-
+    const [isRejectTaskModalOpen, setIsRejectTaskModalOpen] = useState(false);
+    const [isNotSent, setIsNotSent] = useState(false)
     const toggleSidebar = () => {
         if(window.innerWidth >= 1024) return;
         setIsSidebarOpen(!isSidebarOpen);
@@ -90,8 +95,8 @@ export const MyContextProvider = ({children}:{children: ReactNode})=>{
             toggleSidebar,
             isTaskModalOpen,
             setIsTaskModalOpen,
-            taskId,
-            setTaskId,
+            taskIds,
+            setTaskIds,
             isComplaintsModalOpen,
             setIsComplaintsModalOpen,
             recipientId,
@@ -113,7 +118,11 @@ export const MyContextProvider = ({children}:{children: ReactNode})=>{
             isViewReportModalOpen,
             setIsViewReportModalOpen,
             reportData,
-            setReportData
+            setReportData,
+            isRejectTaskModalOpen,
+            setIsRejectTaskModalOpen,
+            isNotSent, 
+            setIsNotSent
         }}>
             {children}
         </myContext.Provider>

@@ -3,6 +3,8 @@ import { useMyContext } from '@/app/context/MyContext';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react'
+import { Eye, Bell } from 'lucide-react';
+import ViewComplainModal from '../../_components/ViewComplainModal';
 
 
 
@@ -21,12 +23,17 @@ interface ComplainObj {
 
 
 export default function Page() {
-    const { setIsComplaintsModalOpen, setRecipientId, setComplaintId, setRecipientRole,setCompId } = useMyContext();
+    const { setIsComplaintsModalOpen, setRecipientId, setComplaintId, setRecipientRole,setCompId, isNotSent } = useMyContext();
     const router = useRouter();
     const [token, setToken] = useState<string | null>(null);
     const [isLoadingComplains, setIsLoadingComplains] = useState(true);
     const [complainType, setComplainType] = useState<string>('all');
     const [complaints, setComplaints] = useState<ComplainObj[]>([]);
+    const [complainObjInfo, setComplainObjInfo] = useState({
+        subject: '',
+        message: ""
+    })
+    const [isViewModalOpen, setIsViewModalOpen] = useState(false)
 
     const getComplaints = async (type:string) => {
         setComplainType(type);
@@ -47,6 +54,15 @@ export default function Page() {
             setIsLoadingComplains(false);
         }
     }
+
+    const handleViewComplain = (complaint: ComplainObj) =>{
+        setIsViewModalOpen(true)
+        setComplainObjInfo({
+            subject: complaint.subject,
+            message: complaint.message
+        })
+    }
+
 
     const handleFilter = (filter: string) => {
         setIsLoadingComplains(true);
@@ -80,7 +96,7 @@ export default function Page() {
         if (token) {
             getComplaints('all');
         }
-    }, [token]);
+    }, [token, isNotSent]);
 
   return (
     <div className='flex-1 overflow-auto rounded-lg border-[1.5px] border-[#b3b3b3] flex flex-col'>
@@ -92,8 +108,8 @@ export default function Page() {
                 </div>
             </div>
         </div>
-        <div className='flex-1 p-4 md:p-6'>
-           <div className='overflow-x-auto mb-4 md:mb-6 lg:mb-8 flex flex-row gap-4 lg:gap-10 items-center px-4 lg:px-6 py-3 bg-white rounded-xl'>
+        <div className='flex-1 flex flex-col'>
+           <div className='overflow-x-auto mb-4 md:mb-6 flex flex-row gap-4 lg:gap-10 items-center px-4 lg:px-6 py-3 bg-white rounded-xl'>
                     <p className='self-start md:self-center text-base font-semibold'>Filter by:</p>
                     <ul className='flex flex-row gap-4 md:gap-6 lg:gap-10 items-center list-none'>
                         <li 
@@ -118,14 +134,14 @@ export default function Page() {
                         </li>
                     </ul>
                 </div>
-            <div className='bg-white rounded-xl overflow-hidden shadow-sm border border-gray-200'>
+            <div className='flex-1 mb-4 mx-4 lg:mx-6 m-3 md:m-5 bg-white rounded-xl overflow-hidden shadow-sm border border-gray-200'>
                 {isLoadingComplains ? (
-                    <div className='bg-[#e3e2e2] flex-1 flex justify-center items-center min-h-[200px] md:min-h-[300px] lg:min-h-[400px]'>
+                    <div className='h-full mb-4 mx-4 lg:mx-6 m-3 md:m-5 flex justify-center items-center'>
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#485d3a]"></div>
                     </div> 
                 ) : complaints.length > 0 ? (
                     // Complaints table
-                    <div className='overflow-auto h-auto md:h-[350px]'>
+                    <div className='overflow-auto'>
                         <table className='w-full'>
                             <thead className='bg-gray-50 border-b border-gray-200'>
                                 <tr>
@@ -181,6 +197,13 @@ export default function Page() {
                                         </td>
                                         <td className='px-6 py-4 whitespace-nowrap'>
                                             <button 
+                                                onClick={()=>handleViewComplain(complaint)}
+                                                className="cursor-pointer p-2 text-gray-600 hover:text-blue-600 transition-colors duration-200 border border-gray-300 rounded-md mr-2" 
+                                                title="View complains"
+                                            >
+                                                <Eye className="w-5 h-5" />
+                                            </button>
+                                            <button 
                                                 onClick={() => {
                                                     setIsComplaintsModalOpen(true);
                                                     setRecipientId(complaint.userId._id);
@@ -188,8 +211,10 @@ export default function Page() {
                                                     setCompId(complaint.complaintID);
                                                     setRecipientRole(complaint.role);
                                                 }}
-                                                className='cursor-pointer text-blue-600 hover:text-blue-900'>
-                                                View
+                                                className="cursor-pointer p-2 text-blue-600 hover:text-blue-900 transition-colors duration-200 border border-blue-200 rounded-md" 
+                                                title="Send Notification"
+                                            >
+                                                <Bell className="w-5 h-5" />
                                             </button>
                                         </td>
                                     </tr>
@@ -216,6 +241,14 @@ export default function Page() {
                 )}
             </div>
         </div>
+        {
+            isViewModalOpen
+            &&
+            <ViewComplainModal 
+                isClose={()=> setIsViewModalOpen(false)}
+                complainObjInfo={complainObjInfo}
+            />
+        }
     </div>
 
   )

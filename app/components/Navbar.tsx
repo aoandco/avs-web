@@ -3,8 +3,7 @@ import Link from 'next/link';
 import React, { useState } from 'react'
 import logo from '../assests/logo.png'
 import Image from 'next/image';
-import { GiHamburgerMenu } from "react-icons/gi"
-import { MdClose } from "react-icons/md"
+import { Menu, X } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 
 const Navbar = () => {
@@ -59,11 +58,11 @@ const Navbar = () => {
       {
         !isMenuOpen
         ? 
-        <GiHamburgerMenu
+        <Menu
             onClick={()=> {setIsMenuOpen(true); setIsClicked(true)}} 
             className='block cursor-pointer sm:hidden text-[#0f170a] text-2xl'
             />
-        : <MdClose
+        : <X
             onClick={()=> setIsMenuOpen(false)} 
             className='block cursor-pointer sm:hidden text-[#0f170a] text-2xl'
             />

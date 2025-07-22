@@ -1,6 +1,6 @@
 "use client"
 import React, { useEffect, useState } from 'react'
-import { IoSearch, IoChatbubbles } from 'react-icons/io5'
+import { Search, MessageCircle } from 'lucide-react'
 import emptyIcon from "../../admin/_assests/emptyIcon.svg"
 import Image from 'next/image'
 import axios from 'axios'  
@@ -62,7 +62,7 @@ export default function Page() {
         return (
             <div className='min-w-[400px] mb-2 md:mb-4 bg-white rounded-xl px-6 md:px-8 lg:px-10 py-2 md:py-3 lg:py-4 flex flex-row justify-between items-center gap-4 md:gap-6 lg:gap-8'>
                 <div className='flex flex-row gap-4 lg:gap-6 items-center'>
-                    <IoChatbubbles className='shrink-0 text-2xl md:text-3xl text-black' />
+                    <MessageCircle className='shrink-0 text-2xl md:text-3xl text-black' />
                     <div>
                         <p className='text-base sm:text-xl font-semibold mb-2'>{title}</p>
                         <p className='text-sm sm:text-base text-[#626262]'>{
@@ -164,7 +164,7 @@ export default function Page() {
         <>
             <div>
                 <div className='mb-4 md:mb-6 lg:mb-8 relative h-auto'>
-                    <IoSearch className='text-xl text-[#8a8a8a] absolute top-[50%] -translate-y-[50%] left-8' />
+                    <Search className='text-xl text-[#8a8a8a] absolute top-[50%] -translate-y-[50%] left-8' />
                     <input 
                         value={keyword}
                         onChange={(e) => handleSearch(e.target.value)}

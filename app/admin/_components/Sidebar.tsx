@@ -1,14 +1,10 @@
 "use client"
 import React, { useEffect } from 'react'
 // import profilePic from "../_assests/profilePic.png"
-import { RiDashboardHorizontalFill,RiFileList2Fill, RiAlarmWarningFill } from "react-icons/ri";
-import { FaUserFriends } from "react-icons/fa";
+import { LayoutDashboard, FileText, AlertTriangle, Users, User, X, LogOut } from "lucide-react";
 import Image from 'next/image'
-import { IoMdClose } from "react-icons/io"
 import { useMyContext } from '@/app/context/MyContext';
 import logo from "@/app/assests/logo.png"
-import { MdLogout } from "react-icons/md";
-import { FaUser } from "react-icons/fa";
 import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
 
@@ -45,7 +41,7 @@ export default function Sidebar() {
     : !isSidebarOpen && window.innerWidth >= 1024
     ? "block" 
     :'hidden'} absolute z-10 top-0 left-0 md:shadow-xl lg:shadow-none md:shadow-md lg:shadow-none lg:relative w-[225px] rounded-tr-xl rounded-br-xl lg:rounded-none border lg:border-[1.5px] border-l-0 border-[#b3b3b3] pt-4 md:pt-10 pb-6 pl-6 pr-4 bg-[#abe08a] lg:bg-white`}>
-        <IoMdClose
+        <X
             onClick={toggleSidebar}
             className='cursor-pointer absolute text-2xl block top-4 right-4 lg:hidden' 
         />
@@ -61,38 +57,38 @@ export default function Sidebar() {
                 alt="profile picture"
                 className='w-[32px] xl:w-[40px] h-[32px] xl:h-[40px]'
             /> */}
-            <FaUser className='text-2xl xl:text-3xl text-[#8a8a8a]' />
+            <User className='text-2xl xl:text-3xl text-[#8a8a8a]' />
             <p className='text-base text-black'>{user?.email}</p>
         </div>
         <div className='cursor-pointer flex flex-col gap-2 items-stretch mt-4'>
             <Link href='/admin/dashboard'
                 onClick={()=>setIsSidebarOpen(false)}
                 className={`rounded-md hover:bg-[#9dc782] p-2 hover:text-white flex flex-row gap-2 items-center transition-all duration-300 ease-linear ${isActive('/admin/dashboard')}`}>
-                <RiDashboardHorizontalFill className='text-2xl' />
+                <LayoutDashboard className='text-2xl' />
                 <p className='text-base font-semibold'>Dashboard</p>
             </Link>
             <Link  href={'/admin/tasks'} 
                 onClick={()=>setIsSidebarOpen(false)}
                 className={`rounded-md hover:bg-[#9dc782] p-2 hover:text-white flex flex-row gap-2 items-center transition-all duration-300 ease-linear ${isActive('/admin/tasks')}`}>
-                <FaUserFriends className='text-2xl' />
+                <Users className='text-2xl' />
                 <p className='text-base font-semibold'>Tasks</p>
             </Link>
             <Link href={'/admin/clients'} 
                 onClick={()=>setIsSidebarOpen(false)}
                 className={`rounded-md hover:bg-[#9dc782] p-2 hover:text-white flex flex-row gap-2 items-center transition-all duration-300 ease-linear ${isActive('/admin/clients')}`}>
-                <FaUserFriends className='text-2xl' />
+                <Users className='text-2xl' />
                 <p className='text-base font-semibold'>Client</p>
             </Link>
             <Link href={'/admin/agents'}
                 onClick={()=>setIsSidebarOpen(false)} 
                 className={`rounded-md hover:bg-[#9dc782] p-2 hover:text-white flex flex-row gap-2 items-center transition-all duration-300 ease-linear ${isActive('/admin/agents')}`}>
-                <RiFileList2Fill className='text-2xl' />
+                <FileText className='text-2xl' />
                 <p className='text-base font-semibold'>Agents</p>
             </Link>
             <Link href={'/admin/complaints'}
                 onClick={()=>setIsSidebarOpen(false)}
                 className={`rounded-md hover:bg-[#9dc782] p-2 text-[#8a8a8a] hover:text-white flex flex-row gap-2 items-center transition-all duration-300 ease-linear ${isActive('/admin/complaints')}`}>
-                <RiAlarmWarningFill className='text-2xl' />
+                <AlertTriangle className='text-2xl' />
                 <p className='text-base font-semibold'>Complaints</p>
 
             </Link>
@@ -114,7 +110,7 @@ export default function Sidebar() {
             </div> */}
         </div>
         <div onClick={handleLogout} className='cursor-pointer my-4 sm:my-6  md:hidden  p-2 inline-flex flex-row gap-2 items-center rounded-md border-[1.5px] border-[#001eff]'>
-            <MdLogout className='text-xl' />
+            <LogOut className='text-xl' />
             <p>Log Out</p>
         </div>
     </div>

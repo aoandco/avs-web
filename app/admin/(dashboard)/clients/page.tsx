@@ -1,6 +1,6 @@
 "use client"
 import React, { useEffect, useState } from 'react'
-import { IoSearch } from "react-icons/io5";
+import { Search } from 'lucide-react';
 import Image from 'next/image';
 import emptyIcon from "../../_assests/emptyIcon.svg"
 import { useRouter } from 'next/navigation';
@@ -113,7 +113,7 @@ export default function Page() {
                     <div className='flex flex-row gap-4 items-center'>
                         <p className='text-black font-semibold text-sm sm:text-base'>{clients.length} Companies</p>
                         <div className='relative h-auto flex-1 md:w-[250px]'>
-                            <IoSearch className='absolute text-[#8a8a8a] top-[50%] -translate-y-[50%] left-2' />
+                            <Search className='absolute text-[#8a8a8a] top-[50%] -translate-y-[50%] left-2' />
                             <input 
                                 value={keyowrd}
                                 onChange={(e) => handleSearch(e.target.value)}
@@ -132,8 +132,8 @@ export default function Page() {
                     </div>
                     : clients.length > 0
                     ?
-                    <div className='h-auto md:h-[500px] overflow-hidden p-3 md:p-5 lg:p-6'>
-                        <div className='h-full overflow-y-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 pb-8 md:pb-12 lg:pb-16'>
+                    <div className='flex-1 overflow-hidden p-3 md:p-5 lg:p-6'>
+                        <div className='h-full overflow-y-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6'>
                             {
                                 clients.map((client, index) => (
                                     <ClientComp 

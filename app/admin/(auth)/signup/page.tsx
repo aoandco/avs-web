@@ -1,7 +1,7 @@
 "use client"
 import React from 'react'
 import Link from 'next/link'
-import { PiEyeLight,PiEyeSlashLight } from "react-icons/pi";
+import { Eye, EyeOff } from 'lucide-react';
 import axios from 'axios';
 import toast, { Toaster } from 'react-hot-toast';
 import { useForm, SubmitHandler } from 'react-hook-form';
@@ -134,11 +134,11 @@ export default function Page() {
                                     type={showPassword ? "text" : "password"} 
                                     id="password" 
                                 />
-                                <PiEyeSlashLight 
+                                <EyeOff 
                                     onClick={() => setShowPassword(!showPassword)} 
                                     className={`${!showPassword ? "absolute top-[50%] right-2 -translate-y-[50%] cursor-pointer" : "hidden"}`}     
                                 />
-                                <PiEyeLight 
+                                <Eye 
                                     onClick={() => setShowPassword(!showPassword)} 
                                     className={`${!showPassword ? "hidden" : "cursor-pointer absolute top-[50%] right-2 -translate-y-[50%]"}`}
                                 />
@@ -160,11 +160,11 @@ export default function Page() {
                                     name="confirmPassword" 
                                     id="confirmPassword" 
                                 />
-                                <PiEyeSlashLight
+                                <EyeOff
                                     onClick={() => setShowConfirmPassword(!showConfirmPassword)} 
                                     className={`${!showConfirmPassword ? "absolute top-[50%] right-2 -translate-y-[50%] cursor-pointer" : "hidden"}`} 
                                 />
-                                <PiEyeLight
+                                <Eye
                                     onClick={() => setShowConfirmPassword(!showConfirmPassword)} 
                                     className={`${!showConfirmPassword ? "hidden" : "cursor-pointer absolute top-[50%] right-2 -translate-y-[50%]"}`}  
                                 />

@@ -4,7 +4,7 @@ import { useMyContext } from '@/app/context/MyContext';
 import axios from 'axios';
 import React, {FormEvent, useEffect, useState } from 'react'
 import toast, { Toaster } from 'react-hot-toast';
-import { MdClose } from 'react-icons/md';
+import { X } from "lucide-react"
 
 interface AgentObj {
     id: string;
@@ -19,7 +19,7 @@ interface AgentObj {
 
 export default function TaskModal() {
     const token = sessionStorage.getItem("token");
-    const { setIsTaskModalOpen, taskId,setTaskId, activityId, setIsTaskAssigned } = useMyContext();
+    const { setIsTaskModalOpen, taskIds,setTaskIds, activityId, setIsTaskAssigned } = useMyContext();
     const [agents, setAgents] = useState<AgentObj[]>([]);
     const [agentId, setAgentId] = useState<string>("");
     const [loading,setLoading] = useState(false)
@@ -42,22 +42,24 @@ export default function TaskModal() {
 
     const assignTaskAgent = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault()
-        if (!agentId || !taskId) return;
-        const endpoint = `https://bayog-production.up.railway.app/v1/admin/assign-task/${taskId}/${agentId}`;
+        if (!agentId || taskIds.length === 0) return;
+        const endpoint = `https://bayog-production.up.railway.app/v1/admin/assign-task/${agentId}`;
         setLoading(true)
         try {
-            const response = await axios.post(endpoint, {}, {
+            const response = await axios.post(endpoint, {
+                taskIds: taskIds
+            }, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
             });
             if (response.status === 200) {
-                toast.success("Task assigned successfully");
+                toast.success(response.data.message);
                 setIsTaskAssigned(true)
                 setTimeout(()=>{
                     setIsTaskModalOpen(false);
                     setAgentId("");
-                    setTaskId(null);
+                    setTaskIds([]);
                 }, 1000)
             }
         } catch (error: any) {
@@ -70,7 +72,7 @@ export default function TaskModal() {
 
     const handleClose = () => {
         setIsTaskModalOpen(false);
-        setTaskId(null);
+        setTaskIds([]);
         setAgentId("");
     }
 
@@ -87,7 +89,7 @@ export default function TaskModal() {
         onClick={handleClose}
        className='absolute top-0 left-0 w-full h-full bg-black opacity-70'></div>
       <div className='relative z-20 bg-white rounded-lg pt-4 px-4 pb-8 max-w-xl w-full'>
-        <MdClose onClick={handleClose} className='absolute top-4 right-4 cursor-pointer' />
+        <X onClick={handleClose} className='absolute top-4 right-4 cursor-pointer' />
         <h2 className='text-xl font-semibold mb-8 text-center'>Assign Agent To Task</h2>
         <form onSubmit={assignTaskAgent} className='space-y-6'>
             <div className='pl-0 sm:pl-4 md:pl-6 flex flex-row items-center font-semibold text-base pb-2 border-b border-b-black'>
@@ -118,7 +120,7 @@ export default function TaskModal() {
                 <button 
                     type='submit'
                     disabled={loading}
-                    className={`cursor-pointer font-medium w-[150px] sm:w-[200px] py-3 rounded-md transition-all duration-200 ${
+                    className={`cursor-pointer disabled:cursor-not-allowed font-medium w-[150px] sm:w-[200px] py-3 rounded-md transition-all duration-200 ${
                         loading 
                             ? 'bg-gray-300 cursor-not-allowed' 
                             : 'bg-[#b1d29b] hover:bg-[#a0c78a] hover:shadow-md active:scale-95'

@@ -1,6 +1,6 @@
 "use client"
 import React, { useEffect, useState } from 'react'
-import { IoSearch } from "react-icons/io5";
+import { Search } from 'lucide-react';
 import emptyIcon from "../../admin/_assests/emptyIcon.svg"
 import Image from 'next/image';
 import axios from 'axios'
@@ -48,7 +48,8 @@ export default function Page() {
     const [loadMore, setLoadMore] = useState(false);
     const [keyword, setKeyword] = useState('');
     const [complainType, setComplainType] = useState('all');
-
+    const [isComplaintCreated, setIsComplaintCreated] = useState(false)
+    console.log(isComplaintCreated)
     const handleSearch = async (value : string) => {
         setKeyword(value)
         const endpoint = `${baseUrl}?search=${value}`
@@ -95,6 +96,7 @@ export default function Page() {
             toast.success(response.data.message);
             setValue("title", "");
             setValue("desc", "");
+            setIsComplaintCreated(true)
         })
         .catch((error) => {
             toast.error(error.response ? error.response.data.message : "An error occurred while submiting....");
@@ -165,14 +167,17 @@ export default function Page() {
     useEffect(()=>{
         if(token){
             getComplains("all");
+            if(isComplaintCreated){
+                setIsComplaintCreated(false)
+            }
         }
-    },[token])
+    },[token, isComplaintCreated])
 
   return (
         <div>
             <Toaster />
                 <div className='mb-4 md:mb-6 lg:mb-8 relative h-auto'>
-                    <IoSearch className='text-xl text-[#8a8a8a] absolute top-[50%] -translate-y-[50%] left-8' />
+                    <Search className='text-xl text-[#8a8a8a] absolute top-[50%] -translate-y-[50%] left-8' />
                     <input 
                         value={keyword}
                         onChange={(e) => handleSearch(e.target.value)}

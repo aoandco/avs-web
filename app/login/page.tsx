@@ -2,7 +2,7 @@
 import React from 'react'
 import AuthComp from '../components/AuthComp'
 import Link from 'next/link'
-import { PiEyeLight, PiEyeSlashLight } from 'react-icons/pi'
+import { Eye, EyeOff } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import axios from 'axios'
@@ -80,11 +80,11 @@ export default function Page() {
                                     type={ showPassword ? "text" : "password"} 
                                     name="password" 
                                 />
-                                <PiEyeSlashLight
+                                <EyeOff
                                     onClick={() => setShowPassword(!showPassword)} 
                                     className={`${!showPassword ? "cursor-pointer absolute top-[50%] right-2 -translate-y-[50%]" : "hidden"}`} 
                                 />
-                                <PiEyeLight
+                                <Eye
                                     onClick={() => setShowPassword(!showPassword)} 
                                     className={`${!showPassword ? "hidden" : "cursor-pointer absolute top-[50%] right-2 -translate-y-[50%]"}`}  
                                 />

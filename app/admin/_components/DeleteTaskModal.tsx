@@ -4,22 +4,22 @@ import { useMyContext } from '@/app/context/MyContext';
 import axios from 'axios';
 import React, { useState } from 'react'
 import toast, {Toaster} from "react-hot-toast"
-import { MdClose } from 'react-icons/md';
+import { X } from "lucide-react"
 
 export default function DeleteTaskModal() {
     const token = sessionStorage.getItem("token")
-    const { setIsDeleteTaskModalOpen, taskId, setTaskId, setIsTaskDeleted } = useMyContext();
+    const { setIsDeleteTaskModalOpen, taskIds, setTaskIds, setIsTaskDeleted } = useMyContext();
     const [isTaskDeleting, setIsTaskDeleting] = useState(false);
     const handleClose = () => {
         setIsDeleteTaskModalOpen(false);
-        setTaskId(null);
+        setTaskIds([]);
     }
 
     const deleteTask = async () => {
         const endpoint = "https://bayog-production.up.railway.app/v1/admin/delete-task"
         setIsTaskDeleting(true);
         try{
-            const response = await axios.post(`${endpoint}/${taskId}`, {},{
+            const response = await axios.post(`${endpoint}/${taskIds[0]}`, {},{
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -29,7 +29,7 @@ export default function DeleteTaskModal() {
                 setIsTaskDeleted(true)
                 setTimeout(()=>{
                     setIsDeleteTaskModalOpen(false)
-                    setTaskId(null)
+                    setTaskIds([])
                 },1000)
             }
         }catch(err : any){
@@ -45,7 +45,7 @@ export default function DeleteTaskModal() {
         <Toaster />
       <div onClick={handleClose} className='absolute top-0 left-0 w-full h-full bg-black opacity-70'></div>
       <div className='relative z-20 bg-white rounded-lg pt-4 px-4 lg:px-6 pb-8 max-w-xl w-full'>
-        <MdClose onClick={handleClose} className='absolute top-4 right-4 cursor-pointer' />
+        <X onClick={handleClose} className='absolute top-4 right-4 cursor-pointer' />
         <h2 className='text-lg font-semibold mb-4 text-center'>Delete Task</h2>
         <p className='mb-6'>Are you sure you want to delete this task?</p>
         <div className='flex justify-end space-x-4'>

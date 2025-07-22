@@ -1,7 +1,5 @@
 import React, { Suspense } from 'react'
-import { IoMail } from "react-icons/io5";
-import { FaPhone,FaLocationDot } from "react-icons/fa6";
-import { BsClockHistory } from "react-icons/bs";
+import { Mail, Phone, MapPin, Clock } from 'lucide-react';
 import Image from 'next/image';
 
 
@@ -69,19 +67,19 @@ const page = () => {
                 <div className='w-[355px] text-white py-6 px-8 bg-[#485d3a] rounded-lg'>
                     <p className='text-xl font-semibold mb-6'>Info</p>
                     <div className='ml-2 flex flex-row gap-6 items-center mb-6'>
-                        <IoMail className='text-xl' />
+                        <Mail className='text-xl' />
                         <p>Bayogassociates@gmail.com</p> 
                     </div>
                     <div className='ml-2 flex flex-row gap-6 items-center mb-6'>
-                        <FaPhone className='text-xl' />
+                        <Phone className='text-xl' />
                         <p>+234 7011122234</p>
                     </div>
                     <div className='ml-2 flex flex-row gap-6 items-center mb-6'>
-                        <FaLocationDot  className='text-xl'/>
+                        <MapPin  className='text-xl'/>
                         <p>123, Admiralty way, Sabo Yaba,<br /> Lagos state</p>
                     </div>
                     <div className='ml-2 flex flex-row gap-6 items-center mb-6'>
-                        <BsClockHistory className='text-xl' />
+                        <Clock className='text-xl' />
                         <p> 9:00am - 7:00pm</p>
                     </div>
                 </div>

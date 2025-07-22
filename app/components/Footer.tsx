@@ -1,7 +1,7 @@
 import React from 'react'
 import logo from "../assests/logo.png"
 import Image from 'next/image'
-import { MdMail } from "react-icons/md";
+import { Mail } from 'lucide-react';
 import Link from 'next/link';
 import facebook from "../assests/facebook.png"
 import instagram from "../assests/instagram.png"
@@ -35,7 +35,7 @@ const Footer = () => {
                 <Link href="/admin/login" className="link link-hover text-[#0f170a]">Admin Log</Link>
             </nav>
             <div className='third-column'>
-                <MdMail className='text-[#485d3a] text-3xl' />
+                <Mail className='text-[#485d3a] text-3xl' />
                 <a className='text-[#485d3a] text-sm font-semibold whitespace-nowrap' href="mailto:Bayogassociates@gmail.com">Email: Bayogassociates@gmail.com</a>
             </div>
         </footer> 

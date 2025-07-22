@@ -1,10 +1,8 @@
 "use client"
 import React from 'react'
 import logo from "@/app/assests/logo.png"
-// import { IoSearch } from "react-icons/io5";
-import { MdLogout } from "react-icons/md";
+import { LogOut, Menu } from "lucide-react";
 import Image from 'next/image';
-import { FaBars } from "react-icons/fa";
 import { useMyContext } from '@/app/context/MyContext';
 import { useRouter } from 'next/navigation';
 
@@ -37,15 +35,15 @@ export default function Header() {
                 </div>
             </div> */}
             <div onClick={handleLogout} className='cursor-pointer rounded-lg p-2 border-2 border-[#9fe273] flex flex-row gap-3 items-center hover:border-red-500 hover:bg-red-500 hover:text-white'>
-                <MdLogout className='text-2xl' />
+                <LogOut className='text-2xl' />
                 <span className='text-base'>Log Out</span>
             </div>
-            <FaBars
+            <Menu
                 onClick={toggleSidebar}
                 className="hidden md:block lg:hidden text-2xl" 
             />    
         </div>
-        <FaBars
+        <Menu
             onClick={toggleSidebar} 
             className="cursor-pointer block md:hidden text-2xl" 
         />

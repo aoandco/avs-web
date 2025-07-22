@@ -1,6 +1,6 @@
 "use client"
 import React, { useState, useEffect } from 'react'
-import { PiEmptyBold } from "react-icons/pi";
+import { Inbox } from "lucide-react";
 import dynamic from 'next/dynamic'
 
 const Line = dynamic(() => import('react-chartjs-2').then(mod => ({ default: mod.Line })), {
@@ -124,15 +124,15 @@ export default function Page() {
                     text: 'Chart.js Line Chart'
                 }
             },
-            // scales:{
-            //     y: {
-            //     min: 0,        
-            //     max: 1000,      
-            //     ticks: {
-            //         stepSize: 100 
-            //         }
-            //     }
-            // }
+            scales:{
+                y: {
+                min: 0,        
+                // max: 1000,      
+                ticks: {
+                    stepSize: 1 
+                    }
+                }
+            }
         }
 
         const barOptions: ChartOptions<'bar'> = {
@@ -227,7 +227,7 @@ export default function Page() {
                 isEmpty
                 ?
                 <div className='text-[#8a8a8a] flex flex-col gap-2 justify-center items-center'>
-                    <PiEmptyBold className='text-6xl' />
+                    <Inbox className='text-6xl' />
                     <p className='text-xl font-semibold'>No results Found</p>
                     <p className='font-semibold w-auto md:w-[300px] text-center'>No data found at this moment please check back later</p>
                 </div>
@@ -278,7 +278,7 @@ export default function Page() {
                     isEmpty
                     ?
                     <div className='text-[#8a8a8a] flex flex-col gap-2 justify-center items-center'>
-                        <PiEmptyBold className='text-6xl' />
+                        <Inbox className='text-6xl' />
                         <p className='text-xl font-semibold'>No results Found</p>
                         <p className='font-semibold w-auto md:w-[300px] text-center'>No data found at this moment please check back later</p>
                     </div>

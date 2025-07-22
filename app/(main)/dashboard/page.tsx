@@ -1,7 +1,6 @@
 "use client"
 import React, {useEffect, useState } from 'react'
-import { MdUpload } from "react-icons/md";
-import { MdDownload } from "react-icons/md";
+import { Upload, Download } from "lucide-react";
 import Image from 'next/image';
 import recentIcon from "../../admin/_assests/recent-icon.svg"
 import uploadIcon from "../../admin/_assests/upload-icon.svg"
@@ -279,12 +278,12 @@ export default function Page() {
         const lineData: ChartData<'line'> = {
             labels: [...dashboardStats.monthlyTasks.map(task => task.month)],
             datasets: [
-        //     {
-        //     label: "Total Request",
-        //     data: [4100,4100,3950,3950,3600,6000,6000,6100,6200,6300,6400,6500],
-        //     backgroundColor: '#1877f2',
-        //     borderColor: '#1877f2'
-        // },
+            {
+            label: "Total Request",
+            data: [...dashboardStats.monthlyTasks.map(task => task.total)],
+            backgroundColor: '#1877f2',
+            borderColor: '#1877f2'
+        },
             {
                 label: "Total Pending",
                 data: [...dashboardStats.monthlyTasks.map(task => task.pending)],
@@ -391,7 +390,7 @@ export default function Page() {
                             {isUploading ? (
                                 <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
                             ) : (
-                                <MdUpload className='text-2xl sm:text-3xl'/>
+                                <Upload className='text-2xl sm:text-3xl'/>
                             )}
                             <div>
                                 <p className='text-sm sm:text-base font-semibold'>
@@ -413,7 +412,7 @@ export default function Page() {
                             {isDownloading ? (
                                 <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-[#485d3a]"></div>
                             ) : (
-                                <MdDownload className='text-xl sm:text-2xl'/>
+                                <Download className='text-xl sm:text-2xl'/>
                             )}
                             <p className='text-sm sm:text-base font-semibold'>
                                 {isDownloading ? 'Generating...' : 'Download Report'}
@@ -438,7 +437,7 @@ export default function Page() {
                     />
                     </div>
                 </div>
-                <div className='flex flex-col h-auto md:h-[350px] bg-white rounded-lg pb-6 my-4 md:my-6 lg:my-8'>
+                <div className='flex flex-col h-auto md:min-h-[350px] bg-white rounded-lg pb-6 my-4 md:my-6 lg:my-8'>
                     <div className="border-b-2 border-b-[#131313] py-4 px-6 flex flex-row justify-between items-center">
                         <div className='flex flex-row gap-2 items-center'>
                             <Image className='w-[24px] sm:w-[28px] h-[24px] sm:h-[28px]' src={recentIcon} alt='recent icon' />

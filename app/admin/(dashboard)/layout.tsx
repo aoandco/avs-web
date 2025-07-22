@@ -8,9 +8,10 @@ import TaskModal from '../_components/TaskModal';
 import ComplaintsModal from '../_components/ComplaintsModal';
 import DeleteTaskModal from '../_components/DeleteTaskModal';
 import ViewReportModal from '../_components/ViewReportModal';
+import RejectTaskModal from '../_components/RejectTaskModal';
 
 export default function Layout({children}: {children: React.ReactNode}) {
-  const {isTaskModalOpen, isComplaintsModalOpen, isDeleteTaskModalOpen, isViewReportModalOpen} = useMyContext();
+  const {isTaskModalOpen, isComplaintsModalOpen, isDeleteTaskModalOpen, isViewReportModalOpen, isRejectTaskModalOpen} = useMyContext();
   const [token, setToken] = React.useState<string | null>(null);
   const [isLoading, setIsLoading] = React.useState(true);
   const router = useRouter();
@@ -63,6 +64,10 @@ export default function Layout({children}: {children: React.ReactNode}) {
           <ViewReportModal
           />
         }
+        {isRejectTaskModalOpen && (
+            <RejectTaskModal
+            />
+        )}
     </main>
   )
 }

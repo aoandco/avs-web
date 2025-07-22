@@ -1,7 +1,7 @@
 "use client"
 import React from 'react'
 import Link from 'next/link'
-import { PiEyeLight, PiEyeSlashLight } from 'react-icons/pi'
+import { Eye, EyeOff } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import axios from 'axios'
 import { toast, Toaster } from 'react-hot-toast'
@@ -77,11 +77,11 @@ function Page() {
                                     name="password" 
                                     id="password" 
                                 />
-                                <PiEyeSlashLight
+                                <EyeOff
                                     onClick={() => setShowPassword(!showPassword)} 
                                     className={`${!showPassword ? "cursor-pointer absolute top-[50%] right-2 -translate-y-[50%]" : "hidden"}`} 
                                 />
-                                <PiEyeLight
+                                <Eye
                                     onClick={() => setShowPassword(!showPassword)} 
                                     className={`${!showPassword ? "hidden" : "cursor-pointer absolute top-[50%] right-2 -translate-y-[50%]"}`}  
                                 />    

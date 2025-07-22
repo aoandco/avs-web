@@ -1,14 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 import { useMyContext } from '@/app/context/MyContext';
-import {MdClose} from "react-icons/md"
+import { X } from "lucide-react"
 import axios from 'axios';
-import React, { ChangeEvent, FormEvent, useState } from 'react'
+import React, { ChangeEvent, FormEvent, useEffect, useState } from 'react'
 import toast, { Toaster } from 'react-hot-toast';
 
 export default function ComplaintsModal() {
     const token = sessionStorage.getItem("token");
-    const { setIsComplaintsModalOpen, recipientId, setRecipientId, complaintId, setComplaintId, recipientRole, setRecipientRole, compId, setCompId } = useMyContext();
+    const { setIsComplaintsModalOpen, recipientId, setRecipientId, complaintId, setComplaintId, recipientRole, setRecipientRole, compId, setCompId, setIsNotSent } = useMyContext();
     const [notificationObj, setNotificationObj] = useState({ title: '', message: '', type: "" });
     const [loading, setLoading] = useState(false);
 
@@ -50,6 +50,7 @@ export default function ComplaintsModal() {
         })
             if(response.status === 201){
                 setNotificationObj({ title: '', message: '', type: "" });
+                setIsNotSent(true)
                 toast.success("Notification sent successfully");
             }
         } catch(err: any){
@@ -59,6 +60,10 @@ export default function ComplaintsModal() {
         }
     }
 
+    useEffect(()=>{
+        setIsNotSent(false)
+    },[])
+
   return (
     <div className='fixed inset-0 flex items-center justify-center w-full h-full z-10'>
         <Toaster />
@@ -67,7 +72,7 @@ export default function ComplaintsModal() {
             className='absolute top-0 left-0 w-full h-full bg-black opacity-70'
         ></div>
         <div className='relative z-20 bg-white rounded-lg pt-4 px-4 pb-8 max-w-xl w-full max-h-[80vh] overflow-y-auto'>
-            <MdClose onClick={handleClose} className='absolute top-4 right-4 cursor-pointer' />
+            <X onClick={handleClose} className='absolute top-4 right-4 cursor-pointer' />
             <h2 className='text-xl font-semibold mb-8 text-center'>Send Notifications</h2>
             <form onSubmit={postNotification} className='space-y-6'>
                 <div className='pl-0 sm:pl-4 md:pl-6 flex flex-row items-center font-semibold text-base pb-2 border-b border-b-black'>

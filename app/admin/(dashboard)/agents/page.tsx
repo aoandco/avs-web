@@ -1,11 +1,10 @@
 "use client"
 import React, { useEffect, useState } from 'react'
-import { IoSearch } from "react-icons/io5";
 import Image from 'next/image';
 import emptyIcon from "../../_assests/emptyIcon.svg"
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
-import { FaUser } from "react-icons/fa";
+import { User, Search } from 'lucide-react';
 
 
 interface AgentObj {
@@ -81,20 +80,23 @@ export default function Page() {
     },[token])
 
   return (
-            <div className='overflow-y-auto flex-1 rounded-lg border-[1.5px] border-[#b3b3b3] flex flex-col pb-16 md:pb-20 lg:pb-24'>
+            <div className='overflow-y-auto flex-1 rounded-xl border-[1.5px] border-[#b3b3b3] flex flex-col pb-8 bg-[#f8f9fa]'>
                 {/* <div className='flex flex-row gap-4 px-3 md:px-5 lg:px-6 border-b-[1.5px] border-b-[#b3b3b3]'>
                     <p className='py-3 md:py-5 lg:py-6 text-sm md:text-base leading-none text-[#8a8a8a] hover:text-[#9dc782] hover:border-b hover:border-b-[#9dc782] cursor-pointer'>Companies</p>
                     <p className='py-3 md:py-5 lg:py-6 text-sm md:text-base leading-none text-[#8a8a8a] hover:text-[#9dc782] hover:border-b hover:border-b-[#9dc782] cursor-pointer'>Agents</p>
                 </div> */}
-                <div className='p-3 md:p-5 lg:p-6 border-b-[1.5px] border-b-[#b3b3b3]'>
+                <div className='flex flex-row items-center justify-between p-3 md:p-5 lg:p-6 border-b-[1.5px] border-b-[#b3b3b3]'>
                     <p className='text-base md:text-xl font-semibold leading-none'>Agents</p>
+                    <div className='bg-[#485d3a] text-white px-3 py-1 rounded-full text-sm font-medium'>
+                        {agents.length} {agents.length === 1 ? 'agent' : 'agents'}
+                    </div>
                 </div>
                 <div className='p-3 md:p-5 lg:px-6 lg:py-3 flex flex-col md:flex-row justify-between gap-3 md:gap-0 items-center border-b-[1.5px] border-b-[#b3b3b3]'>
                     <div className='flex flex-row gap-4 items-center'>
                         <p className='hidden sm:block text-black font-semibold text-base'>Agent Directory</p>
                         <p className='block sm:hidden text-black font-semibold text-sm'>Agent</p>
                         <div className='relative h-auto flex-1 md:w-[250px]'>
-                            <IoSearch className='absolute text-[#8a8a8a] top-[50%] -translate-y-[50%] left-2' />
+                            <Search className='absolute text-[#8a8a8a] top-[50%] -translate-y-[50%] left-2' />
                             <input 
                                 value={keyword}
                                 onChange={(e) => handleSearch(e.target.value)}
@@ -114,44 +116,44 @@ export default function Page() {
                     </div>
                     : agents.length > 0
                     ?
-                    <div className='overflow-x-auto lg:overflow-x-none flex-1'>
-                       <table className='table-fixed w-full min-w-[720px] '>
-                            <thead>
-                                <tr className='text-[#626262] border-b-[1.5px] border-b-[#b3b3b3]'>
-                                    <th className='w-[1/4] text-left py-4 lg:py-6 px-4 flex flex-row gap-4 items-center'>
-                                        <input type="checkbox" className='w-5 h-5' />
-                                        <p>FULL NAME</p>
+                    <div className="flex-1 overflow-auto mb-4 mx-4 lg:mx-6 m-3 md:m-5">
+                        <table className="w-full min-w-[720px] rounded-xl overflow-hidden shadow-sm border border-gray-200 bg-white">
+                            <thead className="bg-gray-50 border-b border-gray-200">
+                                <tr>
+                                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider flex flex-row gap-4 items-center">
+                                        <input type="checkbox" className="w-5 h-5 accent-[#485d3a] mr-2" />
+                                        <span>Full Name</span>
                                     </th>
-                                    <th className='w-[1/4] text-left py-4 lg:py-6 px-4'>STAFF ID</th>
-                                    <th className='w-[1/4] text-left py-4 lg:py-6  px-4'>PHONE NUMBER</th>
-                                    <th className='w-[1/4] text-left py-4 lg:py-6 px-4'>STATUS</th>
+                                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Staff ID</th>
+                                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Phone Number</th>
+                                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                {
-                                    agents.map((agent, index) => (
-                                        <tr key={index} className='border-b border-b-[#a5a5a5]'>
-                                            <td className='text-left py-2 md:py-3 lg:py-4 px-4 flex flex-row gap-4 items-center'>
-                                                <input type="checkbox" className='w-5 h-5' />
-                                                <div className='flex flex-row gap-2 items-center'>
-                                                    {
-                                                        agent.profileImage
-                                                        ?
-                                                        <Image src={agent.profileImage} alt="" className='w-[36px] h-[36px] rounded-full' width="36" height='36' />
-                                                        :
-                                                        <FaUser className='w-[36px] h-[36px] rounded-full' />
-                                                    }
-                                                    <p>{agent.fullName}</p>
-                                                </div>
-                                            </td>
-                                            <td className='text-left py-2 px-4'>{agent.email.substring(0,10)}....</td>
-                                            <td className='text-left py-2 px-4'>{agent.phoneNumber}</td>
-                                            <td className='text-left py-2 px-4'>{agent.isVerified ? "Approved" : "Pending"}</td>
-                                        </tr>
-                                    ))
-                                }
-                            </tbody>                        
-                        </table> 
+                            <tbody className="bg-white divide-y divide-gray-200">
+                                {agents.map((agent, index) => (
+                                    <tr key={index} className={`hover:bg-gray-50 transition-colors duration-200 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50/30'}`}>
+                                        <td className="px-6 py-4 flex flex-row gap-4 items-center">
+                                            <input type="checkbox" className="w-5 h-5 accent-[#485d3a] mr-2" />
+                                            <div className="flex flex-row gap-2 items-center">
+                                                {agent.profileImage ? (
+                                                    <Image src={agent.profileImage} alt="" className="w-[36px] h-[36px] rounded-full border border-gray-200 shadow-sm" width="36" height="36" />
+                                                ) : (
+                                                    <User className="w-[36px] h-[36px] rounded-full border border-gray-200 shadow-sm" />
+                                                )}
+                                                <span className="font-medium text-gray-900">{agent.fullName}</span>
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-4 text-gray-700">{agent.email.substring(0,10)}....</td>
+                                        <td className="px-6 py-4 text-gray-700">{agent.phoneNumber}</td>
+                                        <td className="px-6 py-4">
+                                            <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${agent.isVerified ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
+                                                {agent.isVerified ? "Approved" : "Pending"}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
                     </div>
                     : 
                     <div className='flex-1 flex justify-center items-center'>
