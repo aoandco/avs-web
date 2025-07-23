@@ -83,6 +83,7 @@ interface taskObj {
   verificationAddress: string;
   status: string;
   createdAt: string;
+  reportIsApproved: boolean
 }
 
 function Page() {
@@ -304,6 +305,11 @@ function Page() {
         </td>
         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
           {formatDate(task.createdAt)}
+        </td>
+        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+          {
+            task.reportIsApproved ? "Yes" : "No"
+          }
         </td>
         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
           <div className="flex space-x-2 items-center">
@@ -601,7 +607,7 @@ function Page() {
                       Company Name
                     </th>
                     <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Verification Address2
+                      Verification Address
                     </th>
                     <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Customer Name
@@ -611,6 +617,9 @@ function Page() {
                     </th>
                     <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Date Created
+                    </th>
+                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Report Approved
                     </th>
                     <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Actions
