@@ -52,7 +52,7 @@ export default function Page() {
                 }
             })
             if(response.status === 200){
-                setAgents(response.data.data)
+                setAgents([...response.data.data])
             }
         }catch(err){
             setAgents([])

@@ -20,6 +20,7 @@ import { Line } from "react-chartjs-2"
 import type { ChartData, ChartOptions} from "chart.js"
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
+import UploadFileModal from './component/UploadFileModal';
 ChartJS.register(
     CategoryScale,
     LinearScale,
@@ -67,10 +68,8 @@ export default function Page() {
     const router = useRouter()
     const [token, setToken] = useState<string | null>(null)
     const [isLoading, setIsLoading] = useState(true)
-    const [isUploading, setIsUploading] = React.useState(false)
+    const [isUploadFileVisible, setIsUploadFileVisible] = React.useState(false)
     const [isDownloading, setIsDownloading] = React.useState(false)
-    const [fileError, setFileError] = React.useState<string | null>(null)
-    const fileInputRef = React.useRef<HTMLInputElement>(null)
     const [dashboardStats, setDashboardStats] = useState<DashboardStatsType>({
         totalPendingFiles: 0,
         totalVerifiedFiles: 0,
@@ -138,45 +137,6 @@ export default function Page() {
             setIsLoading(false)
         }
     } 
-
-    const onSubmit = async () => {
-        const endpoint = 'https://bayog-production.up.railway.app/v1/client/upload-tasks'
-        const files = fileInputRef.current?.files
-        if (!files || files.length === 0) return
-        
-        setIsUploading(true)
-        
-        try {
-            const formData = new FormData()
-            formData.append('file', files[0])
-            
-            const response = await axios.post(endpoint, formData, {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'multipart/form-data'
-                }
-            })
-            
-            if(response.status === 200) {
-                toast.success("File uploaded successfully")
-                if (fileInputRef.current) {
-                    fileInputRef.current.value = ''
-                }
-            }
-        } catch (error) {
-            console.error('Upload error:', error)
-            toast.error("An error occurred during upload.")
-            if( fileInputRef.current) {
-                fileInputRef.current.value = ''
-            }
-        } finally {
-            setIsUploading(false)
-        }
-    }
-
-    const handleUploadClick = () => {
-        fileInputRef.current?.click()
-    }
 
     const handleDownloadReport = async () => {
         if (!dashboardStats.reports || dashboardStats.reports.length === 0) {
@@ -248,30 +208,6 @@ export default function Page() {
         } finally {
             setIsDownloading(false);
         }
-    }
-
-    const validateExcelFile = (files: FileList) => {
-        if (!files || files.length === 0) {
-            return "Please select a file"
-        }
-        
-        const file = files[0]
-        const validTypes = [
-            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', // .xlsx
-            'application/vnd.ms-excel', // .xls
-            'text/csv' // .csv
-        ]
-        
-        if (!validTypes.includes(file.type)) {
-            return "Please select a valid Excel file (.xlsx, .xls, or .csv)"
-        }
-        
-        const maxSize = 10 * 1024 * 1024 // 10MB
-        if (file.size > maxSize) {
-            return "File size must be less than 10MB"
-        }
-        
-        return true
     }
 
     const chartData = React.useMemo(()=>{
@@ -352,57 +288,20 @@ export default function Page() {
   return (  
         <div>
             <Toaster />
-                <input
-                    type="file"
-                    ref={fileInputRef}
-                    accept=".xlsx,.xls,.csv"
-                    style={{ display: 'none' }}
-                    onChange={(e) => {
-                        const files = e.target.files
-                        if (files && files.length > 0) {
-                            const validation = validateExcelFile(files)
-                            if (validation === true) {
-                                setFileError(null)
-                                onSubmit()
-                            } else {
-                                setFileError(validation)
-                            }
-                        }
-                    }}
-                />
-                
-                {/* <div className='mb-4 md:mb-6 lg:mb-8 relative h-auto'>
-                    <IoSearch className='text-xl text-[#8a8a8a] absolute top-[50%] -translate-y-[50%] left-8' />
-                    <input 
-                        type="text" 
-                        placeholder='Search by address, reference number' 
-                        className='w-full pl-16 py-3 pr-2 bg-white rounded-2xl outline-none'
-                    />
-                </div> */}
                 <div className='flex flex-col sm:flex-row justify-between gap-5 md:gap-6 lg:gap-8'>
                     <div className='flex flex-col gap-4 w-full sm:w-[200px] md:w-[250px] lg:w-[300px]'>
                         <div 
-                            onClick={handleUploadClick}
-                            className={`bg-[#485d3a] flex-1 rounded-lg py-3 lg:py-5 flex flex-row gap-3 justify-center items-center text-white transition-all duration-300 ease-linear cursor-pointer ${
-                                isUploading ? 'opacity-50 cursor-not-allowed' : 'hover:opacity-80 active:opacity-80'
-                            }`}
+                            onClick={()=> setIsUploadFileVisible(true)}
+                            className={`bg-[#485d3a] flex-1 rounded-lg py-3 lg:py-5 flex flex-row gap-3 justify-center items-center text-white transition-all duration-300 ease-linear cursor-pointer hover:opacity-80 active:opacity-80`}
                         >
-                            {isUploading ? (
-                                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
-                            ) : (
-                                <Upload className='text-2xl sm:text-3xl'/>
-                            )}
+                            <Upload className='text-2xl sm:text-3xl'/>
                             <div>
                                 <p className='text-sm sm:text-base font-semibold'>
-                                    {isUploading ? 'Uploading...' : 'Upload Addresses'}
+                                    Upload Addresses
                                 </p>
                                <p className='text-sm font-normal'>Excel file</p>
                             </div>
                         </div>
-                        {fileError && (
-                            <p className='text-red-500 text-sm'>{fileError}</p>
-                        )}
-                        
                         <div 
                             onClick={handleDownloadReport}
                             className={`cursor-pointer bg-white rounded-lg py-3 lg:py-5 flex flex-row gap-3 justify-center items-center border-[1.5px] border-[#485d3a] text-[#485d3a] transition-all duration-300 ${
@@ -524,6 +423,14 @@ export default function Page() {
                             </div>
                         </div>
                     </div>
+
+                {
+                    isUploadFileVisible
+                    &&
+                    <UploadFileModal
+                        handleClose={()=> setIsUploadFileVisible(false)}
+                    />
+                }    
         </div>
   )
 }

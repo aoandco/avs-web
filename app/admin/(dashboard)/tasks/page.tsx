@@ -57,7 +57,7 @@ interface feedbackObj {
     lng: number;
   };
   geotaggedImages: string[];
-  landMark: string;
+  landMark: string
   metWith: string;
   nameOfPersonMet: string;
   personMetOthers: string;
@@ -82,6 +82,8 @@ interface taskObj {
   customerName: string;
   verificationAddress: string;
   status: string;
+  City: string,
+  state: string
   createdAt: string;
   reportIsApproved: boolean
 }
@@ -110,8 +112,6 @@ function Page() {
     startDate: "",
     endDate: ""
   })
-  console.log(dateObj)
-  // console.log(selectedTasks.length)
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) =>{
     const {name,value} = e.target
@@ -165,7 +165,9 @@ function Page() {
         "Company Name": task.clientId?.companyName || "N/A",
         "Customer Name": task.customerName,
         "Verification Address": task.verificationAddress,
-        Status: task.status,
+        "City": task.City,
+        "State": task.state,
+        "Status": task.status,
         "Date Created": task.createdAt,
         "Report URL": task.feedback?.reportUrl || "N/A",
       }));
@@ -182,6 +184,8 @@ function Page() {
         { wch: 20 }, // Company Name
         { wch: 20 }, // Customer Name
         { wch: 40 }, // Verification Address
+        { wch: 20 }, // city
+        { wch: 20 }, // state
         { wch: 15 }, // Status
         { wch: 20 }, // Date Created
         { wch: 50 }, // Report URL
@@ -260,7 +264,6 @@ function Page() {
       const selectedTasksIds = selectedTasks.map((task) => task._id);
       setIsTaskModalOpen(true);
       setTaskIds([...selectedTasksIds]);
-      // console.log(sele2ctedTasksIds);
     }
   };
 
@@ -302,6 +305,12 @@ function Page() {
               ? `${task.verificationAddress.substring(0, 40)}...`
               : task.verificationAddress}
           </div>
+        </td>
+        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+          {task.City || "N/A"}
+        </td>
+        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+          {task.state || "N/A"}
         </td>
         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
           {task.customerName || "N/A"}
@@ -639,6 +648,12 @@ function Page() {
                     </th>
                     <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Verification Address
+                    </th>
+                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      City
+                    </th>
+                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      State
                     </th>
                     <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Customer Name
