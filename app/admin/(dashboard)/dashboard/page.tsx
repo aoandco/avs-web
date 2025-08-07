@@ -56,7 +56,7 @@ function Page() {
     agentCount: 0,
     taskFiles: [],
   });
-  const [year, setYear] = useState("2024");
+  const [year, setYear] = useState("2025");
   const [monthlySummaryStats, setMonthlySummaryStats] = useState<
     monthlyStats[]
   >([]);

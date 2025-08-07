@@ -46,7 +46,28 @@ interface monthlyTaskType {
 
 interface reportsObj {
     activityId: string,
-    customerName: string,
+    addressExistence: string,
+    addressResidential: string,
+    areaProfile: string,
+    buildingColor : string,
+    buildingType : string,
+    comments : string,
+    customerKnown : string,
+    customerName : string,
+    customerRelationshipWithAddress : string,
+    customerResident : string,
+    easeOfLocation : string,
+    firstGeotaggedImage : null
+    landMark : string,
+    latitude : number,
+    longitude : number,
+    metWith : string,
+    nameOfPersonMet : string
+    receivedDate : string,
+    recordedAudio : string,
+    recordedVideo : string,
+    relatioshipWithCustomer : string,
+    visitFeedback : string,
     reportUrl: string,
     state: string,
     verificationAddress: string,
@@ -151,11 +172,31 @@ export default function Page() {
             const excelData = dashboardStats.reports.map((report, index) => ({
                 'S/N': index + 1,
                 'Activity ID': report.activityId,
+                'Address Existence' : report.addressExistence,
+                "Address Residential": report.addressResidential,
+                "Area Profile": report.areaProfile,
+                "Building Color": report.buildingColor,
+                "Building Type": report.buildingType,
+                "Comments": report.comments,
+                "Custormer Known": report.customerKnown,
                 'Customer Name': report.customerName,
+                "Customer Relationship with Address": report.customerRelationshipWithAddress,
+                "Customer Resident": report.customerResident,
+                'Ease of Location': report.easeOfLocation,
+                "First Geotagged Image": report.firstGeotaggedImage,
+                "LandMark" : report.landMark,
+                "Latitude": report.latitude,
+                "Longitude": report.longitude,
+                "Met With": report.metWith,
+                "Name of Resident": report.nameOfPersonMet,
+                "Received Date": report.receivedDate,
+                "Recorded Audio" : report.recordedAudio,
+                "Recorded Video": report.recordedVideo,
+                "relationship With Customer": report.relatioshipWithCustomer,
                 'Verification Address': report.verificationAddress,
                 'State': report.state,
+                'Visit Feedback': report.visitFeedback,
                 'Report URL': report.reportUrl,
-                'Report ID': report._id
             }));
 
             // Create a new workbook and worksheet
@@ -167,10 +208,29 @@ export default function Page() {
                 { wch: 5 },   // S/N
                 { wch: 15 },  // Activity ID
                 { wch: 20 },  // Customer Name
+                { wch: 20 },
+                { wch: 20 },
+                { wch: 20 },
+                { wch: 20 },
+                { wch: 20 },
+                { wch: 40 },
+                { wch: 20 },
+                { wch: 20 },
+                { wch: 20 },
+                { wch: 20 },
+                { wch: 20 },
+                { wch: 20 },
+                { wch: 20 },
+                { wch: 20 },
+                { wch: 20 },
+                { wch: 20 },
+                { wch: 20 },
+                { wch: 20 },
+                { wch: 20 },
                 { wch: 40 },  // Verification Address
                 { wch: 15 },  // State
+                { wch: 20 },   // Report ID
                 { wch: 50 },  // Report URL
-                { wch: 25 }   // Report ID
             ];
             worksheet['!cols'] = columnWidths;
 
@@ -388,11 +448,6 @@ export default function Page() {
                 </div>
                 <div className='mb-3 md:mb-4 lg:mb-5 rounded-lg bg-white py-4 px-4 md:px-6 lg:px-8'>
                         <p className='text-base sm:text-xl font-semibold mb-2'>Upload History</p>
-                        {/* <select className='rounded-lg border-[1.5px] border-black py-2 px-4'>
-                            <option value="daily">Daily</option>
-                            <option value="monthly">Monthly</option>
-                            <option value="yearly">Yearly</option>
-                        </select> */}
                         <div className='flex flex-col sm:flex-row gap-3 lg:gap-4 md:gap-6 gap-8'>
                             <div className='overflow-x-auto'>
                             <div className="py-3 md:py-4 lg:py-5 w-full h-[300px] min-w-[400px]">
@@ -429,6 +484,7 @@ export default function Page() {
                     &&
                     <UploadFileModal
                         handleClose={()=> setIsUploadFileVisible(false)}
+                        getdashboardStats={getdashboardStats}
                     />
                 }    
         </div>

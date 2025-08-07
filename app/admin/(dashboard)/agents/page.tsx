@@ -111,12 +111,12 @@ export default function Page() {
                 {
                     isLoading 
                     ? 
-                    <div className='flex-1 flex justify-center items-center'>
+                    <div className='flex-1 flex justify-center items-center mb-4 mx-4 lg:mx-6 m-3 md:m-5 border rounded-xl border-gray-200 bg-white'>
                         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#485d3a]"></div>
                     </div>
                     : agents.length > 0
                     ?
-                    <div className="flex-1 overflow-auto mb-4 mx-4 lg:mx-6 m-3 md:m-5">
+                    <div className="flex-1 overflow-auto mt-4 mx-4 lg:mx-6 mt-3 md:mt-5 shadow-sm border border-gray-200 rounded-lg">
                         <table className="w-full min-w-[720px] rounded-xl overflow-hidden shadow-sm border border-gray-200 bg-white">
                             <thead className="bg-gray-50 border-b border-gray-200">
                                 <tr>

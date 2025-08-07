@@ -82,7 +82,7 @@ interface taskObj {
   customerName: string;
   verificationAddress: string;
   status: string;
-  City: string,
+  city: string,
   state: string
   createdAt: string;
   reportIsApproved: boolean
@@ -165,7 +165,7 @@ function Page() {
         "Company Name": task.clientId?.companyName || "N/A",
         "Customer Name": task.customerName,
         "Verification Address": task.verificationAddress,
-        "City": task.City,
+        "City": task.city,
         "State": task.state,
         "Status": task.status,
         "Date Created": task.createdAt,
@@ -307,7 +307,7 @@ function Page() {
           </div>
         </td>
         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-          {task.City || "N/A"}
+          {task.city || "N/A"}
         </td>
         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
           {task.state || "N/A"}

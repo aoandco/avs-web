@@ -5,8 +5,10 @@ import { toast, Toaster } from "react-hot-toast";
 
 export default function UploadFileModal({
   handleClose,
+  getdashboardStats
 }: {
   handleClose: () => void;
+  getdashboardStats: () => void
 }) {
   const [dragActive, setDragActive] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -72,6 +74,7 @@ export default function UploadFileModal({
       if (response.status === 200) {
         toast.success("File uploaded successfully");
         setSelectedFile(null);
+        getdashboardStats()
       }
     } catch (error) {
       console.error("Upload error:", error);
