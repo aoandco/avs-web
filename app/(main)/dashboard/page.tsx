@@ -34,6 +34,7 @@ ChartJS.register(
 interface uploadedType {
     _id: string;
     status: string;
+    fileName: string;
     uploadedAt: string;
 }
 
@@ -424,7 +425,7 @@ export default function Page() {
                                     dashboardStats.uploads.slice(0,4).map((upload, index) => (
                                         <tr key={upload._id} className={`${index !== 3 ? 'border-b border-b-[#c4c4c4]' : ''}`}>
                                             <td className='text-sm sm:text-base py-2 md:py-4 px-4 md:px-6'>0{index + 1}</td>
-                                            <td className='text-sm sm:text-base text-center py-2 md:py-4 px-4 md:px-6'>{upload._id}</td>
+                                            <td className='text-sm sm:text-base text-center py-2 md:py-4 px-4 md:px-6'>{upload.fileName}</td>
                                             <td className='text-sm sm:text-base text-center py-2 md:py-4 px-4 md:px-6 text-sm text-[#c4c4c4]'>{new Date(upload.uploadedAt).toLocaleString()}</td>
                                             <td className={`text-sm sm:text-base py-2 md:py-4 px-4 md:px-6 ${getStatusColor(upload.status)}`}>{upload.status.charAt(0).toUpperCase() + upload.status.slice(1)}</td>
                                         </tr>

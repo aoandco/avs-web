@@ -12,8 +12,6 @@ function VerificationContent() {
     const router = useRouter();
     const [isVerifying, setIsVerifying] = React.useState(true);
     const [verificationStatus, setVerificationStatus] = React.useState<'loading' | 'success' | 'error'>('loading');
-    
-    console.log(token)
 
     const endpoint = `https://bayog-production.up.railway.app/v1/auth/verify-email-from-link?token=${token}`;
     
