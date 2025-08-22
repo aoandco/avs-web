@@ -2,7 +2,7 @@
 import axios from 'axios'
 import Image from 'next/image'
 import { useRouter, useSearchParams } from 'next/navigation'
-import React, { Suspense, use, useEffect } from 'react'
+import React, { Suspense, useEffect } from 'react'
 
 
 function VerifyTokenComp(){
