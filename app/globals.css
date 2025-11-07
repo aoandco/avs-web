@@ -84,6 +84,6 @@ div > canvas{
 
 @layer {
   .image {
-    @apply w-[150px] md:w-[175px] lg:w-[200px];
+    @apply w-[175px] lg:w-auto;
   }
 }
