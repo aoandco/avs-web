@@ -18,7 +18,7 @@ interface AgentObj {
 
 
 export default function Page() {
-    const baseUrl = "https://bayog-production.up.railway.app/v1/admin/agents-with-completed-tasks"
+    const baseUrl = `${process.env.NEXT_PUBLIC_API_URL}/v1/admin/agents-with-completed-tasks`
     const router = useRouter()
     const [keyword, setKeyword] = useState("");
     const [isLoading, setIsLoading] = useState(true)

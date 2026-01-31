@@ -23,7 +23,7 @@ export default function RejectTaskModal({taskIds, handleClose,getTasks}: rejectM
     const rejectTask = () => {
         if(comments == "") return
         setIsLoading(true)
-        const endpoint = `https://bayog-production.up.railway.app/v1/admin/reject-task/${taskIds[0]}`
+        const endpoint = `${process.env.NEXT_PUBLIC_API_URL}/v1/admin/reject-task/${taskIds[0]}`
         axios.post(endpoint,{
             comments
         },{

@@ -97,7 +97,7 @@ export default function RootLayout() {
       <head>
         <link rel="preload" href="/critical.css" as="style" />
         <link rel="preconnect" href="https://res.cloudinary.com" />
-        <link rel="dns-prefetch" href="https://bayog-production.up.railway.app" />
+        <link rel="dns-prefetch" href={process.env.NEXT_PUBLIC_API_URL} />
       </head>
     </html>
   )

@@ -37,7 +37,7 @@ interface NotificationObjType{
 export default function Page() {
     const router = useRouter();
     const [token, setToken] = useState<string | null>(null);
-    const baseurl= 'https://bayog-production.up.railway.app/v1/client/notifications'
+    const baseurl= `${process.env.NEXT_PUBLIC_API_URL}/v1/client/notifications`
     const [notifications,setNotifications] = useState<NotificationObjType[]>([])
     const [metric,setMetric] = useState({
         message: 0,

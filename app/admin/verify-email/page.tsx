@@ -13,7 +13,7 @@ function VerificationContent() {
     const [isVerifying, setIsVerifying] = React.useState(true);
     const [verificationStatus, setVerificationStatus] = React.useState<'loading' | 'success' | 'error'>('loading');
 
-    const endpoint = `https://bayog-production.up.railway.app/v1/auth/verify-email-from-link?token=${token}`;
+    const endpoint = `${process.env.NEXT_PUBLIC_API_URL}/v1/auth/verify-email-from-link?token=${token}`;
     
     const verifyEmail = async () => {
         try {

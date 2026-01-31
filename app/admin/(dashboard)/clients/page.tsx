@@ -23,7 +23,7 @@ interface ClientObj {
 export default function Page() {
     const [keyowrd, setKeyword] = useState("");
     const router = useRouter()
-    const baseUrl = "https://bayog-production.up.railway.app/v1/admin/clients-task-uploads"
+    const baseUrl = `${process.env.NEXT_PUBLIC_API_URL}/v1/admin/clients-task-uploads`
     const [token, setToken] = useState<string | null>(null);
     const [clients, setClients] = useState<ClientObj[]>([])
     const [isLoading, setIsLoading] = useState(true)

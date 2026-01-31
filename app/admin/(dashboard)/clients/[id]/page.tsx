@@ -19,7 +19,7 @@ export default function Page() {
   const { id } = useParams();
   const [monthlyClientStats, setMonthlyClientStats] = useState<monthlyClientStat[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const endpoint = `https://bayog-production.up.railway.app/v1/admin/clients-monthly-summary?clientId=${id}&startMonth=1`;
+  const endpoint = `${process.env.NEXT_PUBLIC_API_URL}/v1/admin/clients-monthly-summary?clientId=${id}&startMonth=1`;
 
   const getClientMonthlySummary = async () => {
     try {

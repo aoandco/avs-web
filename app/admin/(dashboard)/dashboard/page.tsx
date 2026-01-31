@@ -107,7 +107,7 @@ function Page() {
 
   const getDashboardStats = async () => {
     axios
-      .get("https://bayog-production.up.railway.app/v1/admin/dashboard-stats", {
+      .get(`${process.env.NEXT_PUBLIC_API_URL}/v1/admin/dashboard-stats`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -140,7 +140,7 @@ function Page() {
   };
 
   const getMonthlySummary = async () => {
-    const endpoint = `https://bayog-production.up.railway.app/v1/admin/monthly-summary-stats?year=${year}&startMonth=1`;
+    const endpoint = `${process.env.NEXT_PUBLIC_API_URL}/v1/admin/monthly-summary-stats?year=${year}&startMonth=1`;
     try {
       const response = await axios.get(endpoint, {
         headers: {

@@ -13,7 +13,7 @@ interface lofinFormInput {
     password: string;
 }
 
-const endpoint = 'https://bayog-production.up.railway.app/v1/auth/login/client'
+const endpoint = `${process.env.NEXT_PUBLIC_API_URL}/v1/auth/login/client`
 
 export default function Page() {
     const { register, handleSubmit, formState: { errors } } = useForm<lofinFormInput>();

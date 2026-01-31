@@ -12,7 +12,7 @@ interface LoginFormInput {
     password: string;
 }
 
-const endpoint = "https://bayog-production.up.railway.app/v1/auth/login/admin"
+const endpoint = `${process.env.NEXT_PUBLIC_API_URL}/v1/auth/login/admin`
 
 
 function Page() {

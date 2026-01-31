@@ -80,7 +80,7 @@ export default function ViewReportModal({
     if (!reportData) return;
     if (reportData.geotaggedImages.length >= 1) {
       const endpoint =
-        "https://bayog-production.up.railway.app/v1/admin/approve-report";
+        `${process.env.NEXT_PUBLIC_API_URL}/v1/admin/approve-report`;
       setIsApproving(true);
       try {
         const res = await axios.post(

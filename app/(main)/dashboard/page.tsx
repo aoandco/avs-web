@@ -118,7 +118,7 @@ export default function Page() {
     } 
 
     const getdashboardStats = async () => {
-        const endpoint = 'https://bayog-production.up.railway.app/v1/client/dashboard-stats'
+        const endpoint = `${process.env.NEXT_PUBLIC_API_URL}/v1/client/dashboard-stats`
         try{
             const response = await axios.get(endpoint, {
                 headers: { 

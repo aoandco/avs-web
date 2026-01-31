@@ -16,7 +16,7 @@ export default function DeleteTaskModal({taskIds,handleClose, getTasks}: deleteT
     const [isTaskDeleting, setIsTaskDeleting] = useState(false);
 
     const deleteTask = async () => {
-        const endpoint = "https://bayog-production.up.railway.app/v1/admin/delete-task"
+        const endpoint = `${process.env.NEXT_PUBLIC_API_URL}/v1/admin/delete-task`
         setIsTaskDeleting(true);
         try{
             const response = await axios.post(`${endpoint}/${taskIds[0]}`, {},{

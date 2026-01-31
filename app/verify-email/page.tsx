@@ -15,7 +15,7 @@ function VerificationContent() {
     
     console.log(token)
 
-    const endpoint = `https://bayog-production.up.railway.app/v1/auth/verify-email-from-link?token=${token}`;
+    const endpoint = `${process.env.NEXT_PUBLIC_API_URL}/v1/auth/verify-email-from-link?token=${token}`;
     
     const verifyEmail = async () => {
         try {

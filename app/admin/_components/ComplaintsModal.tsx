@@ -41,7 +41,7 @@ export default function ComplaintsModal({handleClose, complaint, getComplaints}:
 
     const postNotification = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        const endpoint = "https://bayog-production.up.railway.app/v1/admin/send-notifications"
+        const endpoint = `${process.env.NEXT_PUBLIC_API_URL}/v1/admin/send-notifications`
 
         if(notificationObj.message === '' || notificationObj.title === '' || complaint.userId._id === '' || complaint._id === "")
             return;

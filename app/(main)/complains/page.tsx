@@ -39,8 +39,8 @@ export default function Page() {
             desc: ''
         }
     });
-    const endpoint = "https://bayog-production.up.railway.app/v1/client/submit-complaint"
-    const baseUrl = "https://bayog-production.up.railway.app/v1/client/complaints"
+    const endpoint = `${process.env.NEXT_PUBLIC_API_URL}/v1/client/submit-complaint`
+    const baseUrl = `${process.env.NEXT_PUBLIC_API_URL}/v1/client/complaints`
     const [token, setToken] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [complains, setComplains] = useState<ComplainObjType[]>([]);

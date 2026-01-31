@@ -1,0 +1,39 @@
+name: Deploy AOandCOTechnologies to Cloud Run
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      # Authenticate using Service Account JSON
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      # Install and configure gcloud
+      - name: Set up gcloud
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: aoandco-web
+
+      # Deploy to Cloud Run using Buildpacks
+      - name: Deploy AOandCO to Cloud Run
+        run: |
+          gcloud run deploy aoandco \
+            --source . \
+            --region europe-west1 \
+            --platform managed \
+            --allow-unauthenticated \
+            --memory 2Gi \
+           --set-env-vars \
+          NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL,\
+          NODE_ENV=production

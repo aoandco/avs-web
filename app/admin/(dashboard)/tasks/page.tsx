@@ -90,7 +90,7 @@ interface taskObj {
 
 function Page() {
   const router = useRouter();
-  const endpoint = "https://bayog-production.up.railway.app/v1/admin/tasks";
+  const endpoint = `${process.env.NEXT_PUBLIC_API_URL}/v1/admin/tasks`;
   const [token, setToken] = useState<string | null>(null);
   const [isTaskLoading, setIsTaskLoading] = useState(true);
   const [tasks, setTasks] = useState<taskObj[]>([]);
@@ -124,7 +124,7 @@ function Page() {
 
 
   const handleSearch = (e: ChangeEvent<HTMLInputElement>) =>{
-    const endpoint = "https://bayog-production.up.railway.app/v1/admin/tasks"
+    const endpoint = `${process.env.NEXT_PUBLIC_API_URL}/v1/admin/tasks`
     setKeyword(e.target.value)
     setIsTaskLoading(true)
     axios.get(`${endpoint}?search=${e.target.value}&statusFilter=${currentFilter}`,{
@@ -230,7 +230,7 @@ function Page() {
   const handleApprovedReport = async () => {
     if (selectedTasks.length > 1) {
       const endpoint =
-        "https://bayog-production.up.railway.app/v1/admin/approve-report";
+        `${process.env.NEXT_PUBLIC_API_URL}/v1/admin/approve-report`;
       const selectedTasksIds = selectedTasks.map((task) => task._id);
       setIsApproving(true);
       try {

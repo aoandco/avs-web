@@ -57,7 +57,7 @@ export default function UploadFileModal({
 
   const uploadTasks = async () => {
     const endpoint =
-      "https://bayog-production.up.railway.app/v1/client/upload-tasks";
+      `${process.env.NEXT_PUBLIC_API_URL}/v1/client/upload-tasks`;
     if (!selectedFile) return;
     setIsUploading(true);
     const formData = new FormData()

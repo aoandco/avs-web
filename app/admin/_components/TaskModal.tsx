@@ -29,7 +29,7 @@ export default function TaskModal({handleClose,taskIds,activityId,getTasks} : ta
     const [agentId, setAgentId] = useState<string>("");
     const [loading,setLoading] = useState(false)
     const getAgents = async ()=>{
-        const endpoint = "https://bayog-production.up.railway.app/v1/admin/agents-with-completed-tasks"
+        const endpoint = `${process.env.NEXT_PUBLIC_API_URL}/v1/admin/agents-with-completed-tasks`
         try {
             const response = await axios.get(endpoint,{
                 headers: {
@@ -48,7 +48,7 @@ export default function TaskModal({handleClose,taskIds,activityId,getTasks} : ta
     const assignTaskAgent = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         if (!agentId || taskIds.length === 0) return;
-        const endpoint = `https://bayog-production.up.railway.app/v1/admin/assign-task/${agentId}`;
+        const endpoint = `${process.env.NEXT_PUBLIC_API_URL}/v1/admin/assign-task/${agentId}`;
         setLoading(true)
         try {
             const response = await axios.post(endpoint, {

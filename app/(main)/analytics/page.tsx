@@ -151,7 +151,7 @@ export default function Page() {
     }, [analyticsData.monthlyTasks]);
 
     const getAnalytics = async () => {
-        const baseUrl = "https://bayog-production.up.railway.app/v1/client/task-analytics";
+        const baseUrl = `${process.env.NEXT_PUBLIC_API_URL}/v1/client/task-analytics`;
         try {
             const response = await axios.get(baseUrl, {
                 headers: {

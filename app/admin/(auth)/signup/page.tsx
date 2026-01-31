@@ -17,7 +17,7 @@ interface signupObj {
     termsAccepted: boolean;
 }
 
-const enpoint = "https://bayog-production.up.railway.app/v1/auth/signup/admin"
+const enpoint = `${process.env.NEXT_PUBLIC_API_URL}/v1/auth/signup/admin`
 
 export default function Page() {
     const {register, handleSubmit, formState: { errors },watch} = useForm<signupObj>({

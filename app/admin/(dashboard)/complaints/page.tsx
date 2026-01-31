@@ -49,7 +49,7 @@ export default function Page() {
 
     const getComplaints = async (type:string) => {
         setComplainType(type);
-        const endpoint = "https://bayog-production.up.railway.app/v1/admin/complaints"
+        const endpoint = `${process.env.NEXT_PUBLIC_API_URL}/v1/admin/complaints`
         try{
             const response = await axios.get(`${type === 'all' ? endpoint : `${endpoint}?status=${type}`}`, {
                 headers: {
@@ -74,7 +74,7 @@ export default function Page() {
             message: complaint.message
         })
         if(complaint.status === "resolved") return
-        const endpoint = `https://bayog-production.up.railway.app/v1/admin/view-complaint/${complaint._id}`
+        const endpoint = `${process.env.NEXT_PUBLIC_API_URL}/v1/admin/view-complaint/${complaint._id}`
         axios.post(endpoint,{},{
             headers: {
                 Authorization : `Bearer ${token}`
