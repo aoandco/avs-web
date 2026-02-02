@@ -26,7 +26,10 @@ jobs:
           project_id: aoandco-web
 
       # Deploy to Cloud Run using Buildpacks
+      # NEXT_PUBLIC_* must be set at BUILD time (Next.js inlines them). Use NEXT_PUBLIC_API_URL in GitHub Secrets.
       - name: Deploy AOandCO to Cloud Run
+        env:
+          NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
         run: |
           gcloud run deploy aoandco \
             --source . \
@@ -34,6 +37,5 @@ jobs:
             --platform managed \
             --allow-unauthenticated \
             --memory 2Gi \
-           --set-env-vars \
-          NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL,\
-          NODE_ENV=production
+            --build-env-vars NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL \
+            --set-env-vars NODE_ENV=production
