@@ -1,4 +1,5 @@
 "use client"
+import { apiBase } from "@/lib/apiBase";
 import axios from 'axios';
 import Image from 'next/image'
 import Link from 'next/link';
@@ -15,7 +16,7 @@ export default function Page() {
     const [isLoading,setIsLoading] = useState(false)
 
     const onSubmit: SubmitHandler<resetFormInput> = (data) => {
-        const endpoint = `${process.env.NEXT_PUBLIC_API_URL}/v1/auth/forgot-password/client/web`
+        const endpoint = `${apiBase()}/v1/auth/forgot-password/client/web`
         setIsLoading(true)
         axios.post(endpoint, {
             email: data.email

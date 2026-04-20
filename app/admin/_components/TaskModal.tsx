@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
+import { apiBase } from "@/lib/apiBase";
 import axios from 'axios';
 import React, {FormEvent, useEffect, useState } from 'react'
 import toast, { Toaster } from 'react-hot-toast';
@@ -29,7 +30,7 @@ export default function TaskModal({handleClose,taskIds,activityId,getTasks} : ta
     const [agentId, setAgentId] = useState<string>("");
     const [loading,setLoading] = useState(false)
     const getAgents = async ()=>{
-        const endpoint = `${process.env.NEXT_PUBLIC_API_URL}/v1/admin/agents-with-completed-tasks`
+        const endpoint = `${apiBase()}/v1/admin/agents-with-completed-tasks`
         try {
             const response = await axios.get(endpoint,{
                 headers: {
@@ -48,7 +49,7 @@ export default function TaskModal({handleClose,taskIds,activityId,getTasks} : ta
     const assignTaskAgent = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         if (!agentId || taskIds.length === 0) return;
-        const endpoint = `${process.env.NEXT_PUBLIC_API_URL}/v1/admin/assign-task/${agentId}`;
+        const endpoint = `${apiBase()}/v1/admin/assign-task/${agentId}`;
         setLoading(true)
         try {
             const response = await axios.post(endpoint, {

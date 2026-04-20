@@ -1,4 +1,5 @@
 "use client"
+import { apiBase } from "@/lib/apiBase";
 import React, { Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { useRouter } from 'next/navigation';
@@ -15,7 +16,7 @@ function VerificationContent() {
     
     console.log(token)
 
-    const endpoint = `${process.env.NEXT_PUBLIC_API_URL}/v1/auth/verify-email-from-link?token=${token}`;
+    const endpoint = `${apiBase()}/v1/auth/verify-email-from-link?token=${token}`;
     
     const verifyEmail = async () => {
         try {

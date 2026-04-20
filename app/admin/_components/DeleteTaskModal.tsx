@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
+import { apiBase } from "@/lib/apiBase";
 import axios from 'axios';
 import React, { useState } from 'react'
 import toast, {Toaster} from "react-hot-toast"
@@ -16,7 +17,7 @@ export default function DeleteTaskModal({taskIds,handleClose, getTasks}: deleteT
     const [isTaskDeleting, setIsTaskDeleting] = useState(false);
 
     const deleteTask = async () => {
-        const endpoint = `${process.env.NEXT_PUBLIC_API_URL}/v1/admin/delete-task`
+        const endpoint = `${apiBase()}/v1/admin/delete-task`
         setIsTaskDeleting(true);
         try{
             const response = await axios.post(`${endpoint}/${taskIds[0]}`, {},{

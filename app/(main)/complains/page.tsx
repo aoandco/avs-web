@@ -1,4 +1,5 @@
 "use client"
+import { apiBase } from "@/lib/apiBase";
 import React, { useEffect, useState } from 'react'
 import { Search } from 'lucide-react';
 import emptyIcon from "../../admin/_assests/emptyIcon.svg"
@@ -39,8 +40,8 @@ export default function Page() {
             desc: ''
         }
     });
-    const endpoint = `${process.env.NEXT_PUBLIC_API_URL}/v1/client/submit-complaint`
-    const baseUrl = `${process.env.NEXT_PUBLIC_API_URL}/v1/client/complaints`
+    const endpoint = `${apiBase()}/v1/client/submit-complaint`
+    const baseUrl = `${apiBase()}/v1/client/complaints`
     const [token, setToken] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [complains, setComplains] = useState<ComplainObjType[]>([]);

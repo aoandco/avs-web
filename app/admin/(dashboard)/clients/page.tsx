@@ -1,4 +1,5 @@
 "use client"
+import { apiBase } from "@/lib/apiBase";
 import React, { useEffect, useState } from 'react'
 import { Search, KeyRound, Plug } from 'lucide-react';
 import Image from 'next/image';
@@ -25,7 +26,7 @@ interface ClientObj {
 export default function Page() {
     const [keyowrd, setKeyword] = useState("");
     const router = useRouter()
-    const baseUrl = `${process.env.NEXT_PUBLIC_API_URL}/v1/admin/clients-task-uploads`
+    const baseUrl = `${apiBase()}/v1/admin/clients-task-uploads`
     const [token, setToken] = useState<string | null>(null);
     const [clients, setClients] = useState<ClientObj[]>([])
     const [isLoading, setIsLoading] = useState(true)

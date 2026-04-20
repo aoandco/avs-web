@@ -1,4 +1,5 @@
 "use client";
+import { apiBase } from "@/lib/apiBase";
 
 import React, { useCallback, useEffect, useState } from "react";
 import { KeyRound, Copy, RefreshCw, ShieldAlert } from "lucide-react";
@@ -25,7 +26,7 @@ export default function SettingsPage() {
     if (!token) return;
     setLoadingKeyInfo(true);
     try {
-      const endpoint = `${process.env.NEXT_PUBLIC_API_URL}/v1/client/api-key`;
+      const endpoint = `${apiBase()}/v1/client/api-key`;
       const response = await axios.get(endpoint, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -54,7 +55,7 @@ export default function SettingsPage() {
     setNewKeyLastFour(null);
     setNewKeyCreatedAt(null);
     try {
-      const endpoint = `${process.env.NEXT_PUBLIC_API_URL}/v1/client/api-key`;
+      const endpoint = `${apiBase()}/v1/client/api-key`;
       const response = await axios.post(
         endpoint,
         {},

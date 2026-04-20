@@ -1,4 +1,5 @@
 "use client";
+import { apiBase } from "@/lib/apiBase";
 import axios from "axios";
 import { Eye, EyeOff } from "lucide-react";
 import Image from "next/image";
@@ -30,7 +31,7 @@ export default function Page() {
   const password = watch("password");
 
   const onSubmit: SubmitHandler<resetFormInput> = (data) => {
-    const endpoint = `${process.env.NEXT_PUBLIC_API_URL}/v1/auth/reset-password/${resetObj.id}/${resetObj.client}`;
+    const endpoint = `${apiBase()}/v1/auth/reset-password/${resetObj.id}/${resetObj.client}`;
     setIsLoading(true);
     axios.post(endpoint, {
         newPassword: data.newPassword

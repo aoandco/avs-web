@@ -1,4 +1,5 @@
 "use client"
+import { apiBase } from "@/lib/apiBase";
 import React from 'react'
 import AuthComp from '../components/AuthComp'
 import Link from 'next/link'
@@ -13,7 +14,7 @@ interface lofinFormInput {
     password: string;
 }
 
-const endpoint = `${process.env.NEXT_PUBLIC_API_URL}/v1/auth/login/client`
+const endpoint = `${apiBase()}/v1/auth/login/client`
 
 export default function Page() {
     const { register, handleSubmit, formState: { errors } } = useForm<lofinFormInput>();

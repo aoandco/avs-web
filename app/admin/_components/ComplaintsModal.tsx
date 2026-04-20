@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
+import { apiBase } from "@/lib/apiBase";
 import { X } from "lucide-react"
 import axios from 'axios';
 import React, { ChangeEvent, FormEvent, useState } from 'react'
@@ -41,7 +42,7 @@ export default function ComplaintsModal({handleClose, complaint, getComplaints}:
 
     const postNotification = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        const endpoint = `${process.env.NEXT_PUBLIC_API_URL}/v1/admin/send-notifications`
+        const endpoint = `${apiBase()}/v1/admin/send-notifications`
 
         if(notificationObj.message === '' || notificationObj.title === '' || complaint.userId._id === '' || complaint._id === "")
             return;

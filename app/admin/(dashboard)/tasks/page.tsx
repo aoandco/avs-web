@@ -1,7 +1,8 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { apiBase } from "@/lib/apiBase";
 import React, { ChangeEvent, useEffect, useState } from "react";
-import { Search, Trash2, User, Eye, XCircle } from "lucide-react";
+import { Search, Trash2, User, Eye, XCircle, AlertTriangle, X } from "lucide-react";
 import Image from "next/image";
 import emptyIcon from "../../_assests/emptyIcon.svg";
 import { useRouter } from "next/navigation";
@@ -69,6 +70,18 @@ interface feedbackObj {
   visitFeedback: string;
 }
 
+interface taskAddress {
+  street?: string;
+  area?: string;
+  city?: string;
+  state?: string;
+  country?: string;
+  landmark?: string;
+  postalCode?: string;
+  fullAddress?: string;
+  additionalInformation?: string;
+}
+
 interface taskObj {
   feedback: feedbackObj;
   _id: string;
@@ -81,6 +94,7 @@ interface taskObj {
   activityId: string;
   customerName: string;
   verificationAddress: string;
+  address?: taskAddress;
   status: string;
   city: string,
   state: string
@@ -90,7 +104,7 @@ interface taskObj {
 
 function Page() {
   const router = useRouter();
-  const endpoint = `${process.env.NEXT_PUBLIC_API_URL}/v1/admin/tasks`;
+  const endpoint = `${apiBase()}/v1/admin/tasks`;
   const [token, setToken] = useState<string | null>(null);
   const [isTaskLoading, setIsTaskLoading] = useState(true);
   const [tasks, setTasks] = useState<taskObj[]>([]);
@@ -107,11 +121,28 @@ function Page() {
   const [activityId, setActivityId] = useState<string | null>(null);
   const [isDeleteTaskModalOpen, setIsDeleteTaskModalOpen] = useState(false);
   const [isRejectTaskModalOpen, setIsRejectTaskModalOpen] = useState(false);
+  const [isDeleteAllModalOpen, setIsDeleteAllModalOpen] = useState(false);
+  const [isDeletingAll, setIsDeletingAll] = useState(false);
   const [currentFilter, setCurrentFilter] = useState("all")
+  const [currentPage, setCurrentPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState<number>(25);
   const [dateObj, setDateObj] = useState({
     startDate: "",
     endDate: ""
   })
+  const totalPages =
+    rowsPerPage === -1 ? 1 : Math.max(1, Math.ceil(tasks.length / rowsPerPage));
+  const pageStart = tasks.length === 0 ? 0 : rowsPerPage === -1 ? 1 : (currentPage - 1) * rowsPerPage + 1;
+  const pageEnd =
+    tasks.length === 0
+      ? 0
+      : rowsPerPage === -1
+      ? tasks.length
+      : Math.min(currentPage * rowsPerPage, tasks.length);
+  const paginatedTasks =
+    rowsPerPage === -1
+      ? tasks
+      : tasks.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) =>{
     const {name,value} = e.target
@@ -124,8 +155,9 @@ function Page() {
 
 
   const handleSearch = (e: ChangeEvent<HTMLInputElement>) =>{
-    const endpoint = `${process.env.NEXT_PUBLIC_API_URL}/v1/admin/tasks`
+    const endpoint = `${apiBase()}/v1/admin/tasks`
     setKeyword(e.target.value)
+    setCurrentPage(1);
     setIsTaskLoading(true)
     axios.get(`${endpoint}?search=${e.target.value}&statusFilter=${currentFilter}`,{
         headers : {
@@ -157,16 +189,24 @@ function Page() {
   const handleDownloadReport = async () => {
     setIsDownloading(true);
     try {
-      // Prepare data for Excel
+      // Prepare data for Excel (fullAddress when present, else verificationAddress)
+      const getDisplayAddress = (t: taskObj) =>
+        t.address?.fullAddress ?? t.verificationAddress;
       const excelData = selectedTasks.map((task, index) => ({
         "S/N": index + 1,
         "Task ID": task._id,
         "Activity ID": task.activityId,
         "Company Name": task.clientId?.companyName || "N/A",
         "Customer Name": task.customerName,
-        "Verification Address": task.verificationAddress,
-        "City": task.city,
-        "State": task.state,
+        "Verification Address": getDisplayAddress(task),
+        "Additional Info": task.address?.additionalInformation ?? "",
+        "Street": task.address?.street ?? "",
+        "Area": task.address?.area ?? "N/A",
+        "City": task.address?.city ?? task.city ?? "",
+        "State": task.address?.state ?? task.state ?? "",
+        "Country": task.address?.country ?? "",
+        "Landmark": task.address?.landmark ?? "",
+        "Postal Code": task.address?.postalCode ?? "",
         "Status": task.status,
         "Date Created": task.createdAt,
         "Report URL": task.feedback?.reportUrl || "N/A",
@@ -184,8 +224,14 @@ function Page() {
         { wch: 20 }, // Company Name
         { wch: 20 }, // Customer Name
         { wch: 40 }, // Verification Address
-        { wch: 20 }, // city
-        { wch: 20 }, // state
+        { wch: 30 }, // Additional Info
+        { wch: 35 }, // street
+        { wch: 25 }, // area
+        { wch: 18 }, // city
+        { wch: 18 }, // state
+        { wch: 15 }, // country
+        { wch: 25 }, // landmark
+        { wch: 15 }, // postal code
         { wch: 15 }, // Status
         { wch: 20 }, // Date Created
         { wch: 50 }, // Report URL
@@ -230,7 +276,7 @@ function Page() {
   const handleApprovedReport = async () => {
     if (selectedTasks.length > 1) {
       const endpoint =
-        `${process.env.NEXT_PUBLIC_API_URL}/v1/admin/approve-report`;
+        `${apiBase()}/v1/admin/approve-report`;
       const selectedTasksIds = selectedTasks.map((task) => task._id);
       setIsApproving(true);
       try {
@@ -300,17 +346,61 @@ function Page() {
           {task.clientId?.companyName || "N/A"}
         </td>
         <td className="px-6 py-4 text-sm text-gray-900 max-w-xs">
-          <div className="truncate" title={task.verificationAddress}>
-            {task.verificationAddress.length > 40
-              ? `${task.verificationAddress.substring(0, 40)}...`
-              : task.verificationAddress}
+          <div
+            className="truncate"
+            title={
+              [
+                task.address?.fullAddress ?? task.verificationAddress,
+                task.address?.additionalInformation,
+              ]
+                .filter(Boolean)
+                .join(" — ") || task.verificationAddress
+            }
+          >
+            {(() => {
+              const fullAddress =
+                task.address?.fullAddress ?? task.verificationAddress;
+              const text =
+                fullAddress.length > 40
+                  ? `${fullAddress.substring(0, 40)}...`
+                  : fullAddress;
+              return text;
+            })()}
+          </div>
+          {task.address?.additionalInformation && (
+            <div className="text-xs text-gray-500 mt-0.5 truncate" title={task.address.additionalInformation}>
+              {task.address.additionalInformation.length > 35
+                ? `${task.address.additionalInformation.substring(0, 35)}...`
+                : task.address.additionalInformation}
+            </div>
+          )}
+        </td>
+        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+          <div className="max-w-xs truncate" title={task.address?.street || "N/A"}>
+            {task.address?.street || "N/A"}
           </div>
         </td>
         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-          {task.city || "N/A"}
+          <div className="max-w-xs truncate" title={task.address?.area || "N/A"}>
+            {task.address?.area || "N/A"}
+          </div>
         </td>
         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-          {task.state || "N/A"}
+          {task.address?.city || task.city || "N/A"}
+        </td>
+        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+          {task.address?.state || task.state || "N/A"}
+        </td>
+        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+          {task.address?.country || "N/A"}
+        </td>
+        <td className="px-6 py-4 text-sm text-gray-600 max-w-[220px]">
+          <div className="truncate" title={task.address?.landmark || "N/A"}>
+            {task.address?.landmark || "N/A"}
+          </div>
+        </td>
+        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+          {task.address?.postalCode || "N/A"}
         </td>
         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
           {task.customerName || "N/A"}
@@ -404,6 +494,12 @@ function Page() {
     } catch (err) {
       setTasks([]);
       console.error("Error fetching tasks:", err);
+      const message = axios.isAxiosError(err)
+        ? err.code === "ERR_NETWORK"
+          ? "Network error: could not reach the API. Try again or check that the backend is up."
+          : err.response?.data?.message || err.message || "Failed to load tasks"
+        : "Failed to load tasks";
+      toast.error(message);
     } finally {
       setIsTaskLoading(false);
     }
@@ -412,8 +508,15 @@ function Page() {
   const handleFilter = (filter: string) => {
     setIsTaskLoading(true);
     setCurrentFilter(filter)
+    setCurrentPage(1);
     getTasks(filter);
   };
+
+  useEffect(() => {
+    if (rowsPerPage !== -1 && currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+  }, [rowsPerPage, currentPage, totalPages]);
 
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
@@ -469,6 +572,33 @@ function Page() {
     setTaskIds([])
   }
 
+  const deleteAllTasks = async () => {
+    if (!token) return;
+    setIsDeletingAll(true);
+    try {
+      const url = `${apiBase()}/v1/admin/tasks/all`;
+      const res = await axios.post(
+        url,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      if (res.status >= 200 && res.status < 300) {
+        toast.success(res.data?.message ?? "All tasks deleted");
+        setSelectedTasks([]);
+        setIsAllSelected(false);
+        setCurrentPage(1);
+        setIsDeleteAllModalOpen(false);
+        setIsTaskLoading(true);
+        await getTasks(currentFilter);
+      }
+    } catch (err: any) {
+      toast.error(
+        err.response?.data?.message ?? "Failed to delete all tasks"
+      );
+    } finally {
+      setIsDeletingAll(false);
+    }
+  };
 
   useEffect(() => {
     const storedToken = sessionStorage.getItem("token");
@@ -496,12 +626,23 @@ function Page() {
                     <p className='py-3 md:py-5 lg:py-6 text-sm md:text-base leading-none text-[#8a8a8a] hover:text-[#9dc782] hover:border-b hover:border-b-[#9dc782] cursor-pointer'>Companies</p>
                     <p className='py-3 md:py-5 lg:py-6 text-sm md:text-base leading-none text-[#8a8a8a] hover:text-[#9dc782] hover:border-b hover:border-b-[#9dc782] cursor-pointer'>Employees</p>
                 </div>   */}
-        <div className="flex flex-row justify-between items-center p-3 md:p-5 lg:p-6 border-b-[1.5px] border-b-[#b3b3b3]">
+        <div className="flex flex-row flex-wrap justify-between items-center gap-3 p-3 md:p-5 lg:p-6 border-b-[1.5px] border-b-[#b3b3b3]">
           <p className="text-base md:text-xl font-semibold leading-none">
             Tasks
           </p>
-          <div className="bg-[#485d3a] text-white px-3 py-1 rounded-full text-sm font-medium">
-            {tasks.length} {tasks.length === 1 ? "task" : "tasks"}
+          <div className="flex flex-row items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setIsDeleteAllModalOpen(true)}
+              disabled={isTaskLoading || tasks.length === 0}
+              className="inline-flex items-center gap-2 rounded-md border border-red-700 bg-red-600 px-3 py-1.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <AlertTriangle className="h-4 w-4 shrink-0" />
+              Delete all tasks
+            </button>
+            <div className="bg-[#485d3a] text-white px-3 py-1 rounded-full text-sm font-medium">
+              {tasks.length} {tasks.length === 1 ? "task" : "tasks"}
+            </div>
           </div>
         </div>
         <div className="p-3 md:p-5 lg:px-6 lg:py-3 flex flex-col md:flex-row justify-between gap-3 md:gap-0 items-center border-b-[1.5px] border-b-[#b3b3b3]">
@@ -630,9 +771,9 @@ function Page() {
                 </button>
               </div>
             )}
-            <div className="overflow-auto">
+            <div className="overflow-auto max-h-[70vh]">
               <table className="w-full">
-                <thead className="bg-gray-50 border-b border-gray-200">
+                <thead className="bg-gray-50 border-b border-gray-200 sticky top-0 z-[1]">
                   <tr>
                     <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       <input
@@ -650,10 +791,25 @@ function Page() {
                       Verification Address
                     </th>
                     <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Street
+                    </th>
+                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Area
+                    </th>
+                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       City
                     </th>
                     <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       State
+                    </th>
+                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Country
+                    </th>
+                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Landmark
+                    </th>
+                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Postal Code
                     </th>
                     <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Customer Name
@@ -673,11 +829,58 @@ function Page() {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {tasks.map((task: taskObj, index) => {
+                  {paginatedTasks.map((task: taskObj, index) => {
                     return <Task key={task._id} task={task} index={index} />;
                   })}
                 </tbody>
               </table>
+            </div>
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 px-4 py-3 border-t border-gray-200 bg-gray-50">
+              <p className="text-sm text-gray-600">
+                Showing <span className="font-semibold">{pageStart}</span> -{" "}
+                <span className="font-semibold">{pageEnd}</span> of{" "}
+                <span className="font-semibold">{tasks.length}</span> tasks
+              </p>
+              <div className="flex items-center gap-3">
+                <label className="text-sm text-gray-600">
+                  Rows:
+                  <select
+                    value={rowsPerPage}
+                    onChange={(e) => {
+                      const value = Number(e.target.value);
+                      setRowsPerPage(value);
+                      setCurrentPage(1);
+                    }}
+                    className="ml-2 border border-gray-300 rounded-md px-2 py-1 bg-white text-sm"
+                  >
+                    <option value={25}>25</option>
+                    <option value={50}>50</option>
+                    <option value={100}>100</option>
+                    <option value={-1}>All</option>
+                  </select>
+                </label>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
+                    disabled={currentPage === 1 || rowsPerPage === -1}
+                    className="px-3 py-1.5 text-sm rounded-md border border-gray-300 bg-white disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100"
+                  >
+                    Previous
+                  </button>
+                  <span className="text-sm text-gray-700">
+                    Page {rowsPerPage === -1 ? 1 : currentPage} of {rowsPerPage === -1 ? 1 : totalPages}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
+                    disabled={currentPage >= totalPages || rowsPerPage === -1}
+                    className="px-3 py-1.5 text-sm rounded-md border border-gray-300 bg-white disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100"
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         ) : (
@@ -728,6 +931,54 @@ function Page() {
             taskIds={taskIds}
             handleClose={handleRejectModalClose}
             />
+        )}
+        {isDeleteAllModalOpen && (
+          <div className="fixed inset-0 z-[60] flex items-center justify-center">
+            <div
+              className="absolute inset-0 bg-black/70"
+              onClick={() => !isDeletingAll && setIsDeleteAllModalOpen(false)}
+            />
+            <div className="relative z-[61] mx-4 w-full max-w-md rounded-lg bg-white p-6 shadow-lg">
+              <button
+                type="button"
+                onClick={() => !isDeletingAll && setIsDeleteAllModalOpen(false)}
+                className="absolute right-4 top-4 text-gray-500 hover:text-gray-800"
+                aria-label="Close"
+              >
+                <X className="h-5 w-5" />
+              </button>
+              <div className="flex items-start gap-3 pr-8">
+                <AlertTriangle className="h-8 w-8 shrink-0 text-red-600" />
+                <div>
+                  <h2 className="text-lg font-semibold text-gray-900">
+                    Delete all tasks?
+                  </h2>
+                  <p className="mt-2 text-sm text-gray-600">
+                    This will permanently remove every task ({tasks.length} total)
+                    from the system. This action cannot be undone.
+                  </p>
+                </div>
+              </div>
+              <div className="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+                <button
+                  type="button"
+                  onClick={() => setIsDeleteAllModalOpen(false)}
+                  disabled={isDeletingAll}
+                  className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={deleteAllTasks}
+                  disabled={isDeletingAll}
+                  className="rounded-md border border-red-800 bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {isDeletingAll ? "Deleting…" : "Yes, delete all"}
+                </button>
+              </div>
+            </div>
+          </div>
         )}
 
       </div>

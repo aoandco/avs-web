@@ -1,4 +1,5 @@
 "use client"
+import { apiBase } from "@/lib/apiBase";
 import React, {useEffect, useState } from 'react'
 import { Upload, Download } from "lucide-react";
 import Image from 'next/image';
@@ -118,7 +119,7 @@ export default function Page() {
     } 
 
     const getdashboardStats = async () => {
-        const endpoint = `${process.env.NEXT_PUBLIC_API_URL}/v1/client/dashboard-stats`
+        const endpoint = `${apiBase()}/v1/client/dashboard-stats`
         try{
             const response = await axios.get(endpoint, {
                 headers: { 

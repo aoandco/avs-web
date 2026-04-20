@@ -1,4 +1,5 @@
 "use client";
+import { apiBase } from "@/lib/apiBase";
 import { Copy, Key, X } from "lucide-react";
 import axios from "axios";
 import React, { useState } from "react";
@@ -31,7 +32,7 @@ export default function ApiKeyModal({
     setLoading(true);
     setGenerated(null);
     try {
-      const endpoint = `${process.env.NEXT_PUBLIC_API_URL}/v1/admin/client/generate-api-key/${clientId}`;
+      const endpoint = `${apiBase()}/v1/admin/client/generate-api-key/${clientId}`;
       const response = await axios.post(endpoint, {}, {
         headers: { Authorization: `Bearer ${token}` },
       });

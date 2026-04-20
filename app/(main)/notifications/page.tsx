@@ -1,4 +1,5 @@
 "use client"
+import { apiBase } from "@/lib/apiBase";
 import React, { useEffect, useState } from 'react'
 import { Search, MessageCircle } from 'lucide-react'
 import emptyIcon from "../../admin/_assests/emptyIcon.svg"
@@ -37,7 +38,7 @@ interface NotificationObjType{
 export default function Page() {
     const router = useRouter();
     const [token, setToken] = useState<string | null>(null);
-    const baseurl= `${process.env.NEXT_PUBLIC_API_URL}/v1/client/notifications`
+    const baseurl= `${apiBase()}/v1/client/notifications`
     const [notifications,setNotifications] = useState<NotificationObjType[]>([])
     const [metric,setMetric] = useState({
         message: 0,

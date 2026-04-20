@@ -1,4 +1,5 @@
 "use client"
+import { apiBase } from "@/lib/apiBase";
 import React, { useState, useEffect } from 'react'
 import { Inbox } from "lucide-react";
 import dynamic from 'next/dynamic'
@@ -151,7 +152,7 @@ export default function Page() {
     }, [analyticsData.monthlyTasks]);
 
     const getAnalytics = async () => {
-        const baseUrl = `${process.env.NEXT_PUBLIC_API_URL}/v1/client/task-analytics`;
+        const baseUrl = `${apiBase()}/v1/client/task-analytics`;
         try {
             const response = await axios.get(baseUrl, {
                 headers: {

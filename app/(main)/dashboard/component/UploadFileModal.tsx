@@ -1,3 +1,4 @@
+import { apiBase } from "@/lib/apiBase";
 import axios from "axios";
 import { X, UploadCloud, Upload } from "lucide-react";
 import React, { useRef, useState } from "react";
@@ -57,7 +58,7 @@ export default function UploadFileModal({
 
   const uploadTasks = async () => {
     const endpoint =
-      `${process.env.NEXT_PUBLIC_API_URL}/v1/client/upload-tasks`;
+      `${apiBase()}/v1/client/upload-tasks`;
     if (!selectedFile) return;
     setIsUploading(true);
     const formData = new FormData()

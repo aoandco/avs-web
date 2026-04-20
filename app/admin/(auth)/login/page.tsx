@@ -1,4 +1,5 @@
 "use client"
+import { apiBase } from "@/lib/apiBase";
 import React from 'react'
 import Link from 'next/link'
 import { Eye, EyeOff } from 'lucide-react'
@@ -12,7 +13,7 @@ interface LoginFormInput {
     password: string;
 }
 
-const endpoint = `${process.env.NEXT_PUBLIC_API_URL}/v1/auth/login/admin`
+const endpoint = `${apiBase()}/v1/auth/login/admin`
 
 
 function Page() {

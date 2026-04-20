@@ -1,4 +1,5 @@
 "use client"
+import { apiBase } from "@/lib/apiBase";
 import React from 'react'
 import AuthComp from '../components/AuthComp'
 import Link from 'next/link'
@@ -16,7 +17,7 @@ interface signupObj{
     termsAccepted: boolean;
 }
 
-const endpoint = `${process.env.NEXT_PUBLIC_API_URL}/v1/auth/signup/client/web`
+const endpoint = `${apiBase()}/v1/auth/signup/client/web`
 
 export default function Page() {
     const {register, handleSubmit, formState: {errors}, watch} = useForm<signupObj>();

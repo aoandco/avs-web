@@ -1,4 +1,5 @@
 "use client";
+import { apiBase } from "@/lib/apiBase";
 import React, { Suspense, useEffect, useState } from "react";
 import axios from "axios";
 import Link from "next/link";
@@ -107,7 +108,7 @@ function Page() {
 
   const getDashboardStats = async () => {
     axios
-      .get(`${process.env.NEXT_PUBLIC_API_URL}/v1/admin/dashboard-stats`, {
+      .get(`${apiBase()}/v1/admin/dashboard-stats`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -140,7 +141,7 @@ function Page() {
   };
 
   const getMonthlySummary = async () => {
-    const endpoint = `${process.env.NEXT_PUBLIC_API_URL}/v1/admin/monthly-summary-stats?year=${year}&startMonth=1`;
+    const endpoint = `${apiBase()}/v1/admin/monthly-summary-stats?year=${year}&startMonth=1`;
     try {
       const response = await axios.get(endpoint, {
         headers: {

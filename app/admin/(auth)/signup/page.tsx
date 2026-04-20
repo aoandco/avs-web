@@ -1,4 +1,5 @@
 "use client"
+import { apiBase } from "@/lib/apiBase";
 import React from 'react'
 import Link from 'next/link'
 import { Eye, EyeOff } from 'lucide-react';
@@ -17,7 +18,7 @@ interface signupObj {
     termsAccepted: boolean;
 }
 
-const enpoint = `${process.env.NEXT_PUBLIC_API_URL}/v1/auth/signup/admin`
+const enpoint = `${apiBase()}/v1/auth/signup/admin`
 
 export default function Page() {
     const {register, handleSubmit, formState: { errors },watch} = useForm<signupObj>({

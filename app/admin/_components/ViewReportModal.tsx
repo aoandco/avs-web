@@ -1,5 +1,6 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { apiBase } from "@/lib/apiBase";
 import React, { useState } from "react";
 import {
   X,
@@ -80,7 +81,7 @@ export default function ViewReportModal({
     if (!reportData) return;
     if (reportData.geotaggedImages.length >= 1) {
       const endpoint =
-        `${process.env.NEXT_PUBLIC_API_URL}/v1/admin/approve-report`;
+        `${apiBase()}/v1/admin/approve-report`;
       setIsApproving(true);
       try {
         const res = await axios.post(

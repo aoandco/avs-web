@@ -1,4 +1,5 @@
 "use client";
+import { apiBase } from "@/lib/apiBase";
 import { X } from "lucide-react";
 import axios from "axios";
 import React, { ChangeEvent, FormEvent, useState } from "react";
@@ -45,7 +46,7 @@ export default function IntegrationModal({
     }
     setLoading(true);
     try {
-      const endpoint = `${process.env.NEXT_PUBLIC_API_URL}/v1/admin/client/integration/${clientId}`;
+      const endpoint = `${apiBase()}/v1/admin/client/integration/${clientId}`;
       const response = await axios.post(endpoint, form, {
         headers: { Authorization: `Bearer ${token}` },
       });

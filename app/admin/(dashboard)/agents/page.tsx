@@ -1,4 +1,5 @@
 "use client"
+import { apiBase } from "@/lib/apiBase";
 import React, { useEffect, useState } from 'react'
 import Image from 'next/image';
 import emptyIcon from "../../_assests/emptyIcon.svg"
@@ -18,7 +19,7 @@ interface AgentObj {
 
 
 export default function Page() {
-    const baseUrl = `${process.env.NEXT_PUBLIC_API_URL}/v1/admin/agents-with-completed-tasks`
+    const baseUrl = `${apiBase()}/v1/admin/agents-with-completed-tasks`
     const router = useRouter()
     const [keyword, setKeyword] = useState("");
     const [isLoading, setIsLoading] = useState(true)

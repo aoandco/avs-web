@@ -1,3 +1,4 @@
+import { apiBase } from "@/lib/apiBase";
 import axios from 'axios'
 import { X } from 'lucide-react'
 import React, { ChangeEvent, useState } from 'react'
@@ -23,7 +24,7 @@ export default function RejectTaskModal({taskIds, handleClose,getTasks}: rejectM
     const rejectTask = () => {
         if(comments == "") return
         setIsLoading(true)
-        const endpoint = `${process.env.NEXT_PUBLIC_API_URL}/v1/admin/reject-task/${taskIds[0]}`
+        const endpoint = `${apiBase()}/v1/admin/reject-task/${taskIds[0]}`
         axios.post(endpoint,{
             comments
         },{

@@ -1,4 +1,5 @@
 "use client"
+import { apiBase } from "@/lib/apiBase";
 import axios from 'axios'
 import Image from 'next/image'
 import { useRouter, useSearchParams } from 'next/navigation'
@@ -12,7 +13,7 @@ function VerifyTokenComp(){
     const [isVerifying, setIsVerifying] = React.useState(true);
     const [verificationStatus, setVerificationStatus] = React.useState<'loading' | 'success' | 'error'>('loading');
     
-    const endpoint = `${process.env.NEXT_PUBLIC_API_URL}/v1/auth/verify-reset-link?token=${token}`
+    const endpoint = `${apiBase()}/v1/auth/verify-reset-link?token=${token}`
 
     const verifyEmail = () => {
         axios.post(endpoint)

@@ -1,4 +1,5 @@
 "use client"
+import { apiBase } from "@/lib/apiBase";
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react'
@@ -49,7 +50,7 @@ export default function Page() {
 
     const getComplaints = async (type:string) => {
         setComplainType(type);
-        const endpoint = `${process.env.NEXT_PUBLIC_API_URL}/v1/admin/complaints`
+        const endpoint = `${apiBase()}/v1/admin/complaints`
         try{
             const response = await axios.get(`${type === 'all' ? endpoint : `${endpoint}?status=${type}`}`, {
                 headers: {
@@ -74,7 +75,7 @@ export default function Page() {
             message: complaint.message
         })
         if(complaint.status === "resolved") return
-        const endpoint = `${process.env.NEXT_PUBLIC_API_URL}/v1/admin/view-complaint/${complaint._id}`
+        const endpoint = `${apiBase()}/v1/admin/view-complaint/${complaint._id}`
         axios.post(endpoint,{},{
             headers: {
                 Authorization : `Bearer ${token}`
