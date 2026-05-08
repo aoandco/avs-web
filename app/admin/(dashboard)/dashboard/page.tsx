@@ -48,6 +48,7 @@ interface monthlyStats {
 function Page() {
   const [token, setToken] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [statsRange, setStatsRange] = useState<"month" | "history">("month");
   const [dashboardStats, setDashboardStats] = useState<DashboardStatsType>({
     totalTasks: 0,
     assignedTasks: 0,
@@ -109,8 +110,13 @@ function Page() {
   };
 
   const getDashboardStats = async () => {
+    setIsLoading(true);
+    const endpoint =
+      statsRange === "history"
+        ? `${apiBase()}/v1/admin/dashboard-stats?start=history`
+        : `${apiBase()}/v1/admin/dashboard-stats`;
     axios
-      .get(`${apiBase()}/v1/admin/dashboard-stats`, {
+      .get(endpoint, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -166,7 +172,7 @@ function Page() {
     if (token) {
       getDashboardStats();
     }
-  }, [token]);
+  }, [token, statsRange]);
 
   useEffect(() => {
     if (token) {
@@ -191,6 +197,38 @@ function Page() {
       </div>
       <div className="flex-1">
         <div className="p-3 md:p-5 lg:p-6">
+          <div className="mb-4 md:mb-6 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between rounded-lg border border-gray-200 bg-white px-3 py-3 md:px-4">
+            <div>
+              <p className="text-sm font-semibold text-gray-900">Stats Range</p>
+              <p className="text-xs text-gray-500">
+                Switch between this month and full historical metrics.
+              </p>
+            </div>
+            <div className="inline-flex rounded-lg border border-gray-300 bg-gray-50 p-1">
+              <button
+                type="button"
+                onClick={() => setStatsRange("month")}
+                className={`rounded-md px-4 py-2 text-sm font-semibold transition-all duration-200 ${
+                  statsRange === "month"
+                    ? "bg-[#174795] text-white shadow-sm"
+                    : "text-gray-700 hover:bg-white"
+                }`}
+              >
+                This Month
+              </button>
+              <button
+                type="button"
+                onClick={() => setStatsRange("history")}
+                className={`rounded-md px-4 py-2 text-sm font-semibold transition-all duration-200 ${
+                  statsRange === "history"
+                    ? "bg-[#174795] text-white shadow-sm"
+                    : "text-gray-700 hover:bg-white"
+                }`}
+              >
+                All History
+              </button>
+            </div>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mb-4 md:mb-6 lg:mb-10">
             <Card
               type="first"
