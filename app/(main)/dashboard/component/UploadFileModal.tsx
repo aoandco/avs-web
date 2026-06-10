@@ -1,4 +1,4 @@
-import { apiBase } from "@/lib/apiBase";
+import { apiUploadBase } from "@/lib/apiBase";
 import axios from "axios";
 import { X, UploadCloud, Upload } from "lucide-react";
 import React, { useRef, useState } from "react";
@@ -57,30 +57,51 @@ export default function UploadFileModal({
   };
 
   const uploadTasks = async () => {
-    const endpoint =
-      `${apiBase()}/v1/client/upload-tasks`;
     if (!selectedFile) return;
+    if (!token) {
+      toast.error("You must be logged in to upload tasks.");
+      return;
+    }
+
+    const endpoint = `${apiUploadBase()}/v1/client/upload-tasks`;
     setIsUploading(true);
-    const formData = new FormData()
-    formData.append("file", selectedFile)
+
+    const formData = new FormData();
+    formData.append("file", selectedFile);
 
     try {
       const response = await axios.post(endpoint, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
-          "Content-Type": "multipart/form-data",
         },
       });
 
       if (response.status === 200) {
-        toast.success("File uploaded successfully");
+        const { totalTasks, message, skippedRows } = response.data;
+
+        if (!totalTasks) {
+          toast.error(
+            message ||
+              "Upload completed but no tasks were created. Check column headers (e.g. CustomerName, FullAddress)."
+          );
+          return;
+        }
+
+        const successMessage =
+          message ||
+          `Successfully uploaded ${totalTasks} task${totalTasks === 1 ? "" : "s"}` +
+            (skippedRows ? ` (${skippedRows} row${skippedRows === 1 ? "" : "s"} skipped)` : "");
+
+        toast.success(successMessage);
         setSelectedFile(null);
-        getdashboardStats()
+        getdashboardStats();
+        handleClose();
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Upload error:", error);
-      toast.error("An error occurred during upload.");
-      setSelectedFile(null);
+      const errorMessage =
+        error.response?.data?.message || "An error occurred during upload.";
+      toast.error(errorMessage);
     } finally {
       setIsUploading(false);
     }

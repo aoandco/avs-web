@@ -11,3 +11,12 @@ export function apiBase(): string {
   const fromEnv = process.env.NEXT_PUBLIC_API_URL || "https://api.aoandco.tech";
   return String(fromEnv).replace(/\/$/, "");
 }
+
+/**
+ * Direct backend URL for multipart file uploads.
+ * Next.js rewrites can corrupt multipart bodies, so uploads must hit the API directly.
+ */
+export function apiUploadBase(): string {
+  const fromEnv = process.env.NEXT_PUBLIC_API_URL || "https://api.aoandco.tech";
+  return String(fromEnv).replace(/\/$/, "");
+}

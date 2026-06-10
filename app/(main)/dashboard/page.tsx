@@ -47,33 +47,47 @@ interface monthlyTaskType {
 }
 
 interface reportsObj {
-    activityId: string,
-    addressExistence: string,
-    addressResidential: string,
-    areaProfile: string,
-    buildingColor : string,
-    buildingType : string,
-    comments : string,
-    customerKnown : string,
-    customerName : string,
-    customerRelationshipWithAddress : string,
-    customerResident : string,
-    easeOfLocation : string,
-    firstGeotaggedImage : null
-    landMark : string,
-    latitude : number,
-    longitude : number,
-    metWith : string,
-    nameOfPersonMet : string
-    receivedDate : string,
-    recordedAudio : string,
-    recordedVideo : string,
-    relatioshipWithCustomer : string,
-    visitFeedback : string,
-    reportUrl: string,
-    state: string,
-    verificationAddress: string,
-    _id: string
+    _id: string;
+    activityId: string;
+    customerName: string;
+    verificationAddress: string;
+    fullAddress?: string;
+    additionalInformation?: string;
+    street?: string;
+    area?: string;
+    city?: string;
+    state: string;
+    country?: string;
+    landmark?: string;
+    postalCode?: string;
+    status?: string;
+    createdAt?: string;
+    reportIsApproved?: boolean;
+    addressExistence: string;
+    addressResidential: string;
+    areaProfile: string;
+    buildingColor: string;
+    buildingType: string;
+    comments: string;
+    additionalComments?: string;
+    customerKnown: string;
+    customerRelationshipWithAddress: string;
+    customerResident: string;
+    easeOfLocation: string;
+    firstGeotaggedImage: string | null;
+    secondGeotaggedImage?: string | null;
+    landMark: string;
+    latitude: number;
+    longitude: number;
+    metWith: string;
+    nameOfPersonMet: string;
+    receivedDate: string;
+    recordedAudio: string;
+    recordedVideo: string;
+    relatioshipWithCustomer: string;
+    personMetOthers?: string;
+    visitFeedback: string;
+    reportUrl: string;
 }
 
 interface DashboardStatsType {
@@ -93,6 +107,8 @@ export default function Page() {
     const [isLoading, setIsLoading] = useState(true)
     const [isUploadFileVisible, setIsUploadFileVisible] = React.useState(false)
     const [isDownloading, setIsDownloading] = React.useState(false)
+    const [selectedReports, setSelectedReports] = React.useState<reportsObj[]>([])
+    const [isAllReportsSelected, setIsAllReportsSelected] = React.useState(false)
     const [dashboardStats, setDashboardStats] = useState<DashboardStatsType>({
         totalPendingFiles: 0,
         totalVerifiedFiles: 0,
@@ -130,6 +146,8 @@ export default function Page() {
                 setDashboardStats({
                     ...response.data.data
                 })
+                setSelectedReports([])
+                setIsAllReportsSelected(false)
             } else {
                 setDashboardStats({
                     totalPendingFiles: 0,
@@ -161,43 +179,81 @@ export default function Page() {
         }
     } 
 
+    const toggleReportSelection = (report: reportsObj) => {
+        const isSelected = selectedReports.some((item) => item._id === report._id);
+        if (isSelected) {
+            setSelectedReports(selectedReports.filter((item) => item._id !== report._id));
+            setIsAllReportsSelected(false);
+        } else {
+            setSelectedReports([...selectedReports, report]);
+        }
+    };
+
+    const handleSelectAllReports = () => {
+        if (isAllReportsSelected) {
+            setSelectedReports([]);
+            setIsAllReportsSelected(false);
+            return;
+        }
+        setSelectedReports([...dashboardStats.reports]);
+        setIsAllReportsSelected(true);
+    };
+
     const handleDownloadReport = async () => {
-        if (!dashboardStats.reports || dashboardStats.reports.length === 0) {
-            toast.error("No reports available to download");
+        if (selectedReports.length === 0) {
+            toast.error("Select at least one approved report to export");
             return;
         }
 
         setIsDownloading(true);
         
         try {
-            // Prepare data for Excel
-            const excelData = dashboardStats.reports.map((report, index) => ({
-                'S/N': index + 1,
-                'Activity ID': report.activityId,
-                'Address Existence' : report.addressExistence,
+            const excelData = selectedReports.map((report, index) => ({
+                "S/N": index + 1,
+                "Task ID": report._id,
+                "Activity ID": report.activityId,
+                "Customer Name": report.customerName,
+                "Verification Address": report.fullAddress || report.verificationAddress,
+                "Additional Information": report.additionalInformation || "",
+                "Street": report.street || "",
+                "Area": report.area || "",
+                "City": report.city || "",
+                "State": report.state || "",
+                "Country": report.country || "",
+                "Landmark": report.landmark || "",
+                "Postal Code": report.postalCode || "",
+                "Status": report.status || "",
+                "Report Approved": report.reportIsApproved ? "Yes" : "No",
+                "Date Created": report.createdAt
+                    ? new Date(report.createdAt).toLocaleString()
+                    : "",
+                "Address Existence": report.addressExistence,
                 "Address Residential": report.addressResidential,
                 "Area Profile": report.areaProfile,
                 "Building Color": report.buildingColor,
                 "Building Type": report.buildingType,
                 "Comments": report.comments,
-                "Custormer Known": report.customerKnown,
-                'Customer Name': report.customerName,
+                "Additional Comments": report.additionalComments || "",
+                "Customer Known": report.customerKnown,
                 "Customer Relationship with Address": report.customerRelationshipWithAddress,
                 "Customer Resident": report.customerResident,
-                'Ease of Location': report.easeOfLocation,
-                "First Geotagged Image": report.firstGeotaggedImage,
-                "LandMark" : report.landMark,
+                "Ease of Location": report.easeOfLocation,
+                "Met With": report.metWith,
+                "Name of Person Met": report.nameOfPersonMet,
+                "Person Met Others": report.personMetOthers || "",
+                "Relationship With Customer": report.relatioshipWithCustomer,
+                "Landmark (Visit)": report.landMark,
+                "Visit Feedback": report.visitFeedback,
+                "Received Date": report.receivedDate
+                    ? new Date(report.receivedDate).toLocaleString()
+                    : "",
                 "Latitude": report.latitude,
                 "Longitude": report.longitude,
-                "Met With": report.metWith,
-                "Name of Resident": report.nameOfPersonMet,
-                "Received Date": report.receivedDate,
-                "Recorded Audio" : report.recordedAudio,
+                "First Geotagged Image": report.firstGeotaggedImage || "",
+                "Second Geotagged Image": report.secondGeotaggedImage || "",
+                "Recorded Audio": report.recordedAudio,
                 "Recorded Video": report.recordedVideo,
-                "relationship With Customer": report.relatioshipWithCustomer,
-                'Verification Address': report.verificationAddress,
-                'State': report.state,
-                'Visit Feedback': report.visitFeedback,
+                "Report URL": report.reportUrl,
             }));
 
             // Create a new workbook and worksheet
@@ -252,16 +308,14 @@ export default function Page() {
             
             // Generate filename with current date
             const currentDate = new Date().toISOString().split('T')[0];
-            link.download = `Reports_${currentDate}.xlsx`;
+            link.download = `Approved_Reports_${currentDate}.xlsx`;
             
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
-            
 
             window.URL.revokeObjectURL(url);
-            
-            
+            toast.success(`Exported ${selectedReports.length} approved report(s)`);
         } catch (error) {
             console.error('Error generating Excel file:', error);
             toast.error("Failed to generate report. Please try again.");
@@ -364,8 +418,10 @@ export default function Page() {
                         </div>
                         <div 
                             onClick={handleDownloadReport}
-                            className={`cursor-pointer bg-white rounded-lg py-3 lg:py-5 flex flex-row gap-3 justify-center items-center border-[1.5px] border-[#485d3a] text-[#485d3a] transition-all duration-300 ${
-                                isDownloading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-[#485d3a] hover:text-white'
+                            className={`bg-white rounded-lg py-3 lg:py-5 flex flex-row gap-3 justify-center items-center border-[1.5px] border-[#485d3a] text-[#485d3a] transition-all duration-300 ${
+                                isDownloading || selectedReports.length === 0
+                                  ? 'opacity-50 cursor-not-allowed'
+                                  : 'cursor-pointer hover:bg-[#485d3a] hover:text-white'
                             }`}
                         >
                             {isDownloading ? (
@@ -374,7 +430,9 @@ export default function Page() {
                                 <Download className='text-xl sm:text-2xl'/>
                             )}
                             <p className='text-sm sm:text-base font-semibold'>
-                                {isDownloading ? 'Generating...' : 'Download Report'}
+                                {isDownloading
+                                  ? 'Generating...'
+                                  : `Export Selected (${selectedReports.length})`}
                             </p>
                         </div>
                     </div>
@@ -445,6 +503,60 @@ export default function Page() {
                             </div>
                     </div>
                 }
+                </div>
+                <div className='mb-3 md:mb-4 lg:mb-5 rounded-lg bg-white py-4 px-4 md:px-6 lg:px-8'>
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+                            <p className='text-base sm:text-xl font-semibold'>Approved Reports</p>
+                            <p className="text-sm text-[#626262]">
+                                {selectedReports.length} of {dashboardStats.reports.length} selected
+                            </p>
+                        </div>
+                        {dashboardStats.reports.length > 0 ? (
+                            <div className="overflow-x-auto border border-[#e3e2e2] rounded-lg">
+                                <table className="w-full">
+                                    <thead>
+                                        <tr className="border-b border-b-[#c4c4c4] bg-[#fafafa]">
+                                            <th className="py-3 px-4 text-left">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={isAllReportsSelected}
+                                                    onChange={handleSelectAllReports}
+                                                    className="size-4 accent-[#485d3a]"
+                                                />
+                                            </th>
+                                            <th className="text-sm sm:text-base py-3 px-4 text-[#626262] text-left">Activity ID</th>
+                                            <th className="text-sm sm:text-base py-3 px-4 text-[#626262] text-left">Customer</th>
+                                            <th className="text-sm sm:text-base py-3 px-4 text-[#626262] text-left">Address</th>
+                                            <th className="text-sm sm:text-base py-3 px-4 text-[#626262] text-left">State</th>
+                                            <th className="text-sm sm:text-base py-3 px-4 text-[#626262] text-left">Approved</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {dashboardStats.reports.map((report) => (
+                                            <tr key={report._id} className="border-b border-b-[#e3e2e2]">
+                                                <td className="py-3 px-4">
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={selectedReports.some((item) => item._id === report._id)}
+                                                        onChange={() => toggleReportSelection(report)}
+                                                        className="size-4 accent-[#485d3a]"
+                                                    />
+                                                </td>
+                                                <td className="py-3 px-4 text-sm">{report.activityId}</td>
+                                                <td className="py-3 px-4 text-sm">{report.customerName}</td>
+                                                <td className="py-3 px-4 text-sm max-w-[280px] truncate" title={report.fullAddress || report.verificationAddress}>
+                                                    {report.fullAddress || report.verificationAddress}
+                                                </td>
+                                                <td className="py-3 px-4 text-sm">{report.state}</td>
+                                                <td className="py-3 px-4 text-sm text-[#178a51]">Yes</td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        ) : (
+                            <p className="text-sm text-[#626262]">No approved reports available yet.</p>
+                        )}
                 </div>
                 <div className='mb-3 md:mb-4 lg:mb-5 rounded-lg bg-white py-4 px-4 md:px-6 lg:px-8'>
                         <p className='text-base sm:text-xl font-semibold mb-2'>Upload History</p>

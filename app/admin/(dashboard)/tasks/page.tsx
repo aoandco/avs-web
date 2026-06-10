@@ -109,6 +109,7 @@ function Page() {
   const [isTaskLoading, setIsTaskLoading] = useState(true);
   const [tasks, setTasks] = useState<taskObj[]>([]);
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [companyNameFilter, setCompanyNameFilter] = useState<string>("all");
   const [selectedTasks, setSelectedTasks] = useState<taskObj[]>([]);
   const [isAllSelected, setIsAllSelected] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
@@ -156,7 +157,7 @@ function Page() {
     setKeyword(e.target.value)
     setCurrentPage(1);
     setIsTaskLoading(true)
-    axios.get(`${endpoint}?search=${e.target.value}&statusFilter=${currentFilter}`,{
+    axios.get(`${endpoint}?search=${e.target.value}&statusFilter=${currentFilter}&companyNameFilter=${companyNameFilter}`,{
         headers : {
             Authorization: `Bearer ${token}`
         }
@@ -289,13 +290,15 @@ function Page() {
           }
         );
         if (res.status === 200) {
-          toast.success(res.data.message);
+          toast.success(res.data.data?.message || res.data.message);
           getTasks("completed")
         }
       } catch (err: any) {
-        toast.error(
-          err.response ? err.response.data.message : "Failed to approve report"
-        );
+        const errorMessage =
+          err.response?.data?.data?.message ||
+          err.response?.data?.message ||
+          "Failed to approve report";
+        toast.error(errorMessage);
       } finally {
         setIsApproving(false);
       }
@@ -495,7 +498,7 @@ function Page() {
     setStatusFilter(filter);
     try {
       const response = await axios.get(
-        `${endpoint}?statusFilter=${filter}&search=${keyword}&startDate=${dateObj.startDate}&endDate=${dateObj.endDate}`,
+        `${endpoint}?statusFilter=${filter}&search=${keyword}&startDate=${dateObj.startDate}&endDate=${dateObj.endDate}&companyNameFilter=${companyNameFilter}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -524,6 +527,13 @@ function Page() {
     setCurrentFilter(filter)
     setCurrentPage(1);
     getTasks(filter);
+  };
+
+  const handleCompanyFilter = (filter: string) => {
+    setIsTaskLoading(true);
+    setCompanyNameFilter(filter);
+    setCurrentPage(1);
+    getTasks(currentFilter);
   };
 
   useEffect(() => {
@@ -602,9 +612,9 @@ function Page() {
       if(!isTaskLoading){
         setIsTaskLoading(true);
       }
-      getTasks("all");
+      getTasks(currentFilter);
     }
-  }, [token, dateObj.startDate, dateObj.endDate]);
+  }, [token, dateObj.startDate, dateObj.endDate, companyNameFilter]);
 
   return (
     <>
@@ -725,6 +735,43 @@ function Page() {
               }`}
             >
               Overdue
+            </li>
+          </ul>
+        </div>
+        <div className="overflow-x-auto flex flex-row gap-4 lg:gap-10 items-center px-4 lg:px-6 py-3 bg-white border-t border-[#e3e2e2]">
+          <p className="self-start md:self-center text-base font-semibold whitespace-nowrap">
+            Company:
+          </p>
+          <ul className="flex flex-row gap-4 items-center list-none">
+            <li
+              onClick={() => handleCompanyFilter("all")}
+              className={`cursor-pointer text-base px-4 py-2 rounded-xl hover:bg-[#485d3a] hover:text-white ${
+                companyNameFilter === "all"
+                  ? "bg-[#485d3a] text-white"
+                  : "bg-[#e3e2e2] text-[#0f170a]"
+              }`}
+            >
+              All
+            </li>
+            <li
+              onClick={() => handleCompanyFilter("wema")}
+              className={`cursor-pointer text-base whitespace-nowrap px-4 py-2 rounded-xl hover:bg-[#485d3a] hover:text-white ${
+                companyNameFilter === "wema"
+                  ? "bg-[#485d3a] text-white"
+                  : "bg-[#e3e2e2] text-[#0f170a]"
+              }`}
+            >
+              Wema Bank Ltd
+            </li>
+            <li
+              onClick={() => handleCompanyFilter("others")}
+              className={`cursor-pointer text-base px-4 py-2 rounded-xl hover:bg-[#485d3a] hover:text-white ${
+                companyNameFilter === "others"
+                  ? "bg-[#485d3a] text-white"
+                  : "bg-[#e3e2e2] text-[#0f170a]"
+              }`}
+            >
+              Others
             </li>
           </ul>
         </div>

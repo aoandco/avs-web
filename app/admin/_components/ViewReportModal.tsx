@@ -96,16 +96,18 @@ export default function ViewReportModal({
           }
         );
         if (res.status === 200) {
-          toast.success(res.data.message);
+          toast.success(res.data.data?.message || res.data.message);
           setTimeout(() => {
             handleClose();
           }, 1000);
           getTasks();
         }
       } catch (err: any) {
-        toast.error(
-          err.response ? err.response.data.message : "Failed to approve report"
-        );
+        const errorMessage =
+          err.response?.data?.data?.message ||
+          err.response?.data?.message ||
+          "Failed to approve report";
+        toast.error(errorMessage);
       } finally {
         setIsApproving(false);
       }
