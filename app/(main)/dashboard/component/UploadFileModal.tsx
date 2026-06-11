@@ -97,10 +97,11 @@ export default function UploadFileModal({
         getdashboardStats();
         handleClose();
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error("Upload error:", error);
-      const errorMessage =
-        error.response?.data?.message || "An error occurred during upload.";
+      const errorMessage = axios.isAxiosError(error)
+        ? error.response?.data?.message || "An error occurred during upload."
+        : "An error occurred during upload.";
       toast.error(errorMessage);
     } finally {
       setIsUploading(false);
