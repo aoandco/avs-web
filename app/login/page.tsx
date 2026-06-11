@@ -3,7 +3,7 @@ import { apiBase } from "@/lib/apiBase";
 import React from 'react'
 import AuthComp from '../components/AuthComp'
 import Link from 'next/link'
-import { Eye, EyeOff } from 'lucide-react'
+// import { Eye, EyeOff } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import axios from 'axios'
@@ -11,21 +11,22 @@ import { toast, Toaster } from 'react-hot-toast'
 
 interface lofinFormInput {
     email: string;
-    password: string;
+    // password: string;
 }
 
 const endpoint = `${apiBase()}/v1/auth/login/client`
 
 export default function Page() {
     const { register, handleSubmit, formState: { errors } } = useForm<lofinFormInput>();
-    const [showPassword, setShowPassword] = React.useState(false);
+    // const [showPassword, setShowPassword] = React.useState(false);
     const [isLoading, setIsLoading] = React.useState(false);
     const router = useRouter();
 
     const onSubmit: SubmitHandler<lofinFormInput> = (data) => {
         setIsLoading(true);
-        axios.post(endpoint,{
-            ...data
+        axios.post(endpoint, {
+            email: data.email,
+            // password: data.password,
         })
         .then((response)=>{
             console.log(response.data)
@@ -68,6 +69,7 @@ export default function Page() {
                     {errors.email?.message == "Invalid email address" && (
                         <p className='text-red-500 text-sm mb-3'>{errors.email.message}</p>
                     )}
+                    {/* Password temporarily disabled — email-only client login for now
                     <div className='flex flex-row gap-8'>
                         <div className='flex-1'>
                             <label className='mb-2 block text-sm font-semibold' htmlFor="password">Password</label>
@@ -95,6 +97,8 @@ export default function Page() {
                     <div className='mb-8'>
                         <a href='/forgot-password'>Forgot password?</a>
                     </div>
+                    */}
+                    <div className='mb-8' />
 
                     <div className='flex justify-center items-center'>
                         <button
