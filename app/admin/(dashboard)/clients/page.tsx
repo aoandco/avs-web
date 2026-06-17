@@ -1,5 +1,6 @@
 "use client"
 import { apiBase } from "@/lib/apiBase";
+import { ui } from "@/lib/uiClasses";
 import React, { useEffect, useState } from 'react'
 import { Search, KeyRound, Plug } from 'lucide-react';
 import Image from 'next/image';
@@ -35,13 +36,13 @@ export default function Page() {
 
     const ClientComp = ({name, id}:{name: string, id: string}) => {
     return (
-        <div className='rounded-md bg-white min-h-[100px] shadow-md hover:shadow-none'>
-            <div className='flex flex-row items-stretch h-[36px] border-b-[1.5px]  border-b-[#ececec]'>
+        <div className={`${ui.clientCard} min-h-[100px]`}>
+            <div className='flex flex-row items-stretch h-[36px] border-b border-brand-200 bg-brand-50'>
                 <div className='flex-1'></div>
-                <p className='flex items-center pl-2 border-l-[1.5px]  border-l-[#ececec] flex-[3] font-semibold text-base'>{name}</p>
+                <p className='flex items-center pl-2 border-l border-brand-200 flex-[3] font-semibold text-base text-brand-700'>{name}</p>
             </div>
             <div className='pl-2 md:pl-4 lg:pl-6 pb-4 mt-2 md:mt-3 lg:mt-4 space-y-2'>
-                <p className='cursor-pointer text-[#8a8a8a] text-base block hover:text-[#485d3a]' onClick={()=>router.push(`/admin/clients/${id}`)}>Client History</p>
+                <p className='cursor-pointer text-brand-500 text-base block hover:text-brand-500' onClick={()=>router.push(`/admin/clients/${id}`)}>Client History</p>
                 <div className='flex flex-wrap gap-2'>
                     <button
                         type="button"
@@ -120,27 +121,23 @@ export default function Page() {
 
     return (
             <>
-            <div className='overflow-auto flex-1 rounded-lg border-[1.5px] border-[#b3b3b3] flex flex-col'>
-                {/* <div className='flex flex-row gap-4 px-3 md:px-5 lg:px-6 border-b-[1.5px] border-b-[#b3b3b3]'>
-                    <p className='py-3 md:py-5 lg:py-6 text-sm md:text-base leading-none text-[#8a8a8a] hover:text-[#9dc782] hover:border-b hover:border-b-[#9dc782] cursor-pointer'>Companies</p>
-                    <p className='py-3 md:py-5 lg:py-6 text-sm md:text-base leading-none text-[#8a8a8a] hover:text-[#9dc782] hover:border-b hover:border-b-[#9dc782] cursor-pointer'>Employees</p>
-                </div>   */}
-                <div className='flex flex-row justify-between items-center p-3 md:p-5 lg:p-6 border-b-[1.5px] border-b-[#b3b3b3]'>
+            <div className={ui.panel}>
+                <div className={ui.panelHeader}>
                     <p className='text-base md:text-xl font-semibold leading-none'>Clients</p>
-                    <div className='bg-[#485d3a] text-white px-3 py-1 rounded-full text-sm font-medium'>
+                    <div className={ui.countBadge}>
                         {clients.length} {clients.length === 1 ? 'client' : 'clients'}
                     </div>
                 </div>
-                <div className='p-3 md:p-5 lg:px-6 lg:py-3 flex flex flex-col md:flex-row justify-between gap-3 md:gap-0 items-center border-b-[1.5px] border-b-[#b3b3b3]'>
+                <div className={ui.panelToolbar}>
                     <div className='flex flex-row gap-4 items-center'>
-                        <p className='text-black font-semibold text-sm sm:text-base'>{clients.length} Companies</p>
+                        <p className='text-brand-700 font-semibold text-sm sm:text-base'>{clients.length} Companies</p>
                         <div className='relative h-auto flex-1 md:w-[250px]'>
-                            <Search className='absolute text-[#8a8a8a] top-[50%] -translate-y-[50%] left-2' />
+                            <Search className='absolute text-brand-400 top-[50%] -translate-y-[50%] left-2' />
                             <input 
                                 value={keyowrd}
                                 onChange={(e) => handleSearch(e.target.value)}
                                 type="text" 
-                                className='w-full border-0 text-black border-white rounded-xl border-[1.5px] bg-white text-[#8a8a8a] py-2 pl-8 pr-2'
+                                className={ui.searchInput}
                                 placeholder='search companies'    
                             />
                         </div>
@@ -149,8 +146,8 @@ export default function Page() {
                 </div>
                 {
                     isLoading
-                    ?  <div className='flex-1 flex justify-center items-center'>
-                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#485d3a]"></div>
+                    ?  <div className='flex-1 flex justify-center items-center py-12'>
+                        <div className={ui.spinner}></div>
                     </div>
                     : clients.length > 0
                     ?

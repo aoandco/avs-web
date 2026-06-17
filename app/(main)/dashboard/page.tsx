@@ -1,5 +1,6 @@
 "use client"
 import { apiBase } from "@/lib/apiBase";
+import { ui } from "@/lib/uiClasses";
 import React, {useEffect, useState } from 'react'
 import { Upload, Download } from "lucide-react";
 import Image from 'next/image';
@@ -57,7 +58,8 @@ interface reportsObj {
     taskUploadId?: string | null;
     uploadFileName?: string | null;
     uploadDate?: string | null;
-    activityId: string;
+    activityId?: string | null;
+    cif?: string | null;
     customerName: string;
     verificationAddress: string;
     fullAddress?: string;
@@ -122,6 +124,9 @@ export default function Page() {
     const [uploadFiles, setUploadFiles] = React.useState<uploadFileOption[]>([])
     const [selectedTaskUploadId, setSelectedTaskUploadId] = React.useState("")
     const [isReportsLoading, setIsReportsLoading] = React.useState(false)
+    const [reportsPage, setReportsPage] = React.useState(1)
+    const [reportsRowsPerPage, setReportsRowsPerPage] = React.useState(25)
+    const [totalApprovedReports, setTotalApprovedReports] = React.useState(0)
     const [dashboardStats, setDashboardStats] = useState<DashboardStatsType>({
         totalPendingFiles: 0,
         totalVerifiedFiles: 0,
@@ -190,7 +195,11 @@ export default function Page() {
         }
     }
 
-    const fetchApprovedReports = async (taskUploadId = selectedTaskUploadId) => {
+    const fetchApprovedReports = async (
+        taskUploadId = selectedTaskUploadId,
+        page = reportsPage,
+        rowsPerPage = reportsRowsPerPage
+    ) => {
         if (!token) return;
 
         setIsReportsLoading(true);
@@ -199,6 +208,10 @@ export default function Page() {
             if (taskUploadId) {
                 params.set("taskUploadId", taskUploadId);
             }
+
+            const skip = rowsPerPage === -1 ? 0 : (page - 1) * rowsPerPage;
+            params.set("skip", String(skip));
+            params.set("limit", rowsPerPage === -1 ? "all" : String(rowsPerPage));
 
             const response = await axios.get(
                 `${apiBase()}/v1/client/approved-reports?${params.toString()}`,
@@ -212,17 +225,44 @@ export default function Page() {
             if (response.status === 200) {
                 setApprovedReports(response.data.data.reports || []);
                 setUploadFiles(response.data.data.uploads || []);
+                setTotalApprovedReports(response.data.total ?? 0);
                 setSelectedReports([]);
                 setIsAllReportsSelected(false);
             }
         } catch (error) {
             console.error("Error fetching approved reports:", error);
             setApprovedReports([]);
+            setTotalApprovedReports(0);
             toast.error("Failed to load approved reports.");
         } finally {
             setIsReportsLoading(false);
         }
     };
+
+    const reportsTotalPages =
+        reportsRowsPerPage === -1
+            ? 1
+            : Math.max(1, Math.ceil(totalApprovedReports / reportsRowsPerPage));
+    const reportsPageStart =
+        totalApprovedReports === 0
+            ? 0
+            : reportsRowsPerPage === -1
+            ? 1
+            : (reportsPage - 1) * reportsRowsPerPage + 1;
+    const reportsPageEnd =
+        totalApprovedReports === 0
+            ? 0
+            : reportsRowsPerPage === -1
+            ? totalApprovedReports
+            : Math.min(reportsPage * reportsRowsPerPage, totalApprovedReports);
+
+    const reportsPaginationSummary = (
+        <p className="text-sm text-gray-600">
+            Showing <span className="font-semibold">{reportsPageStart}</span> -{" "}
+            <span className="font-semibold">{reportsPageEnd}</span> of{" "}
+            <span className="font-semibold">{totalApprovedReports}</span> reports
+        </p>
+    );
 
     const toggleReportSelection = (report: reportsObj) => {
         const isSelected = selectedReports.some((item) => item._id === report._id);
@@ -257,7 +297,8 @@ export default function Page() {
                 "S/N": index + 1,
                 "Task ID": report._id,
                 "Upload File Name": report.uploadFileName || "",
-                "Activity ID": report.activityId,
+                "Activity ID": report.activityId || "",
+                "CIF": report.cif || "",
                 "Customer Name": report.customerName,
                 "Verification Address": report.fullAddress || report.verificationAddress,
                 "Additional Information": report.additionalInformation || "",
@@ -310,6 +351,7 @@ export default function Page() {
             const columnWidths = [
                 { wch: 5 },   // S/N
                 { wch: 15 },  // Activity ID
+                { wch: 18 },  // CIF
                 { wch: 20 },  // Customer Name
                 { wch: 20 },
                 { wch: 20 },
@@ -423,9 +465,9 @@ export default function Page() {
 
     const Card = ({number,desc,color}:{number: number, desc: string,color:string})=>{
         return (
-            <div className={`min-h-[100px] sm:min-h-[125px] rounded-xl flex-1 flex flex-col justify-center items-center border-[1.5px] border-[#485d3a] ${color}`}>
+            <div className={`${ui.statCard} ${color}`}>
                 <p className='text-xl sm:text-2xl font-semibold'>{number}</p>
-                <p className='text-sm sm:text-base font-semibold'>{desc}</p>
+                <p className='text-sm sm:text-base font-semibold text-brand-600'>{desc}</p>
             </div>
         )
     }
@@ -442,9 +484,15 @@ export default function Page() {
     useEffect(() => {
         if (token) {
             getdashboardStats()
-            fetchApprovedReports(selectedTaskUploadId)
+            fetchApprovedReports(selectedTaskUploadId, reportsPage, reportsRowsPerPage)
         }
-    }, [token, selectedTaskUploadId])
+    }, [token, selectedTaskUploadId, reportsPage, reportsRowsPerPage])
+
+    useEffect(() => {
+        if (reportsRowsPerPage !== -1 && reportsPage > reportsTotalPages) {
+            setReportsPage(reportsTotalPages);
+        }
+    }, [reportsRowsPerPage, reportsPage, reportsTotalPages]);
 
   return (  
         <div>
@@ -453,7 +501,7 @@ export default function Page() {
                     <div className='flex flex-col gap-4 w-full sm:w-[200px] md:w-[250px] lg:w-[300px]'>
                         <div 
                             onClick={()=> setIsUploadFileVisible(true)}
-                            className={`bg-[#485d3a] flex-1 rounded-lg py-3 lg:py-5 flex flex-row gap-3 justify-center items-center text-white transition-all duration-300 ease-linear cursor-pointer hover:opacity-80 active:opacity-80`}
+                            className={`bg-brand-500 flex-1 rounded-xl py-3 lg:py-5 flex flex-row gap-3 justify-center items-center text-white transition-all duration-300 ease-linear cursor-pointer hover:bg-brand-600 hover:shadow-md active:opacity-90`}
                         >
                             <Upload className='text-2xl sm:text-3xl'/>
                             <div>
@@ -465,10 +513,10 @@ export default function Page() {
                         </div>
                         <div 
                             onClick={handleDownloadReport}
-                            className={`bg-white rounded-lg py-3 lg:py-5 flex flex-row gap-3 justify-center items-center border-[1.5px] border-[#485d3a] text-[#485d3a] transition-all duration-300 ${
+                            className={`bg-white rounded-xl py-3 lg:py-5 flex flex-row gap-3 justify-center items-center border border-brand-300 text-brand-500 transition-all duration-300 ${
                                 isDownloading || selectedReports.length === 0
                                   ? 'opacity-50 cursor-not-allowed'
-                                  : 'cursor-pointer hover:bg-[#485d3a] hover:text-white'
+                                  : 'cursor-pointer hover:bg-brand-500 hover:text-white hover:border-brand-500 hover:shadow-md'
                             }`}
                         >
                             {isDownloading ? (
@@ -501,9 +549,9 @@ export default function Page() {
                     />
                     </div>
                 </div>
-                <div className='flex flex-col h-auto md:min-h-[350px] bg-white rounded-lg pb-6 my-4 md:my-6 lg:my-8'>
-                    <div className="border-b-2 border-b-[#131313] py-4 px-6 flex flex-row justify-between items-center">
-                        <div className='flex flex-row gap-2 items-center'>
+                <div className={`${ui.section} h-auto md:min-h-[350px] pb-6 my-4 md:my-6 lg:my-8`}>
+                    <div className={ui.sectionHead}>
+                        <div className='flex flex-row gap-2 items-center text-brand-700 font-medium'>
                             <Image className='w-[24px] sm:w-[28px] h-[24px] sm:h-[28px]' src={recentIcon} alt='recent icon' />
                             <p >Recent Uploads</p>
                         </div>
@@ -512,28 +560,28 @@ export default function Page() {
                 {
                     isLoading 
                     ? <div className='flex justify-center items-center h-[200px] md:h-[300px] lg:h-[400px]'>
-                        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#485d3a]"></div>
+                        <div className={`${ui.spinner} h-10 w-10`}></div>
                     </div>
                     : dashboardStats.uploads.length > 0
                     ?
                     <div className='overflow-x-auto'>
-                    <table className='w-full'>
+                    <table className={ui.tableSimple}>
                             <thead>
-                                <tr className='border-b border-b-[#c4c4c4]'>
-                                    <th className='text-sm sm:text-base text-start py-2 md:py-4 px-4 md:px-6 text-[#626262]'>No</th>
-                                    <th className='text-sm sm:text-base py-2 md:py-4 px-4 md:px-6 text-[#626262] text-center'>File Name</th>
-                                    <th className='text-sm sm:text-base py-2 md:py-4 px-4 md:px-6 text-[#626262] text-center'>Date & Time</th>
-                                    <th className='text-sm sm:text-base text-start py-2 md:py-4 px-4 md:px-6 text-[#626262]'>Status</th>
+                                <tr>
+                                    <th className='text-start'>No</th>
+                                    <th className='text-center'>File Name</th>
+                                    <th className='text-center'>Date & Time</th>
+                                    <th className='text-start'>Status</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {
                                     dashboardStats.uploads.slice(0,4).map((upload, index) => (
-                                        <tr key={upload._id} className={`${index !== 3 ? 'border-b border-b-[#c4c4c4]' : ''}`}>
-                                            <td className='text-sm sm:text-base py-2 md:py-4 px-4 md:px-6'>0{index + 1}</td>
-                                            <td className='text-sm sm:text-base text-center py-2 md:py-4 px-4 md:px-6'>{upload.fileName}</td>
-                                            <td className='text-sm sm:text-base text-center py-2 md:py-4 px-4 md:px-6 text-sm text-[#c4c4c4]'>{new Date(upload.uploadedAt).toLocaleString()}</td>
-                                            <td className={`text-sm sm:text-base py-2 md:py-4 px-4 md:px-6 ${getStatusColor(upload.status)}`}>{upload.status.charAt(0).toUpperCase() + upload.status.slice(1)}</td>
+                                        <tr key={upload._id}>
+                                            <td>0{index + 1}</td>
+                                            <td className='text-center'>{upload.fileName}</td>
+                                            <td className='text-center text-brand-400'>{new Date(upload.uploadedAt).toLocaleString()}</td>
+                                            <td className={`${getStatusColor(upload.status)}`}>{upload.status.charAt(0).toUpperCase() + upload.status.slice(1)}</td>
                                         </tr>
                                     ))
                                 }
@@ -551,16 +599,19 @@ export default function Page() {
                     </div>
                 }
                 </div>
-                <div className='mb-3 md:mb-4 lg:mb-5 rounded-lg bg-white py-4 px-4 md:px-6 lg:px-8'>
+                <div className={ui.contentBlock}>
                         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 mb-4">
-                            <p className='text-base sm:text-xl font-semibold'>Approved Reports</p>
+                            <p className='text-base sm:text-xl font-semibold text-brand-700'>Approved Reports</p>
                             <div className="flex flex-col sm:flex-row gap-3 sm:items-center">
-                                <label className="flex flex-col gap-1 text-sm text-[#626262]">
+                                <label className="flex flex-col gap-1 text-sm text-brand-500">
                                     Filter by upload file
                                     <select
                                         value={selectedTaskUploadId}
-                                        onChange={(e) => setSelectedTaskUploadId(e.target.value)}
-                                        className="min-w-[220px] border border-[#c4c4c4] rounded-md px-3 py-2 text-sm text-black bg-white"
+                                        onChange={(e) => {
+                                            setSelectedTaskUploadId(e.target.value);
+                                            setReportsPage(1);
+                                        }}
+                                        className={`min-w-[220px] ${ui.select}`}
                                     >
                                         <option value="">All upload files</option>
                                         {uploadFiles.map((upload) => (
@@ -570,39 +621,42 @@ export default function Page() {
                                         ))}
                                     </select>
                                 </label>
-                                <p className="text-sm text-[#626262] whitespace-nowrap">
-                                    {selectedReports.length} of {approvedReports.length} selected
+                                <p className="text-sm text-brand-500 whitespace-nowrap">
+                                    {selectedReports.length} of {approvedReports.length} selected on this page
                                 </p>
                             </div>
                         </div>
                         {isReportsLoading ? (
                             <div className="flex justify-center items-center h-[160px]">
-                                <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#485d3a]"></div>
+                                <div className={`${ui.spinner} h-10 w-10`}></div>
                             </div>
                         ) : approvedReports.length > 0 ? (
-                            <div className="overflow-x-auto border border-[#e3e2e2] rounded-lg">
-                                <table className="w-full">
+                            <div className={`overflow-x-auto rounded-xl border border-brand-200 shadow-sm`}>
+                                <div className={ui.tableMeta}>
+                                    {reportsPaginationSummary}
+                                </div>
+                                <table className={ui.tableSimple}>
                                     <thead>
-                                        <tr className="border-b border-b-[#c4c4c4] bg-[#fafafa]">
-                                            <th className="py-3 px-4 text-left">
+                                        <tr>
+                                            <th className="text-left py-3 px-4">
                                                 <input
                                                     type="checkbox"
                                                     checked={isAllReportsSelected}
                                                     onChange={handleSelectAllReports}
-                                                    className="size-4 accent-[#485d3a]"
+                                                    className="size-4 accent-brand-500"
                                                 />
                                             </th>
-                                            <th className="text-sm sm:text-base py-3 px-4 text-[#626262] text-left">Upload File</th>
-                                            <th className="text-sm sm:text-base py-3 px-4 text-[#626262] text-left">Activity ID</th>
-                                            <th className="text-sm sm:text-base py-3 px-4 text-[#626262] text-left">Customer</th>
-                                            <th className="text-sm sm:text-base py-3 px-4 text-[#626262] text-left">Address</th>
-                                            <th className="text-sm sm:text-base py-3 px-4 text-[#626262] text-left">State</th>
-                                            <th className="text-sm sm:text-base py-3 px-4 text-[#626262] text-left">Approved</th>
+                                            <th className="text-left">Upload File</th>
+                                            <th className="text-left">Activity ID</th>
+                                            <th className="text-left">Customer</th>
+                                            <th className="text-left">Address</th>
+                                            <th className="text-left">State</th>
+                                            <th className="text-left">Approved</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {approvedReports.map((report) => (
-                                            <tr key={report._id} className="border-b border-b-[#e3e2e2]">
+                                            <tr key={report._id}>
                                                 <td className="py-3 px-4">
                                                     <input
                                                         type="checkbox"
@@ -611,20 +665,76 @@ export default function Page() {
                                                         className="size-4 accent-[#485d3a]"
                                                     />
                                                 </td>
-                                                <td className="py-3 px-4 text-sm max-w-[180px] truncate" title={report.uploadFileName || "N/A"}>
+                                                <td className="max-w-[180px] truncate" title={report.uploadFileName || "N/A"}>
                                                     {report.uploadFileName || "N/A"}
                                                 </td>
-                                                <td className="py-3 px-4 text-sm">{report.activityId}</td>
-                                                <td className="py-3 px-4 text-sm">{report.customerName}</td>
-                                                <td className="py-3 px-4 text-sm max-w-[280px] truncate" title={report.fullAddress || report.verificationAddress}>
+                                                <td>{report.activityId}</td>
+                                                <td>{report.customerName}</td>
+                                                <td className="max-w-[280px] truncate" title={report.fullAddress || report.verificationAddress}>
                                                     {report.fullAddress || report.verificationAddress}
                                                 </td>
-                                                <td className="py-3 px-4 text-sm">{report.state}</td>
-                                                <td className="py-3 px-4 text-sm text-[#178a51]">Yes</td>
+                                                <td>{report.state}</td>
+                                                <td className="text-brand-success font-medium">Yes</td>
                                             </tr>
                                         ))}
                                     </tbody>
                                 </table>
+                                <div className={ui.tableFooter}>
+                                    {reportsPaginationSummary}
+                                    <div className="flex items-center gap-3">
+                                        <label className="text-sm text-brand-600">
+                                            Rows:
+                                            <select
+                                                value={reportsRowsPerPage}
+                                                onChange={(e) => {
+                                                    const value = Number(e.target.value);
+                                                    setReportsRowsPerPage(value);
+                                                    setReportsPage(1);
+                                                }}
+                                                className={`ml-2 ${ui.select}`}
+                                            >
+                                                <option value={25}>25</option>
+                                                <option value={50}>50</option>
+                                                <option value={100}>100</option>
+                                                <option value={-1}>All</option>
+                                            </select>
+                                        </label>
+                                        <div className="flex items-center gap-2">
+                                            <button
+                                                type="button"
+                                                onClick={() =>
+                                                    setReportsPage((prev) => Math.max(1, prev - 1))
+                                                }
+                                                disabled={
+                                                    reportsPage === 1 || reportsRowsPerPage === -1
+                                                }
+                                                className={ui.paginationBtn}
+                                            >
+                                                Previous
+                                            </button>
+                                            <span className="text-sm text-gray-700">
+                                                Page{" "}
+                                                {reportsRowsPerPage === -1 ? 1 : reportsPage} of{" "}
+                                                {reportsRowsPerPage === -1 ? 1 : reportsTotalPages}
+                                            </span>
+                                            <button
+                                                type="button"
+                                                onClick={() =>
+                                                    setReportsPage((prev) =>
+                                                        Math.min(reportsTotalPages, prev + 1)
+                                                    )
+                                                }
+                                                disabled={
+                                                    reportsPage >= reportsTotalPages ||
+                                                    reportsRowsPerPage === -1
+                                                }
+                                                className={ui.paginationBtn}
+                                            >
+                                                Next
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         ) : (
                             <p className="text-sm text-[#626262]">
@@ -674,7 +784,11 @@ export default function Page() {
                         handleClose={()=> setIsUploadFileVisible(false)}
                         getdashboardStats={() => {
                             getdashboardStats();
-                            fetchApprovedReports(selectedTaskUploadId);
+                            fetchApprovedReports(
+                                selectedTaskUploadId,
+                                reportsPage,
+                                reportsRowsPerPage
+                            );
                         }}
                     />
                 }    

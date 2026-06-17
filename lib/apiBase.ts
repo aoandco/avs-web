@@ -8,7 +8,8 @@ export function apiBase(): string {
   if (typeof window !== "undefined") {
     return "/api/backend";
   }
-  const fromEnv = process.env.NEXT_PUBLIC_API_URL || "https://api.aoandco.tech";
+  const defaultApiUrl = "https://api.aoandco.tech";
+  const fromEnv = process.env.NEXT_PUBLIC_API_URL || defaultApiUrl;
   return String(fromEnv).replace(/\/$/, "");
 }
 
@@ -17,6 +18,7 @@ export function apiBase(): string {
  * Next.js rewrites can corrupt multipart bodies, so uploads must hit the API directly.
  */
 export function apiUploadBase(): string {
-  const fromEnv = process.env.NEXT_PUBLIC_API_URL || "https://api.aoandco.tech";
+  const defaultApiUrl = "https://api.aoandco.tech";
+  const fromEnv = process.env.NEXT_PUBLIC_API_URL || defaultApiUrl;
   return String(fromEnv).replace(/\/$/, "");
 }

@@ -1,5 +1,6 @@
 "use client";
 import { apiBase } from "@/lib/apiBase";
+import { ui } from "@/lib/uiClasses";
 
 import React, { useCallback, useEffect, useState } from "react";
 import { KeyRound, Copy, RefreshCw, ShieldAlert } from "lucide-react";
@@ -100,20 +101,19 @@ export default function SettingsPage() {
   const hasKey = Boolean(displayLastFour || existingKey?.apiKeyCreatedAt || newKey);
 
   return (
-    <div className="overflow-auto flex-1 rounded-lg border-[1.5px] border-[#b3b3b3] flex flex-col">
+    <div className={ui.panel}>
       <Toaster />
-      <div className="flex flex-row justify-between items-center p-3 md:p-5 lg:p-6 border-b-[1.5px] border-b-[#b3b3b3]">
+      <div className={ui.panelHeader}>
         <p className="text-base md:text-xl font-semibold leading-none">Settings</p>
       </div>
 
       <div className="p-3 md:p-5 lg:p-6 space-y-6">
-        {/* API Key section */}
-        <section className="bg-white rounded-xl border border-[#b3b3b3] p-4 md:p-6">
+        <section className={`${ui.contentBlock} space-y-0`}>
           <div className="flex flex-row items-center gap-2 mb-4">
-            <KeyRound className="w-6 h-6 text-[#485d3a]" />
-            <h2 className="text-lg font-semibold text-[#2d3429]">API Key</h2>
+            <KeyRound className="w-6 h-6 text-brand-500" />
+            <h2 className="text-lg font-semibold text-brand-700">API Key</h2>
           </div>
-          <p className="text-sm text-[#626262] mb-4">
+          <p className="text-sm text-brand-500 mb-4">
             Use your API key to authenticate requests from your systems. Keep it
             secret and never share it. You can regenerate a new key at any time;
             the previous key will stop working.
@@ -128,8 +128,8 @@ export default function SettingsPage() {
             <>
               {/* Partially displayed existing key */}
               {hasKey && (
-                <div className="mb-4 p-3 rounded-lg bg-[#f6f6f7] border border-[#ececec]">
-                  <p className="text-xs font-semibold text-[#8a8a8a] mb-1">
+                <div className="mb-4 p-3 rounded-lg bg-brand-50 border border-brand-200">
+                  <p className="text-xs font-semibold text-brand-500 mb-1">
                     Current key
                   </p>
                   <div className="flex flex-wrap items-center gap-2">
@@ -164,7 +164,7 @@ export default function SettingsPage() {
                     <button
                       type="button"
                       onClick={copyToClipboard}
-                      className="shrink-0 inline-flex items-center gap-1.5 px-3 py-2 rounded-md bg-[#485d3a] text-white text-sm font-medium hover:bg-[#3d4e2f] transition-colors"
+                      className="shrink-0 inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-brand-500 text-white text-sm font-medium hover:bg-brand-600 transition-colors"
                       title="Copy API key"
                     >
                       <Copy className="w-4 h-4" />
@@ -181,7 +181,7 @@ export default function SettingsPage() {
                 className={`inline-flex items-center gap-2 px-4 py-3 rounded-lg font-medium text-sm transition-all duration-200 ${
                   generating
                     ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                    : "bg-[#b1d29b] text-[#2d3429] hover:bg-[#a0c78a] hover:shadow-md active:scale-[0.98]"
+                    : "bg-brand-300 text-brand-700 hover:bg-brand-400 hover:shadow-md active:scale-[0.98]"
                 }`}
               >
                 <RefreshCw

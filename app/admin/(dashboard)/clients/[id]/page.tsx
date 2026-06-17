@@ -1,5 +1,6 @@
 "use client";
 import { apiBase } from "@/lib/apiBase";
+import { ui } from "@/lib/uiClasses";
 import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { ArrowBigLeft } from "lucide-react";
@@ -45,64 +46,61 @@ export default function Page() {
   }, []);
 
   return (
-    <div className="overflow-auto flex-1 rounded-lg border-[1.5px] border-[#b3b3b3] flex flex-col">
-      <div className="flex flex-row justify-between items-center p-3 md:p-5 lg:p-6 border-b-[1.5px] border-b-[#b3b3b3]">
+    <div className={ui.panel}>
+      <div className={ui.panelHeader}>
         <p className="text-base md:text-xl font-semibold leading-none">
           Client History
         </p>
       </div>
-      <p className="p-3 md:p-5 lg:p-6 text-base font-medium">
+      <p className="p-3 md:p-5 lg:p-6 text-base font-medium text-brand-700">
         <ArrowBigLeft
           className="inline mr-2 cursor-pointer"
           onClick={() => router.push("/admin/clients")}
         />
         Client Task Summary
       </p>
-      <div className="mx-3 md:mx-5 lg:mx-6 mb-6 rounded-lg overflow-auto">
+      <div className="mx-3 md:mx-5 lg:mx-6 mb-6 rounded-xl overflow-auto border border-brand-200 bg-white shadow-sm">
         {!isLoading ? 
         (
-        <table className="bg-white w-full">
-          <thead className="border-b border-gray-200">
+        <table className={ui.table}>
+          <thead>
             <tr>
-              <td className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th>
                 Month
-              </td>
-              <td className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              </th>
+              <th>
                 Received Task
-              </td>
-              <td className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              </th>
+              <th>
                 Approved Rep.
-              </td>
-              <td className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              </th>
+              <th>
                 UnApproved Rep.
-              </td>
-              <td className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              </th>
+              <th>
                 Overdue Task
-              </td>
+              </th>
             </tr>
           </thead>
             <tbody>
               {monthlyClientStats.map((monthStats, index) => {
                 return (
                   <tr
-                    className={`hover:bg-gray-50 transition-colors duration-200 border-b border-gray-200 ${
-                      index % 2 === 0 ? "bg-white" : "bg-gray-50/30"
-                    }`}
                     key={index}
                   >
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 font-medium">
+                    <td className="whitespace-nowrap font-medium">
                       {monthStats.month}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                    <td className="whitespace-nowrap">
                       {monthStats.totalTasks}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                    <td className="whitespace-nowrap">
                       {monthStats.approvedReports}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                    <td className="whitespace-nowrap">
                       {monthStats.unapprovedReports}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                    <td className="whitespace-nowrap">
                       {monthStats.overdueTasks}
                     </td>
                   </tr>
@@ -113,7 +111,7 @@ export default function Page() {
         ) 
         : (
             <div className="flex-1 min-h-[400px] w-full flex justify-center items-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#485d3a]"></div>
+              <div className={ui.spinner}></div>
             </div>
           )}
       </div>

@@ -1,6 +1,7 @@
 "use client";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { apiBase } from "@/lib/apiBase";
+import { filterChipClass, ui } from "@/lib/uiClasses";
 import React, { ChangeEvent, useEffect, useState } from "react";
 import { Search, Trash2, User, Eye, XCircle, RefreshCw } from "lucide-react";
 import Image from "next/image";
@@ -91,7 +92,8 @@ interface taskObj {
     email: string;
   };
   agentId: null | string;
-  activityId: string;
+  activityId?: string | null;
+  cif?: string | null;
   customerName: string;
   verificationAddress: string;
   address?: taskAddress;
@@ -109,6 +111,7 @@ function Page() {
   const [isTaskLoading, setIsTaskLoading] = useState(true);
   const [tasks, setTasks] = useState<taskObj[]>([]);
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [approvalFilter, setApprovalFilter] = useState<string>("all");
   const [companyNameFilter, setCompanyNameFilter] = useState<string>("all");
   const [selectedTasks, setSelectedTasks] = useState<taskObj[]>([]);
   const [isAllSelected, setIsAllSelected] = useState(false);
@@ -122,7 +125,9 @@ function Page() {
   const [activityId, setActivityId] = useState<string | null>(null);
   const [isDeleteTaskModalOpen, setIsDeleteTaskModalOpen] = useState(false);
   const [isRejectTaskModalOpen, setIsRejectTaskModalOpen] = useState(false);
-  const [currentFilter, setCurrentFilter] = useState("all")
+  const [currentStatusFilter, setCurrentStatusFilter] = useState("all")
+  const [currentApprovalFilter, setCurrentApprovalFilter] = useState("all")
+  const [filterMode, setFilterMode] = useState<"status" | "approval">("status")
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState<number>(25);
   const [dateObj, setDateObj] = useState({
@@ -143,6 +148,36 @@ function Page() {
       ? tasks
       : tasks.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
 
+  const buildTasksQuery = (
+    status: string,
+    approval: string,
+    mode: "status" | "approval" = filterMode,
+    search = keyword
+  ) => {
+    const params = new URLSearchParams();
+
+    if (mode === "approval") {
+      params.set("approvalFilter", approval);
+    } else {
+      params.set("statusFilter", status);
+    }
+
+    if (search) {
+      params.set("search", search);
+    }
+    if (dateObj.startDate) {
+      params.set("startDate", dateObj.startDate);
+    }
+    if (dateObj.endDate) {
+      params.set("endDate", dateObj.endDate);
+    }
+    if (companyNameFilter !== "all") {
+      params.set("companyNameFilter", companyNameFilter);
+    }
+
+    return params.toString();
+  };
+
   const handleChange = (e: ChangeEvent<HTMLInputElement>) =>{
     const {name,value} = e.target
 
@@ -157,7 +192,7 @@ function Page() {
     setKeyword(e.target.value)
     setCurrentPage(1);
     setIsTaskLoading(true)
-    axios.get(`${endpoint}?search=${e.target.value}&statusFilter=${currentFilter}&companyNameFilter=${companyNameFilter}`,{
+    axios.get(`${endpoint}?${buildTasksQuery(currentStatusFilter, currentApprovalFilter, filterMode, e.target.value)}`,{
         headers : {
             Authorization: `Bearer ${token}`
         }
@@ -193,7 +228,8 @@ function Page() {
       const excelData = selectedTasks.map((task, index) => ({
         "S/N": index + 1,
         "Task ID": task._id,
-        "Activity ID": task.activityId,
+        "Activity ID": task.activityId || "",
+        "CIF": task.cif || "",
         "Company Name": task.clientId?.companyName || "N/A",
         "Customer Name": task.customerName,
         "Verification Address": getDisplayAddress(task),
@@ -219,6 +255,7 @@ function Page() {
         { wch: 5 }, // S/N
         { wch: 20 }, // Task ID
         { wch: 15 }, // Activity ID
+        { wch: 18 }, // CIF
         { wch: 20 }, // Company Name
         { wch: 20 }, // Customer Name
         { wch: 40 }, // Verification Address
@@ -291,7 +328,9 @@ function Page() {
         );
         if (res.status === 200) {
           toast.success(res.data.data?.message || res.data.message);
-          getTasks("completed")
+          setSelectedTasks([]);
+          setIsAllSelected(false);
+          getTasks(currentStatusFilter, currentApprovalFilter, filterMode);
         }
       } catch (err: any) {
         const errorMessage =
@@ -313,7 +352,7 @@ function Page() {
     }
   };
 
-  const Task = ({ task, index }: { task: taskObj; index: number }) => {
+  const Task = ({ task }: { task: taskObj; index: number }) => {
     const canReassignTask =
       statusFilter !== "pending" &&
       (statusFilter !== "all" || task.status !== "pending");
@@ -329,12 +368,7 @@ function Page() {
     };
 
     return (
-      <tr
-        key={task._id}
-        className={`hover:bg-gray-50 transition-colors duration-200 ${
-          index % 2 === 0 ? "bg-white" : "bg-gray-50/30"
-        }`}
-      >
+      <tr key={task._id}>
         <td className="flex flex-row items-center px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
           <input
             checked={
@@ -445,7 +479,7 @@ function Page() {
                 onClick={() => {
                   setIsTaskModalOpen(true);
                   setTaskIds([task._id]);
-                  setActivityId(task.activityId);
+                  setActivityId(task.activityId ?? null);
                 }}
                 title="Assign task"
                 className="cursor-pointer text-green-600 hover:text-green-900 transition-colors duration-200 px-3 py-1 rounded-md hover:bg-green-50 border border-green-200 hover:border-green-300"
@@ -458,7 +492,7 @@ function Page() {
                 onClick={() => {
                   setIsTaskModalOpen(true);
                   setTaskIds([task._id]);
-                  setActivityId(task.activityId);
+                  setActivityId(task.activityId ?? null);
                 }}
                 title="Reassign task"
                 className="cursor-pointer text-indigo-600 hover:text-indigo-900 transition-colors duration-200 px-3 py-1 rounded-md hover:bg-indigo-50 border border-indigo-200 hover:border-indigo-300"
@@ -494,11 +528,16 @@ function Page() {
     );
   };
 
-  const getTasks = async (filter: string) => {
-    setStatusFilter(filter);
+  const getTasks = async (
+    status = currentStatusFilter,
+    approval = currentApprovalFilter,
+    mode = filterMode
+  ) => {
+    setStatusFilter(status);
+    setApprovalFilter(approval);
     try {
       const response = await axios.get(
-        `${endpoint}?statusFilter=${filter}&search=${keyword}&startDate=${dateObj.startDate}&endDate=${dateObj.endDate}&companyNameFilter=${companyNameFilter}`,
+        `${endpoint}?${buildTasksQuery(status, approval, mode)}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -524,16 +563,27 @@ function Page() {
 
   const handleFilter = (filter: string) => {
     setIsTaskLoading(true);
-    setCurrentFilter(filter)
+    setFilterMode("status");
+    setCurrentStatusFilter(filter);
+    setCurrentApprovalFilter("all");
     setCurrentPage(1);
-    getTasks(filter);
+    getTasks(filter, "all", "status");
+  };
+
+  const handleApprovalFilter = (filter: string) => {
+    setIsTaskLoading(true);
+    setFilterMode("approval");
+    setCurrentApprovalFilter(filter);
+    setCurrentStatusFilter("all");
+    setCurrentPage(1);
+    getTasks("all", filter, "approval");
   };
 
   const handleCompanyFilter = (filter: string) => {
     setIsTaskLoading(true);
     setCompanyNameFilter(filter);
     setCurrentPage(1);
-    getTasks(currentFilter);
+    getTasks(currentStatusFilter, currentApprovalFilter);
   };
 
   useEffect(() => {
@@ -612,175 +662,180 @@ function Page() {
       if(!isTaskLoading){
         setIsTaskLoading(true);
       }
-      getTasks(currentFilter);
+      getTasks(currentStatusFilter, currentApprovalFilter);
     }
   }, [token, dateObj.startDate, dateObj.endDate, companyNameFilter]);
+
+  const paginationSummary = (
+    <p className="text-sm text-gray-600">
+      Showing <span className="font-semibold">{pageStart}</span> -{" "}
+      <span className="font-semibold">{pageEnd}</span> of{" "}
+      <span className="font-semibold">{tasks.length}</span> tasks
+    </p>
+  );
 
   return (
     <>
       <Toaster />
-      <div className="h-full overflow-auto flex-1 rounded-lg border-[1.5px] border-[#b3b3b3] flex flex-col">
-        {/* <div className='flex flex-row gap-4 px-3 md:px-5 lg:px-6 border-b-[1.5px] border-b-[#b3b3b3]'>
-                    <p className='py-3 md:py-5 lg:py-6 text-sm md:text-base leading-none text-[#8a8a8a] hover:text-[#9dc782] hover:border-b hover:border-b-[#9dc782] cursor-pointer'>Companies</p>
-                    <p className='py-3 md:py-5 lg:py-6 text-sm md:text-base leading-none text-[#8a8a8a] hover:text-[#9dc782] hover:border-b hover:border-b-[#9dc782] cursor-pointer'>Employees</p>
-                </div>   */}
-        <div className="flex flex-row flex-wrap justify-between items-center gap-3 p-3 md:p-5 lg:p-6 border-b-[1.5px] border-b-[#b3b3b3]">
+      <div className={ui.panel}>
+        <div className={ui.panelHeader}>
           <p className="text-base md:text-xl font-semibold leading-none">
             Tasks
           </p>
-          <div className="bg-[#485d3a] text-white px-3 py-1 rounded-full text-sm font-medium">
+          <div className={ui.countBadge}>
             {tasks.length} {tasks.length === 1 ? "task" : "tasks"}
           </div>
         </div>
-        <div className="p-3 md:p-5 lg:px-6 lg:py-3 flex flex-col md:flex-row justify-between gap-3 md:gap-0 items-center border-b-[1.5px] border-b-[#b3b3b3]">
+        <div className={ui.panelToolbar}>
           <div className="flex flex-row gap-4 items-center">
-            <p className="text-black font-semibold text-sm sm:text-base">
+            <p className="text-brand-700 font-semibold text-sm sm:text-base">
               {tasks.length} tasks
             </p>
             <div className="relative h-auto flex-1 md:w-[250px] lg:w-[350px]">
-              <Search className="absolute text-[#8a8a8a] top-[50%] -translate-y-[50%] left-2" />
+              <Search className="absolute text-brand-400 top-[50%] -translate-y-[50%] left-2" />
               <input
                 value={keyword}
                 onChange={handleSearch}
                 type="text"
-                className="text-black w-full border-0 border-white rounded-xl border-[1.5px] bg-white text-[#8a8a8a] py-2 pl-8 pr-2"
+                className={ui.searchInput}
                 placeholder="actvity id, address and company"
               />
             </div>
           </div>
           <div className="flex flex-row gap-4">
             <div className="flex flex-col gap-1">
-              <span>Start Date</span>
+              <span className="text-sm text-brand-600">Start Date</span>
               <input 
                 type="date"
                 name="startDate"
                 value={dateObj.startDate}
                 onChange={handleChange}
-                className="p-2 border border-[#b3b3b3] rounded-md"
+                className={ui.input}
               />
             </div>
             <div className="flex flex-col gap-1">
-              <span>End Date</span>
+              <span className="text-sm text-brand-600">End Date</span>
               <input 
                 type="date"
                 name="endDate"
                 value={dateObj.endDate}
                 onChange={handleChange}
-                className="p-2 border border-[#b3b3b3] rounded-md"
+                className={ui.input}
               />
             </div>
           </div>
         </div>
-        <div className="overflow-x-auto flex flex-row gap-4 lg:gap-10 items-center px-4 lg:px-6 py-3 bg-white rounded-xl">
-          <p className="self-start md:self-center text-base font-semibold">
+        <div className={ui.filterBar}>
+          <p className="self-start md:self-center text-base font-semibold text-brand-700">
             Filter by:
           </p>
           <ul className="flex flex-row gap-4 items-center list-none">
             <li
               onClick={() => handleFilter("all")}
-              className={`cursor-pointer text-base px-4 py-2 rounded-xl hover:bg-[#485d3a] hover:text-white ${
-                statusFilter === "all"
-                  ? "bg-[#485d3a] text-white"
-                  : "bg-[#e3e2e2] text-[#0f170a]"
-              }`}
+              className={filterChipClass(statusFilter === "all")}
             >
               All
             </li>
             <li
               onClick={() => handleFilter("assigned")}
-              className={`cursor-pointer text-base px-4 py-2 rounded-xl hover:bg-[#485d3a] hover:text-white ${
-                statusFilter === "assigned"
-                  ? "bg-[#485d3a] text-white"
-                  : "bg-[#e3e2e2] text-[#0f170a]"
-              }`}
+              className={filterChipClass(statusFilter === "assigned")}
             >
               Assigned
             </li>
             <li
               onClick={() => handleFilter("pending")}
-              className={`cursor-pointer text-base whitespace-nowrap px-4 py-2 rounded-xl hover:bg-[#485d3a] hover:text-white ${
-                statusFilter === "pending"
-                  ? "bg-[#485d3a] text-white"
-                  : "bg-[#e3e2e2] text-[#0f170a]"
-              }`}
+              className={`${filterChipClass(statusFilter === "pending")} whitespace-nowrap`}
             >
               Pending
             </li>
             <li
               onClick={() => handleFilter("completed")}
-              className={`cursor-pointer text-base px-4 py-2 rounded-xl hover:bg-[#485d3a] hover:text-white ${
-                statusFilter === "completed"
-                  ? "bg-[#485d3a] text-white"
-                  : "bg-[#e3e2e2] text-[#0f170a]"
-              }`}
+              className={filterChipClass(statusFilter === "completed")}
             >
               Completed
             </li>
             <li
               onClick={() => handleFilter("incomplete")}
-              className={`cursor-pointer text-base px-4 py-2 rounded-xl hover:bg-[#485d3a] hover:text-white ${
-                statusFilter === "incomplete"
-                  ? "bg-[#485d3a] text-white"
-                  : "bg-[#e3e2e2] text-[#0f170a]"
-              }`}
+              className={filterChipClass(statusFilter === "incomplete")}
             >
               Incomplete
             </li>
             <li
               onClick={() => handleFilter("overdue")}
-              className={`cursor-pointer text-base px-4 py-2 rounded-xl hover:bg-[#485d3a] hover:text-white ${
-                statusFilter === "overdue"
-                  ? "bg-[#485d3a] text-white"
-                  : "bg-[#e3e2e2] text-[#0f170a]"
-              }`}
+              className={filterChipClass(statusFilter === "overdue")}
             >
               Overdue
             </li>
           </ul>
         </div>
-        <div className="overflow-x-auto flex flex-row gap-4 lg:gap-10 items-center px-4 lg:px-6 py-3 bg-white border-t border-[#e3e2e2]">
-          <p className="self-start md:self-center text-base font-semibold whitespace-nowrap">
+        <div className={`${ui.filterBar} border-t-0`}>
+          <p className="self-start md:self-center text-base font-semibold whitespace-nowrap text-brand-700">
+            Report approval:
+          </p>
+          <ul className="flex flex-row flex-wrap gap-4 items-center list-none">
+            <li
+              onClick={() => handleApprovalFilter("approved")}
+              className={`${filterChipClass(approvalFilter === "approved")} whitespace-nowrap`}
+            >
+              Approved
+            </li>
+            <li
+              onClick={() => handleApprovalFilter("unapproved")}
+              className={`${filterChipClass(approvalFilter === "unapproved")} whitespace-nowrap`}
+            >
+              Unapproved
+            </li>
+            <li
+              onClick={() => handleApprovalFilter("approval-success")}
+              className={`${filterChipClass(approvalFilter === "approval-success")} whitespace-nowrap`}
+            >
+              Approved Success (V2)
+            </li>
+            <li
+              onClick={() => handleApprovalFilter("approval-failed")}
+              className={`${filterChipClass(approvalFilter === "approval-failed")} whitespace-nowrap`}
+            >
+              Approved Failed (V3)
+            </li>
+            <li
+              onClick={() => handleApprovalFilter("approval-returned")}
+              className={`${filterChipClass(approvalFilter === "approval-returned")} whitespace-nowrap`}
+            >
+              Approved Returned (V4)
+            </li>
+          </ul>
+        </div>
+        <div className={`${ui.filterBar} border-t-0`}>
+          <p className="self-start md:self-center text-base font-semibold whitespace-nowrap text-brand-700">
             Company:
           </p>
           <ul className="flex flex-row gap-4 items-center list-none">
             <li
               onClick={() => handleCompanyFilter("all")}
-              className={`cursor-pointer text-base px-4 py-2 rounded-xl hover:bg-[#485d3a] hover:text-white ${
-                companyNameFilter === "all"
-                  ? "bg-[#485d3a] text-white"
-                  : "bg-[#e3e2e2] text-[#0f170a]"
-              }`}
+              className={filterChipClass(companyNameFilter === "all")}
             >
               All
             </li>
             <li
               onClick={() => handleCompanyFilter("wema")}
-              className={`cursor-pointer text-base whitespace-nowrap px-4 py-2 rounded-xl hover:bg-[#485d3a] hover:text-white ${
-                companyNameFilter === "wema"
-                  ? "bg-[#485d3a] text-white"
-                  : "bg-[#e3e2e2] text-[#0f170a]"
-              }`}
+              className={`${filterChipClass(companyNameFilter === "wema")} whitespace-nowrap`}
             >
               Wema Bank Ltd
             </li>
             <li
               onClick={() => handleCompanyFilter("others")}
-              className={`cursor-pointer text-base px-4 py-2 rounded-xl hover:bg-[#485d3a] hover:text-white ${
-                companyNameFilter === "others"
-                  ? "bg-[#485d3a] text-white"
-                  : "bg-[#e3e2e2] text-[#0f170a]"
-              }`}
+              className={filterChipClass(companyNameFilter === "others")}
             >
               Others
             </li>
           </ul>
         </div>
         {isTaskLoading ? (
-          <div className="flex-1 flex justify-center items-center mb-4 mx-4 lg:mx-6 m-3 md:m-5 border rounded-xl border-gray-200 bg-white">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#485d3a]"></div>
+          <div className={ui.loadingBox}>
+            <div className={ui.spinner}></div>
           </div>
         ) : tasks.length > 0 ? (
-          <div className="flex-1 mb-4 mx-4 lg:mx-6 m-3 md:m-5 bg-white rounded-xl overflow-hidden shadow-sm border border-gray-200">
+          <div className={ui.tableCard}>
             {selectedTasks.length > 0 && (
               <div className="flex flex-row justify-end gap-4 p-2">
                 {selectedTasks.length > 1 && (
@@ -798,86 +853,62 @@ function Page() {
                 >
                   {isDownloading ? "Downloading..." : "Download"}
                 </button>
-                <button
-                  onClick={handleApprovedReport}
-                  className="cursor-pointer text-white bg-purple-600 hover:bg-purple-900 transition-colors duration-200 px-3 py-2 rounded-md"
-                >
-                  {isApproving ? "Approving..." : "Approve"}
-                </button>
+                {(statusFilter === "completed" ||
+                  statusFilter === "incomplete" ||
+                  approvalFilter === "unapproved") && (
+                  <button
+                    onClick={handleApprovedReport}
+                    disabled={isApproving}
+                    className="cursor-pointer disabled:cursor-not-allowed disabled:opacity-60 text-white bg-purple-600 hover:bg-purple-900 transition-colors duration-200 px-3 py-2 rounded-md"
+                  >
+                    {isApproving ? "Approving..." : "Approve"}
+                  </button>
+                )}
               </div>
             )}
-            <div className="overflow-auto max-h-[70vh]">
-              <table className="w-full">
-                <thead className="bg-gray-50 border-b border-gray-200 sticky top-0 z-[1]">
+            <div className={ui.tableMeta}>
+              {paginationSummary}
+            </div>
+            <div className={ui.tableScroll}>
+              <table className={ui.table}>
+                <thead>
                   <tr>
-                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th>
                       <input
                         checked={isAllSelected}
                         onChange={handleSelectAll}
                         type="checkbox"
-                        className="mr-2 size-4 translate-y-1 accent-[#485d3a]"
+                        className="mr-2 size-4 translate-y-1 accent-brand-500"
                       />
                       Activity ID
                     </th>
-                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Company Name
-                    </th>
-                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Verification Address
-                    </th>
-                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Street
-                    </th>
-                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Area
-                    </th>
-                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      City
-                    </th>
-                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      State
-                    </th>
-                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Country
-                    </th>
-                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Landmark
-                    </th>
-                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Postal Code
-                    </th>
-                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Customer Name
-                    </th>
-                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Status
-                    </th>
-                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Date Created
-                    </th>
-                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Report Approved
-                    </th>
-                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Actions
-                    </th>
+                    <th>Company Name</th>
+                    <th>Verification Address</th>
+                    <th>Street</th>
+                    <th>Area</th>
+                    <th>City</th>
+                    <th>State</th>
+                    <th>Country</th>
+                    <th>Landmark</th>
+                    <th>Postal Code</th>
+                    <th>Customer Name</th>
+                    <th>Status</th>
+                    <th>Date Created</th>
+                    <th>Report Approved</th>
+                    <th>Actions</th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                <tbody>
                   {paginatedTasks.map((task: taskObj, index) => {
                     return <Task key={task._id} task={task} index={index} />;
                   })}
                 </tbody>
               </table>
             </div>
-            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 px-4 py-3 border-t border-gray-200 bg-gray-50">
-              <p className="text-sm text-gray-600">
-                Showing <span className="font-semibold">{pageStart}</span> -{" "}
-                <span className="font-semibold">{pageEnd}</span> of{" "}
-                <span className="font-semibold">{tasks.length}</span> tasks
-              </p>
+            <div className={ui.tableFooter}>
+              {paginationSummary}
               <div className="flex items-center gap-3">
-                <label className="text-sm text-gray-600">
+                <label className="text-sm text-brand-600">
                   Rows:
                   <select
                     value={rowsPerPage}
@@ -886,7 +917,7 @@ function Page() {
                       setRowsPerPage(value);
                       setCurrentPage(1);
                     }}
-                    className="ml-2 border border-gray-300 rounded-md px-2 py-1 bg-white text-sm"
+                    className={`ml-2 ${ui.select}`}
                   >
                     <option value={25}>25</option>
                     <option value={50}>50</option>
@@ -899,18 +930,18 @@ function Page() {
                     type="button"
                     onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
                     disabled={currentPage === 1 || rowsPerPage === -1}
-                    className="px-3 py-1.5 text-sm rounded-md border border-gray-300 bg-white disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100"
+                    className={ui.paginationBtn}
                   >
                     Previous
                   </button>
-                  <span className="text-sm text-gray-700">
+                  <span className="text-sm text-brand-700">
                     Page {rowsPerPage === -1 ? 1 : currentPage} of {rowsPerPage === -1 ? 1 : totalPages}
                   </span>
                   <button
                     type="button"
                     onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
                     disabled={currentPage >= totalPages || rowsPerPage === -1}
-                    className="px-3 py-1.5 text-sm rounded-md border border-gray-300 bg-white disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100"
+                    className={ui.paginationBtn}
                   >
                     Next
                   </button>
@@ -937,7 +968,7 @@ function Page() {
           isViewReportModalOpen &&
           <ViewReportModal
             handleClose={handleViewReportModalClose}
-            getTasks={() =>getTasks("all")}
+            getTasks={() =>getTasks(currentStatusFilter, currentApprovalFilter, filterMode)}
             reportData={reportData}
             taskIds={taskIds}
             />
@@ -945,7 +976,7 @@ function Page() {
         {
           isTaskModalOpen && 
           <TaskModal 
-            getTasks={() => getTasks("all")}
+            getTasks={() => getTasks(currentStatusFilter, currentApprovalFilter, filterMode)}
             taskIds={taskIds}
             handleClose={handleTaskModalClose}
             activityId={activityId}
@@ -955,14 +986,14 @@ function Page() {
           isDeleteTaskModalOpen
           &&
           <DeleteTaskModal 
-            getTasks={() => getTasks("all")}
+            getTasks={() => getTasks(currentStatusFilter, currentApprovalFilter, filterMode)}
             taskIds={taskIds}
             handleClose={handleDeleteModalClose}
           />
         }
         {isRejectTaskModalOpen && (
           <RejectTaskModal
-            getTasks={() => getTasks("all")}
+            getTasks={() => getTasks(currentStatusFilter, currentApprovalFilter, filterMode)}
             taskIds={taskIds}
             handleClose={handleRejectModalClose}
             />

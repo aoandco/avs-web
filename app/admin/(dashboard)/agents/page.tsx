@@ -1,5 +1,6 @@
 "use client"
 import { apiBase } from "@/lib/apiBase";
+import { ui } from "@/lib/uiClasses";
 import React, { useEffect, useState } from 'react'
 import Image from 'next/image';
 import emptyIcon from "../../_assests/emptyIcon.svg"
@@ -81,28 +82,24 @@ export default function Page() {
     },[token])
 
   return (
-            <div className='overflow-y-auto flex-1 rounded-xl border-[1.5px] border-[#b3b3b3] flex flex-col pb-8 bg-[#f8f9fa]'>
-                {/* <div className='flex flex-row gap-4 px-3 md:px-5 lg:px-6 border-b-[1.5px] border-b-[#b3b3b3]'>
-                    <p className='py-3 md:py-5 lg:py-6 text-sm md:text-base leading-none text-[#8a8a8a] hover:text-[#9dc782] hover:border-b hover:border-b-[#9dc782] cursor-pointer'>Companies</p>
-                    <p className='py-3 md:py-5 lg:py-6 text-sm md:text-base leading-none text-[#8a8a8a] hover:text-[#9dc782] hover:border-b hover:border-b-[#9dc782] cursor-pointer'>Agents</p>
-                </div> */}
-                <div className='flex flex-row items-center justify-between p-3 md:p-5 lg:p-6 border-b-[1.5px] border-b-[#b3b3b3]'>
+            <div className={`${ui.panel} pb-8`}>
+                <div className={ui.panelHeader}>
                     <p className='text-base md:text-xl font-semibold leading-none'>Agents</p>
-                    <div className='bg-[#485d3a] text-white px-3 py-1 rounded-full text-sm font-medium'>
+                    <div className={ui.countBadge}>
                         {agents.length} {agents.length === 1 ? 'agent' : 'agents'}
                     </div>
                 </div>
-                <div className='p-3 md:p-5 lg:px-6 lg:py-3 flex flex-col md:flex-row justify-between gap-3 md:gap-0 items-center border-b-[1.5px] border-b-[#b3b3b3]'>
+                <div className={ui.panelToolbar}>
                     <div className='flex flex-row gap-4 items-center'>
-                        <p className='hidden sm:block text-black font-semibold text-base'>Agent Directory</p>
-                        <p className='block sm:hidden text-black font-semibold text-sm'>Agent</p>
+                        <p className='hidden sm:block text-brand-700 font-semibold text-base'>Agent Directory</p>
+                        <p className='block sm:hidden text-brand-700 font-semibold text-sm'>Agent</p>
                         <div className='relative h-auto flex-1 md:w-[250px]'>
-                            <Search className='absolute text-[#8a8a8a] top-[50%] -translate-y-[50%] left-2' />
+                            <Search className='absolute text-brand-400 top-[50%] -translate-y-[50%] left-2' />
                             <input 
                                 value={keyword}
                                 onChange={(e) => handleSearch(e.target.value)}
                                 type="text" 
-                                className='w-full border-0 border-white text-black rounded-xl border-[1.5px] bg-white text-[#8a8a8a] py-2 pl-8 pr-2'
+                                className={ui.searchInput}
                                 placeholder='search agents'    
                             />
                         </div>
@@ -112,42 +109,42 @@ export default function Page() {
                 {
                     isLoading 
                     ? 
-                    <div className='flex-1 flex justify-center items-center mb-4 mx-4 lg:mx-6 m-3 md:m-5 border rounded-xl border-gray-200 bg-white'>
-                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#485d3a]"></div>
+                    <div className={ui.loadingBox}>
+                        <div className={ui.spinner}></div>
                     </div>
                     : agents.length > 0
                     ?
-                    <div className="flex-1 overflow-auto mt-4 mx-4 lg:mx-6 mt-3 md:mt-5 shadow-sm border border-gray-200 rounded-lg">
-                        <table className="w-full min-w-[720px] rounded-xl overflow-hidden shadow-sm border border-gray-200 bg-white">
-                            <thead className="bg-gray-50 border-b border-gray-200">
+                    <div className={`${ui.tableCard} mt-4 mx-4 lg:mx-6 md:mt-5`}>
+                        <table className={`${ui.table} min-w-[720px]`}>
+                            <thead>
                                 <tr>
-                                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider flex flex-row gap-4 items-center">
-                                        <input type="checkbox" className="w-5 h-5 accent-[#485d3a] mr-2" />
+                                    <th className="flex flex-row gap-4 items-center">
+                                        <input type="checkbox" className="w-5 h-5 accent-brand-500 mr-2" />
                                         <span>Full Name</span>
                                     </th>
-                                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Staff ID</th>
-                                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Phone Number</th>
-                                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                    <th>Staff ID</th>
+                                    <th>Phone Number</th>
+                                    <th>Status</th>
                                 </tr>
                             </thead>
-                            <tbody className="bg-white divide-y divide-gray-200">
+                            <tbody>
                                 {agents.map((agent, index) => (
-                                    <tr key={index} className={`hover:bg-gray-50 transition-colors duration-200 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50/30'}`}>
-                                        <td className="px-6 py-4 flex flex-row gap-4 items-center">
-                                            <input type="checkbox" className="w-5 h-5 accent-[#485d3a] mr-2" />
+                                    <tr key={index}>
+                                        <td className="flex flex-row gap-4 items-center">
+                                            <input type="checkbox" className="w-5 h-5 accent-brand-500 mr-2" />
                                             <div className="flex flex-row gap-2 items-center">
                                                 {agent.profileImage ? (
-                                                    <Image src={agent.profileImage} alt="" className="w-[36px] h-[36px] rounded-full border border-gray-200 shadow-sm" width="36" height="36" />
+                                                    <Image src={agent.profileImage} alt="" className="w-[36px] h-[36px] rounded-full border border-brand-200 shadow-sm" width="36" height="36" />
                                                 ) : (
-                                                    <User className="w-[36px] h-[36px] rounded-full border border-gray-200 shadow-sm" />
+                                                    <User className="w-[36px] h-[36px] rounded-full border border-brand-200 shadow-sm text-brand-400" />
                                                 )}
-                                                <span className="font-medium text-gray-900">{agent.fullName}</span>
+                                                <span className="font-medium text-brand-700">{agent.fullName}</span>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4 text-gray-700">{agent.email.substring(0,10)}....</td>
-                                        <td className="px-6 py-4 text-gray-700">{agent.phoneNumber}</td>
-                                        <td className="px-6 py-4">
-                                            <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${agent.isVerified ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
+                                        <td>{agent.email.substring(0,10)}....</td>
+                                        <td>{agent.phoneNumber}</td>
+                                        <td>
+                                            <span className={`${ui.badge} ${agent.isVerified ? "ui-badge--success" : "ui-badge--warning"}`}>
                                                 {agent.isVerified ? "Approved" : "Pending"}
                                             </span>
                                         </td>

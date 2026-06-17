@@ -14,7 +14,7 @@ export default function Sidebar() {
     const {isSidebarOpen,setIsSidebarOpen ,toggleSidebar} = useMyContext()
 
     const isActive = (path: string) => {
-        return pathname.includes(path) ? 'bg-[#9dc782] text-white' : 'bg-[#f5f5f5] text-[#8a8a8a]';
+        return pathname.includes(path) ? 'bg-brand-500 text-white shadow-sm' : 'bg-brand-50 text-brand-500 hover:bg-brand-100';
     }
 
     const handleLogout = () => {
@@ -39,7 +39,7 @@ export default function Sidebar() {
     <div className={`${isSidebarOpen ? 'block' 
     : !isSidebarOpen && window.innerWidth >= 1024
     ? "block" 
-    :'hidden'} absolute z-10 top-0 left-0 md:shadow-xl lg:shadow-none md:shadow-md lg:shadow-none lg:relative w-[225px] rounded-tr-xl rounded-br-xl lg:rounded-none border lg:border-[1.5px] border-l-0 border-[#b3b3b3] pt-4 md:pt-10 pb-6 pl-6 pr-4 bg-[#abe08a] lg:bg-white`}>
+    :'hidden'} absolute z-10 top-0 left-0 md:shadow-xl lg:shadow-none md:shadow-md lg:shadow-none lg:relative w-[225px] rounded-tr-xl rounded-br-xl lg:rounded-none border lg:border border-l-0 border-brand-200 pt-4 md:pt-10 pb-6 pl-6 pr-4 bg-brand-300/40 lg:bg-white shadow-sm`}>
         <X
             onClick={toggleSidebar}
             className='cursor-pointer absolute text-2xl block top-4 right-4 lg:hidden' 

@@ -1,5 +1,6 @@
 "use client"
 import { apiBase } from "@/lib/apiBase";
+import { ui } from "@/lib/uiClasses";
 import React, { useEffect, useState } from 'react'
 import { Search, MessageCircle } from 'lucide-react'
 import emptyIcon from "../../admin/_assests/emptyIcon.svg"
@@ -58,9 +59,9 @@ export default function Page() {
 
     const Card = ({num,type,color,borderColor}:CardType)=>{
         return (
-            <div className={`flex-1 border-2 ${borderColor} rounded-2xl bg-white min-h-[150px] sm:min-h-[200px] flex flex-col justify-center items-center gap-2`}>
+            <div className={`flex-1 ${ui.statCard} min-h-[150px] sm:min-h-[200px] gap-2 border-2 ${borderColor}`}>
                 <p className={`${color} text-2xl sm:text-3xl font-semibold`}>{num}</p>
-                <p className='text-base text-[#626262]'>{type}</p>
+                <p className='text-base text-brand-500'>{type}</p>
             </div>
         )
     }
@@ -73,7 +74,7 @@ export default function Page() {
         })
     }
         return (
-            <div className='min-w-[400px] mb-2 md:mb-4 bg-white rounded-xl px-6 md:px-8 lg:px-10 py-2 md:py-3 lg:py-4 flex flex-row justify-between items-center gap-4 md:gap-6 lg:gap-8'>
+            <div className='min-w-[400px] mb-2 md:mb-4 bg-white rounded-xl px-6 md:px-8 lg:px-10 py-2 md:py-3 lg:py-4 flex flex-row justify-between items-center gap-4 md:gap-6 lg:gap-8 border border-brand-200 shadow-sm hover:shadow-md hover:border-brand-300 transition-all duration-200'>
                 <div className='flex flex-row gap-4 lg:gap-6 items-center'>
                     <MessageCircle className='shrink-0 text-2xl md:text-3xl text-black' />
                     <div>

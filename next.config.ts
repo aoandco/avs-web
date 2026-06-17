@@ -1,7 +1,9 @@
 import type { NextConfig } from "next";
 
+const defaultApiUrl = "https://api.aoandco.tech";
+
 const publicApiUrl = (
-  process.env.NEXT_PUBLIC_API_URL || "https://api.aoandco.tech"
+  process.env.NEXT_PUBLIC_API_URL || defaultApiUrl
 ).replace(/\/$/, "");
 
 const nextConfig: NextConfig = {
@@ -9,7 +11,7 @@ const nextConfig: NextConfig = {
   // Fallback so the app works even if the host doesn't set this during build (e.g. Cloud Run runtime-only env).
   env: {
     NEXT_PUBLIC_API_URL:
-      process.env.NEXT_PUBLIC_API_URL || "https://api.aoandco.tech",
+      process.env.NEXT_PUBLIC_API_URL || defaultApiUrl,
   },
   async rewrites() {
     return [

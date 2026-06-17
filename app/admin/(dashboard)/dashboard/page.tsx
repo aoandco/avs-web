@@ -1,5 +1,6 @@
 "use client";
 import { apiBase } from "@/lib/apiBase";
+import { toggleBtnClass, ui } from "@/lib/uiClasses";
 import React, { Suspense, useEffect, useState } from "react";
 import axios from "axios";
 import Link from "next/link";
@@ -28,6 +29,11 @@ interface DashboardStatsType {
   pendingTasks: number;
   incompleteTasks: number;
   verifiedTasks: number;
+  approvedReports: number;
+  unapprovedReports: number;
+  approvedSuccessReports: number;
+  approvedFailedReports: number;
+  approvedReturnedReports: number;
   agentCount: number;
   taskFiles: taskFileType[];
 }
@@ -57,6 +63,11 @@ function Page() {
     pendingTasks: 0,
     incompleteTasks: 0,
     verifiedTasks: 0,
+    approvedReports: 0,
+    unapprovedReports: 0,
+    approvedSuccessReports: 0,
+    approvedFailedReports: 0,
+    approvedReturnedReports: 0,
     agentCount: 0,
     taskFiles: [],
   });
@@ -88,9 +99,9 @@ function Page() {
   }: cardType) => {
     return (
       <div
-        className={`${bgColor} ${
+        className={`${bgColor} ui-stat-card--filled ${
           type === "first" ? "px-4 py-6" : "px-6 py-4"
-        }  rounded-lg text-white`}
+        } rounded-xl text-white`}
       >
         {type == "first" ? (
           <>
@@ -140,6 +151,11 @@ function Page() {
           pendingTasks: 0,
           incompleteTasks: 0,
           verifiedTasks: 0,
+          approvedReports: 0,
+          unapprovedReports: 0,
+          approvedSuccessReports: 0,
+          approvedFailedReports: 0,
+          approvedReturnedReports: 0,
           agentCount: 0,
           taskFiles: [],
         });
@@ -189,41 +205,33 @@ function Page() {
   }, []);
 
   return (
-    <div className="flex-1 overflow-auto rounded-lg border-[1.5px] border-[#b3b3b3] flex flex-col">
-      <div className="p-3 md:p-5 lg:p-6 border-b-[1.5px] border-b-[#b3b3b3]">
+    <div className={ui.panel}>
+      <div className={ui.panelHeader}>
         <p className="text-base md:text-xl font-semibold leading-none">
           Dashboard
         </p>
       </div>
       <div className="flex-1">
         <div className="p-3 md:p-5 lg:p-6">
-          <div className="mb-4 md:mb-6 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between rounded-lg border border-gray-200 bg-white px-3 py-3 md:px-4">
+          <div className="mb-4 md:mb-6 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between rounded-xl border border-brand-200 bg-white px-3 py-3 md:px-4 shadow-sm">
             <div>
-              <p className="text-sm font-semibold text-gray-900">Stats Range</p>
-              <p className="text-xs text-gray-500">
+              <p className="text-sm font-semibold text-brand-700">Stats Range</p>
+              <p className="text-xs text-brand-500">
                 Switch between this month and full historical metrics.
               </p>
             </div>
-            <div className="inline-flex rounded-lg border border-gray-300 bg-gray-50 p-1">
+            <div className={ui.toggleGroup}>
               <button
                 type="button"
                 onClick={() => setStatsRange("month")}
-                className={`rounded-md px-4 py-2 text-sm font-semibold transition-all duration-200 ${
-                  statsRange === "month"
-                    ? "bg-[#174795] text-white shadow-sm"
-                    : "text-gray-700 hover:bg-white"
-                }`}
+                className={toggleBtnClass(statsRange === "month")}
               >
                 This Month
               </button>
               <button
                 type="button"
                 onClick={() => setStatsRange("history")}
-                className={`rounded-md px-4 py-2 text-sm font-semibold transition-all duration-200 ${
-                  statsRange === "history"
-                    ? "bg-[#174795] text-white shadow-sm"
-                    : "text-gray-700 hover:bg-white"
-                }`}
+                className={toggleBtnClass(statsRange === "history")}
               >
                 All History
               </button>
@@ -256,6 +264,56 @@ function Page() {
                 dashboardStats.verifiedTasks == 0
                   ? "bg-[#8a8a8a]"
                   : "bg-[#178a51]"
+              }
+            />
+            <Card
+              type="first"
+              paraText1="Approved Reports"
+              paraText2={dashboardStats.approvedReports.toString()}
+              bgColor={
+                dashboardStats.approvedReports == 0
+                  ? "bg-[#8a8a8a]"
+                  : "bg-[#15803d]"
+              }
+            />
+            <Card
+              type="first"
+              paraText1="Unapproved Reports"
+              paraText2={dashboardStats.unapprovedReports.toString()}
+              bgColor={
+                dashboardStats.unapprovedReports == 0
+                  ? "bg-[#8a8a8a]"
+                  : "bg-[#ca8a04]"
+              }
+            />
+            <Card
+              type="first"
+              paraText1="Approved Success (V2)"
+              paraText2={dashboardStats.approvedSuccessReports.toString()}
+              bgColor={
+                dashboardStats.approvedSuccessReports == 0
+                  ? "bg-[#8a8a8a]"
+                  : "bg-[#16a34a]"
+              }
+            />
+            <Card
+              type="first"
+              paraText1="Approved Failed (V3)"
+              paraText2={dashboardStats.approvedFailedReports.toString()}
+              bgColor={
+                dashboardStats.approvedFailedReports == 0
+                  ? "bg-[#8a8a8a]"
+                  : "bg-[#dc2626]"
+              }
+            />
+            <Card
+              type="first"
+              paraText1="Approved Returned (V4)"
+              paraText2={dashboardStats.approvedReturnedReports.toString()}
+              bgColor={
+                dashboardStats.approvedReturnedReports == 0
+                  ? "bg-[#8a8a8a]"
+                  : "bg-[#9333ea]"
               }
             />
             <Card
@@ -303,7 +361,7 @@ function Page() {
               name="year"
               value={year}
               onChange={(e) => setYear(e.target.value)}
-              className="w-[200px] border border-[#b3b3b3] rounded-md p-2"
+              className={`w-[200px] ${ui.select}`}
             >
               <option value="">-- select year --</option>
               <option value={`${new Date().getFullYear() - 1}`}>
@@ -317,74 +375,51 @@ function Page() {
               </option>
             </select>
           </div>
-          <div className="overflow-auto mb-6 rounded-lg h-[400px]">
+          <div className="overflow-auto mb-6 rounded-xl h-[400px] border border-brand-200 bg-white shadow-sm">
             {!isStatLoading ? (
-              <table className="bg-white w-full">
-                <thead className="border-b border-gray-200">
+              <table className={ui.table}>
+                <thead>
                   <tr>
-                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Month
-                    </th>
-                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Total Task
-                    </th>
-                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Assigned Task
-                    </th>
-                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Pending Requests
-                    </th>
-                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Incomplete Requests
-                    </th>
-                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      TAT
-                    </th>
-                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      OTAT
-                    </th>
-                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Fail Rep.
-                    </th>
-                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Pass Rep.
-                    </th>
+                    <th>Month</th>
+                    <th>Total Task</th>
+                    <th>Assigned Task</th>
+                    <th>Pending Requests</th>
+                    <th>Incomplete Requests</th>
+                    <th>TAT</th>
+                    <th>OTAT</th>
+                    <th>Fail Rep.</th>
+                    <th>Pass Rep.</th>
                   </tr>
                 </thead>
                 <tbody>
                   {monthlySummaryStats.map((monthStat, index) => {
                     return (
-                      <tr
-                        className={`hover:bg-gray-50 transition-colors duration-200 border-b border-gray-200 ${
-                          index % 2 === 0 ? "bg-white" : "bg-gray-50/30"
-                        }`}
-                        key={index}
-                      >
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 font-medium">
+                      <tr key={index}>
+                        <td className="whitespace-nowrap font-medium">
                           {monthStat.month}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                        <td className="whitespace-nowrap">
                           {monthStat.totalTasks}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                        <td className="whitespace-nowrap">
                           {monthStat.assignedTasks}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                        <td className="whitespace-nowrap">
                           {monthStat.pendingRequests}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                        <td className="whitespace-nowrap">
                           {monthStat.incompleteRequests}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                        <td className="whitespace-nowrap">
                           {monthStat.tat}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                        <td className="whitespace-nowrap">
                           {monthStat.otat}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                        <td className="whitespace-nowrap">
                           {monthStat.failReports}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                        <td className="whitespace-nowrap">
                           {monthStat.passReports}
                         </td>
                       </tr>
@@ -394,20 +429,20 @@ function Page() {
               </table>
             ) : (
               <div className="flex-1 h-full flex justify-center items-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#485d3a]"></div>
+              <div className={ui.spinner}></div>
               </div>
             )}
           </div>
           <Suspense
             fallback={
               <div className="min-h-[400px] flex justify-center items-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#485d3a]"></div>
+              <div className={ui.spinner}></div>
               </div>
             }
           >
-            <div className="overflow-x-auto min-h-[200px] md:min-h-[300px] lg:min-h-[350px] bg-white rounded-lg pb-6 flex flex-col">
-              <div className="border-b-2 border-b-[#131313] py-4 px-6 flex flex-row justify-between items-center">
-                <div className="flex flex-row gap-2 items-center">
+            <div className={`${ui.section} min-h-[200px] md:min-h-[300px] lg:min-h-[350px] pb-6`}>
+              <div className={ui.sectionHead}>
+                <div className="flex flex-row gap-2 items-center text-brand-700 font-medium">
                   <Image
                     src="/recent-icon.svg"
                     alt="recent icon"
@@ -418,14 +453,14 @@ function Page() {
                 </div>
                 <Link
                   href="/admin/tasks"
-                  className="text-base md:text-xl hover:text-[#485d3a] active:text-[#485d3a]"
+                  className="text-base md:text-xl hover:text-brand-500 active:text-brand-600"
                 >
                   View all
                 </Link>
               </div>
               {isLoading ? (
                 <div className="flex-1 flex justify-center items-center">
-                  <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#485d3a]"></div>
+                  <div className={`${ui.spinner} h-10 w-10`}></div>
                 </div>
               ) : dashboardStats.taskFiles.length === 0 ? (
                 <div className="flex-1 flex justify-center items-center">
@@ -448,36 +483,23 @@ function Page() {
                   </div>
                 </div>
               ) : (
-                <table className="w-full min-w-[375px]">
+                <table className={`${ui.tableSimple} min-w-[375px]`}>
                   <thead>
-                    <tr className="border-b border-b-[#c4c4c4]">
-                      <th className="text-sm sm:text-base text-start py-2 md:py-4 px-4 md:px-6 text-[#626262]">
-                        No
-                      </th>
-                      <th className="whitespace-normal break-words text-sm sm:text-base py-2 md:py-4 px-4 md:px-6 text-[#626262] text-center">
-                        File Name
-                      </th>
-                      <th className="whitespace-normal break-words text-sm sm:text-base py-2 md:py-4 px-4 md:px-6 text-[#626262] text-center">
-                        Date & Time
-                      </th>
-                      <th className="whitespace-normal break-words text-sm sm:text-base text-start py-2 md:py-4 px-4 md:px-6 text-[#626262]">
-                        Status
-                      </th>
+                    <tr>
+                      <th className="text-start">No</th>
+                      <th className="text-center">File Name</th>
+                      <th className="text-center">Date & Time</th>
+                      <th className="text-start">Status</th>
                     </tr>
                   </thead>
                   <tbody>
                     {dashboardStats.taskFiles.slice(0, 3).map((file, index) => (
-                      <tr
-                        key={file._id}
-                        className="border-b border-b-[#c4c4c4]"
-                      >
-                        <td className="text-sm sm:text-base py-2 md:py-4 px-4 md:px-6">
-                          {index + 1}
-                        </td>
-                        <td className="text-sm sm:text-base text-center py-2 md:py-4 px-4 md:px-6">
+                      <tr key={file._id}>
+                        <td>{index + 1}</td>
+                        <td className="text-center">
                           <span>{file.taskUrl.split("/").pop()}</span>
                         </td>
-                        <td className="text-sm sm:text-base text-center py-2 md:py-4 px-4 md:px-6 text-sm text-[#c4c4c4]">
+                        <td className="text-center text-brand-400">
                           {new Date(file.uploadedAt).toLocaleString()}
                         </td>
                         <td
