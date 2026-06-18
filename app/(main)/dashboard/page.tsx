@@ -129,6 +129,7 @@ export default function Page() {
     const [totalApprovedReports, setTotalApprovedReports] = React.useState(0)
     const [reportsStartDate, setReportsStartDate] = React.useState("")
     const [reportsEndDate, setReportsEndDate] = React.useState("")
+    const [reportsDateFilter, setReportsDateFilter] = React.useState<"taskCreated" | "reportCreated">("taskCreated")
     const [dashboardStats, setDashboardStats] = useState<DashboardStatsType>({
         totalPendingFiles: 0,
         totalVerifiedFiles: 0,
@@ -215,6 +216,9 @@ export default function Page() {
             }
             if (reportsEndDate) {
                 params.set("endDate", reportsEndDate);
+            }
+            if (reportsStartDate || reportsEndDate) {
+                params.set("dateFilter", reportsDateFilter);
             }
 
             const skip = rowsPerPage === -1 ? 0 : (page - 1) * rowsPerPage;
@@ -494,7 +498,7 @@ export default function Page() {
             getdashboardStats()
             fetchApprovedReports(selectedTaskUploadId, reportsPage, reportsRowsPerPage)
         }
-    }, [token, selectedTaskUploadId, reportsPage, reportsRowsPerPage, reportsStartDate, reportsEndDate])
+    }, [token, selectedTaskUploadId, reportsPage, reportsRowsPerPage, reportsStartDate, reportsEndDate, reportsDateFilter])
 
     useEffect(() => {
         if (reportsRowsPerPage !== -1 && reportsPage > reportsTotalPages) {
@@ -608,10 +612,15 @@ export default function Page() {
                 }
                 </div>
                 <div className={ui.contentBlock}>
-                        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 mb-4">
-                            <p className='text-base sm:text-xl font-semibold text-brand-700'>Approved Reports</p>
-                            <div className="flex flex-col sm:flex-row gap-3 sm:items-center">
-                                <label className="flex flex-col gap-1 text-sm text-brand-500">
+                        <div className="flex flex-col gap-4 mb-4">
+                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                                <p className='text-base sm:text-xl font-semibold text-brand-700'>Approved Reports</p>
+                                <p className="text-sm text-brand-500">
+                                    {selectedReports.length} of {approvedReports.length} selected on this page
+                                </p>
+                            </div>
+                            <div className="flex flex-wrap gap-3 items-end w-full min-w-0">
+                                <label className="flex flex-col gap-1 text-sm text-brand-500 min-w-0 flex-1 sm:flex-none sm:min-w-[200px]">
                                     Filter by upload file
                                     <select
                                         value={selectedTaskUploadId}
@@ -619,9 +628,10 @@ export default function Page() {
                                             setSelectedTaskUploadId(e.target.value);
                                             setReportsPage(1);
                                         }}
-                                        className={`min-w-[220px] ${ui.select}`}
+                                        className={`w-full ${ui.select}`}
                                     >
-                                        <option value="">All upload files</option>
+                                        <option value="">All reports</option>
+                                        <option value="none">Direct API submissions (no upload file)</option>
                                         {uploadFiles.map((upload) => (
                                             <option key={upload._id} value={upload._id}>
                                                 {upload.fileName} ({new Date(upload.uploadedAt).toLocaleDateString()})
@@ -629,7 +639,23 @@ export default function Page() {
                                         ))}
                                     </select>
                                 </label>
-                                <label className="flex flex-col gap-1 text-sm text-brand-500">
+                                <label className="flex flex-col gap-1 text-sm text-brand-500 min-w-0 flex-1 sm:flex-none sm:min-w-[170px]">
+                                    Date filter by
+                                    <select
+                                        value={reportsDateFilter}
+                                        onChange={(e) => {
+                                            setReportsDateFilter(
+                                                e.target.value as "taskCreated" | "reportCreated"
+                                            );
+                                            setReportsPage(1);
+                                        }}
+                                        className={`w-full ${ui.select}`}
+                                    >
+                                        <option value="taskCreated">Task creation date</option>
+                                        <option value="reportCreated">Report creation date</option>
+                                    </select>
+                                </label>
+                                <label className="flex flex-col gap-1 text-sm text-brand-500 min-w-0 flex-1 sm:flex-none sm:min-w-[150px]">
                                     Start date
                                     <input
                                         type="date"
@@ -638,10 +664,10 @@ export default function Page() {
                                             setReportsStartDate(e.target.value);
                                             setReportsPage(1);
                                         }}
-                                        className={`min-w-[170px] ${ui.input}`}
+                                        className={`w-full ${ui.input}`}
                                     />
                                 </label>
-                                <label className="flex flex-col gap-1 text-sm text-brand-500">
+                                <label className="flex flex-col gap-1 text-sm text-brand-500 min-w-0 flex-1 sm:flex-none sm:min-w-[150px]">
                                     End date
                                     <input
                                         type="date"
@@ -650,12 +676,9 @@ export default function Page() {
                                             setReportsEndDate(e.target.value);
                                             setReportsPage(1);
                                         }}
-                                        className={`min-w-[170px] ${ui.input}`}
+                                        className={`w-full ${ui.input}`}
                                     />
                                 </label>
-                                <p className="text-sm text-brand-500 whitespace-nowrap">
-                                    {selectedReports.length} of {approvedReports.length} selected on this page
-                                </p>
                             </div>
                         </div>
                         {isReportsLoading ? (
@@ -770,8 +793,12 @@ export default function Page() {
                             </div>
                         ) : (
                             <p className="text-sm text-[#626262]">
-                                {selectedTaskUploadId
-                                    ? "No approved reports found for the selected upload file."
+                                {selectedTaskUploadId === "none"
+                                    ? "No approved reports found for direct API submissions."
+                                    : selectedTaskUploadId
+                                    ? "No approved reports found for the selected upload file yet."
+                                    : reportsStartDate || reportsEndDate
+                                    ? "No approved reports found for the selected date range."
                                     : "No approved reports available yet."}
                             </p>
                         )}

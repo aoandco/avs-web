@@ -134,6 +134,7 @@ function Page() {
     startDate: "",
     endDate: ""
   })
+  const [dateFilter, setDateFilter] = useState<"taskCreated" | "reportCreated">("taskCreated")
   const totalPages =
     rowsPerPage === -1 ? 1 : Math.max(1, Math.ceil(tasks.length / rowsPerPage));
   const pageStart = tasks.length === 0 ? 0 : rowsPerPage === -1 ? 1 : (currentPage - 1) * rowsPerPage + 1;
@@ -170,6 +171,13 @@ function Page() {
     }
     if (dateObj.endDate) {
       params.set("endDate", dateObj.endDate);
+    }
+    if (
+      mode === "status" &&
+      status === "completed" &&
+      (dateObj.startDate || dateObj.endDate)
+    ) {
+      params.set("dateFilter", dateFilter);
     }
     if (companyNameFilter !== "all") {
       params.set("companyNameFilter", companyNameFilter);
@@ -664,7 +672,7 @@ function Page() {
       }
       getTasks(currentStatusFilter, currentApprovalFilter);
     }
-  }, [token, dateObj.startDate, dateObj.endDate, companyNameFilter]);
+  }, [token, dateObj.startDate, dateObj.endDate, dateFilter, companyNameFilter]);
 
   const paginationSummary = (
     <p className="text-sm text-gray-600">
@@ -702,7 +710,25 @@ function Page() {
               />
             </div>
           </div>
-          <div className="flex flex-row gap-4">
+          <div className="flex flex-row flex-wrap gap-4 items-end">
+            {statusFilter === "completed" && (
+              <div className="flex flex-col gap-1">
+                <span className="text-sm text-brand-600">Date filter by</span>
+                <select
+                  value={dateFilter}
+                  onChange={(e) => {
+                    setDateFilter(
+                      e.target.value as "taskCreated" | "reportCreated"
+                    );
+                    setCurrentPage(1);
+                  }}
+                  className={ui.select}
+                >
+                  <option value="taskCreated">Task creation date</option>
+                  <option value="reportCreated">Report creation date</option>
+                </select>
+              </div>
+            )}
             <div className="flex flex-col gap-1">
               <span className="text-sm text-brand-600">Start Date</span>
               <input 
