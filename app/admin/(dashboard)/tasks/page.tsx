@@ -1,6 +1,7 @@
 "use client";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { apiBase } from "@/lib/apiBase";
+import { formatApiResponseMessage } from "@/lib/formatApiMessage";
 import { filterChipClass, ui } from "@/lib/uiClasses";
 import React, { ChangeEvent, useEffect, useState } from "react";
 import { Search, Trash2, User, Eye, XCircle, RefreshCw } from "lucide-react";
@@ -173,9 +174,8 @@ function Page() {
       params.set("endDate", dateObj.endDate);
     }
     if (
-      mode === "status" &&
-      status === "completed" &&
-      (dateObj.startDate || dateObj.endDate)
+      (dateObj.startDate || dateObj.endDate) &&
+      ((mode === "status" && status === "completed") || mode === "approval")
     ) {
       params.set("dateFilter", dateFilter);
     }
@@ -335,17 +335,20 @@ function Page() {
           }
         );
         if (res.status === 200) {
-          toast.success(res.data.data?.message || res.data.message);
+          toast.success(
+            formatApiResponseMessage(res.data, "Report approved successfully")
+          );
           setSelectedTasks([]);
           setIsAllSelected(false);
           getTasks(currentStatusFilter, currentApprovalFilter, filterMode);
         }
       } catch (err: any) {
-        const errorMessage =
-          err.response?.data?.data?.message ||
-          err.response?.data?.message ||
-          "Failed to approve report";
-        toast.error(errorMessage);
+        toast.error(
+          formatApiResponseMessage(
+            err.response?.data,
+            "Failed to approve report"
+          )
+        );
       } finally {
         setIsApproving(false);
       }
@@ -674,6 +677,9 @@ function Page() {
     }
   }, [token, dateObj.startDate, dateObj.endDate, dateFilter, companyNameFilter]);
 
+  const showDateTypeSelector =
+    statusFilter === "completed" || filterMode === "approval";
+
   const paginationSummary = (
     <p className="text-sm text-gray-600">
       Showing <span className="font-semibold">{pageStart}</span> -{" "}
@@ -711,7 +717,7 @@ function Page() {
             </div>
           </div>
           <div className="flex flex-row flex-wrap gap-4 items-end">
-            {statusFilter === "completed" && (
+            {showDateTypeSelector && (
               <div className="flex flex-col gap-1">
                 <span className="text-sm text-brand-600">Date filter by</span>
                 <select

@@ -1,6 +1,7 @@
 "use client";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { apiBase } from "@/lib/apiBase";
+import { formatApiResponseMessage } from "@/lib/formatApiMessage";
 import React, { useState } from "react";
 import {
   X,
@@ -96,18 +97,21 @@ export default function ViewReportModal({
           }
         );
         if (res.status === 200) {
-          toast.success(res.data.data?.message || res.data.message);
+          toast.success(
+            formatApiResponseMessage(res.data, "Report approved successfully")
+          );
           setTimeout(() => {
             handleClose();
           }, 1000);
           getTasks();
         }
       } catch (err: any) {
-        const errorMessage =
-          err.response?.data?.data?.message ||
-          err.response?.data?.message ||
-          "Failed to approve report";
-        toast.error(errorMessage);
+        toast.error(
+          formatApiResponseMessage(
+            err.response?.data,
+            "Failed to approve report"
+          )
+        );
       } finally {
         setIsApproving(false);
       }
