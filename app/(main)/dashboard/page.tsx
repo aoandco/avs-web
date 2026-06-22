@@ -1,5 +1,9 @@
 "use client"
 import { apiBase } from "@/lib/apiBase";
+import {
+  buildTaskExportRows,
+  getTaskExportColumnWidths,
+} from "@/lib/buildTaskExportRows";
 import { ui } from "@/lib/uiClasses";
 import React, {useEffect, useState } from 'react'
 import { Upload, Download } from "lucide-react";
@@ -305,90 +309,10 @@ export default function Page() {
         setIsDownloading(true);
         
         try {
-            const excelData = selectedReports.map((report, index) => ({
-                "S/N": index + 1,
-                "Task ID": report._id,
-                "Upload File Name": report.uploadFileName || "",
-                "Activity ID": report.activityId || "",
-                "CIF": report.cif || "",
-                "Customer Name": report.customerName,
-                "Verification Address": report.fullAddress || report.verificationAddress,
-                "Additional Information": report.additionalInformation || "",
-                "Street": report.street || "",
-                "Area": report.area || "",
-                "City": report.city || "",
-                "State": report.state || "",
-                "Country": report.country || "",
-                "Landmark": report.landmark || "",
-                "Postal Code": report.postalCode || "",
-                "Status": report.status || "",
-                "Report Approved": report.reportIsApproved ? "Yes" : "No",
-                "Date Created": report.createdAt
-                    ? new Date(report.createdAt).toLocaleString()
-                    : "",
-                "Address Existence": report.addressExistence,
-                "Address Residential": report.addressResidential,
-                "Area Profile": report.areaProfile,
-                "Building Color": report.buildingColor,
-                "Building Type": report.buildingType,
-                "Comments": report.comments,
-                "Additional Comments": report.additionalComments || "",
-                "Customer Known": report.customerKnown,
-                "Customer Relationship with Address": report.customerRelationshipWithAddress,
-                "Customer Resident": report.customerResident,
-                "Ease of Location": report.easeOfLocation,
-                "Met With": report.metWith,
-                "Name of Person Met": report.nameOfPersonMet,
-                "Person Met Others": report.personMetOthers || "",
-                "Relationship With Customer": report.relatioshipWithCustomer,
-                "Landmark (Visit)": report.landMark,
-                "Visit Feedback": report.visitFeedback,
-                "Received Date": report.receivedDate
-                    ? new Date(report.receivedDate).toLocaleString()
-                    : "",
-                "Latitude": report.latitude,
-                "Longitude": report.longitude,
-                "First Geotagged Image": report.firstGeotaggedImage || "",
-                "Second Geotagged Image": report.secondGeotaggedImage || "",
-                "Recorded Audio": report.recordedAudio,
-                "Recorded Video": report.recordedVideo,
-                "Report URL": report.reportUrl,
-            }));
-
-            // Create a new workbook and worksheet
+            const excelData = buildTaskExportRows(selectedReports);
             const workbook = XLSX.utils.book_new();
             const worksheet = XLSX.utils.json_to_sheet(excelData);
-
-            // Set column widths for better readability
-            const columnWidths = [
-                { wch: 5 },   // S/N
-                { wch: 15 },  // Activity ID
-                { wch: 18 },  // CIF
-                { wch: 20 },  // Customer Name
-                { wch: 20 },
-                { wch: 20 },
-                { wch: 20 },
-                { wch: 20 },
-                { wch: 20 },
-                { wch: 40 },
-                { wch: 20 },
-                { wch: 20 },
-                { wch: 20 },
-                { wch: 20 },
-                { wch: 20 },
-                { wch: 20 },
-                { wch: 20 },
-                { wch: 20 },
-                { wch: 20 },
-                { wch: 20 },
-                { wch: 20 },
-                { wch: 20 },
-                { wch: 20 },
-                { wch: 40 },  
-                { wch: 15 },  
-                { wch: 20 },   
-            ];
-            worksheet['!cols'] = columnWidths;
+            worksheet["!cols"] = getTaskExportColumnWidths();
 
             // Add the worksheet to the workbook
             XLSX.utils.book_append_sheet(workbook, worksheet, 'Reports');

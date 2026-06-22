@@ -1,6 +1,10 @@
 "use client";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { apiBase } from "@/lib/apiBase";
+import {
+  buildTaskExportRows,
+  getTaskExportColumnWidths,
+} from "@/lib/buildTaskExportRows";
 import { formatApiResponseMessage } from "@/lib/formatApiMessage";
 import { filterChipClass, ui } from "@/lib/uiClasses";
 import React, { ChangeEvent, useEffect, useState } from "react";
@@ -230,55 +234,13 @@ function Page() {
   const handleDownloadReport = async () => {
     setIsDownloading(true);
     try {
-      // Prepare data for Excel (fullAddress when present, else verificationAddress)
-      const getDisplayAddress = (t: taskObj) =>
-        t.address?.fullAddress ?? t.verificationAddress;
-      const excelData = selectedTasks.map((task, index) => ({
-        "S/N": index + 1,
-        "Task ID": task._id,
-        "Activity ID": task.activityId || "",
-        "CIF": task.cif || "",
-        "Company Name": task.clientId?.companyName || "N/A",
-        "Customer Name": task.customerName,
-        "Verification Address": getDisplayAddress(task),
-        "Additional Info": task.address?.additionalInformation ?? "",
-        "Street": task.address?.street ?? "",
-        "Area": task.address?.area ?? "N/A",
-        "City": task.address?.city ?? task.city ?? "",
-        "State": task.address?.state ?? task.state ?? "",
-        "Country": task.address?.country ?? "",
-        "Landmark": task.address?.landmark ?? "",
-        "Postal Code": task.address?.postalCode ?? "",
-        "Status": task.status,
-        "Date Created": task.createdAt,
-        "Report URL": task.feedback?.reportUrl || "N/A",
-      }));
+      const excelData = buildTaskExportRows(selectedTasks, {
+        includeCompanyName: true,
+      });
 
-      // Create a worksheet
       const workbook = XLSX.utils.book_new();
       const worksheet = XLSX.utils.json_to_sheet(excelData);
-
-      // Set column widths for better readability
-      worksheet["!cols"] = [
-        { wch: 5 }, // S/N
-        { wch: 20 }, // Task ID
-        { wch: 15 }, // Activity ID
-        { wch: 18 }, // CIF
-        { wch: 20 }, // Company Name
-        { wch: 20 }, // Customer Name
-        { wch: 40 }, // Verification Address
-        { wch: 30 }, // Additional Info
-        { wch: 35 }, // street
-        { wch: 25 }, // area
-        { wch: 18 }, // city
-        { wch: 18 }, // state
-        { wch: 15 }, // country
-        { wch: 25 }, // landmark
-        { wch: 15 }, // postal code
-        { wch: 15 }, // Status
-        { wch: 20 }, // Date Created
-        { wch: 50 }, // Report URL
-      ];
+      worksheet["!cols"] = getTaskExportColumnWidths({ includeCompanyName: true });
 
       // Add the worksheet to the workbook
       XLSX.utils.book_append_sheet(workbook, worksheet, "Reports");
